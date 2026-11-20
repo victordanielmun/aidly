@@ -129,6 +129,20 @@ class MainActivity : ActividadAidly() {
         }
         // --es idioma es|en|auto: cambia el idioma de la app y de la voz para las pruebas.
         intent.getStringExtra("idioma")?.let { Idioma.fijar(this, if (it == "auto") "" else it) }
+        // --ez presenciaTest true: carga los modelos de MediaPipe y analiza una imagen en blanco (sin camara) para medir el tiempo.
+        if (intent.getBooleanExtra("presenciaTest", false)) lifecycleScope.launch(kotlinx.coroutines.Dispatchers.Default) {
+            try {
+                val t0 = System.currentTimeMillis()
+                PresenciaCamara(this@MainActivity).use { p ->
+                    val t1 = System.currentTimeMillis()
+                    val bmp = android.graphics.Bitmap.createBitmap(480, 640, android.graphics.Bitmap.Config.ARGB_8888).also { it.eraseColor(0xFF808080.toInt()) }
+                    val o = p.analizar(bmp, t1)
+                    val t2 = System.currentTimeMillis()
+                    val o2 = p.analizar(bmp, t2)
+                    SpikeLog.log("PRESENCIA test: modelos cargados en ${t1 - t0} ms; 1er cuadro ${t2 - t1} ms; 2o cuadro ${System.currentTimeMillis() - t2} ms; visible=${o.visible}/${o2.visible}")
+                }
+            } catch (e: Throwable) { SpikeLog.log("PRESENCIA test: FALLO ${e::class.simpleName}: ${e.message}") }
+        }
         // --ez nube true|false: enciende o apaga la nube de Privacidad (las pruebas con voz la necesitan encendida).
         if (intent.hasExtra("nube")) Privacidad.fijarNube(this, intent.getBooleanExtra("nube", false))
         intent.getStringExtra("frase")?.let { f ->
