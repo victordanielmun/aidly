@@ -28,6 +28,8 @@ Idea tomada de la tabla de flujos del repo `fun-phone` (reimplementada, sin copi
 
 | F13 | **Modo dock** con cámara (opcional, apagada hasta que la persona acepta en esa pantalla; se puede pausar) | Ninguno: la cámara frontal se analiza **en el teléfono** con MediaPipe (detector de caras y pose ligera). No hay vista previa, no se guarda ni se envía ningún cuadro; de cada cuadro solo se usa "se ve / no se ve" y la posición horizontal. Si la persona deja de verse tras haber conversado, Aidly le pregunta en voz alta si está bien (**no detecta caídas ni emergencias**) | No sale | Apagada hasta que se acepta; con la cámara pausada no se analiza nada | `ModoDockActivity.kt`, `PresenciaCamara.kt`, `CompaniaAtenta.kt` |
 
+| F14 | **Base USB del dock** (opcional): la app busca un puerto serie USB, pide el permiso al sistema y solo le habla si el dispositivo responde "AIDLY-DOCK" | Órdenes de ángulo (GOTO/STOP…) a la base; el micrófono y los parlantes USB son audio local. Nada se envía a internet | No sale | Sin base USB conectada no ocurre nada | `DockUsb.kt`, `ProtocoloDock.kt`, `AudioExterno.kt` |
+
 No sale nunca del teléfono: el texto de los mensajes y correos que Aidly lee en voz alta (viene de las notificaciones), la lista de recordatorios, los favoritos, el número de quien llama, el contenido del calendario (solo se lee o se escribe en el calendario del propio teléfono).
 
 ## 3. Lo que se guarda en el teléfono

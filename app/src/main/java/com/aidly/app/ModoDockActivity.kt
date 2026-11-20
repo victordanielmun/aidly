@@ -20,12 +20,15 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -112,8 +116,12 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
     val scope = rememberCoroutineScope()
     val animar = remember { !Preferencias.reducirMovimiento(ctx) }
     val compania = remember { CompaniaAtenta(cfg) }
-    val dock: Dock = remember { DockSimulado() }
-    val angulo by dock.angulo.collectAsState()
+    var dock by remember { mutableStateOf<Dock>(DockSimulado()) }
+    val dockActual by rememberUpdatedState(dock)
+    val angulo by remember(dock) { dock.angulo }.collectAsState()
+    var usbEstado by remember { mutableIntStateOf(0) }          // 0 sin base USB, 1 buscando, 2 conectada
+    var reintentoUsb by remember { mutableIntStateOf(0) }
+    var audioUsb by remember { mutableStateOf<String?>(null) }
 
     var permisoMic by remember { mutableStateOf(ContextCompat.checkSelfPermission(ctx, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) }
     var permisoCam by remember { mutableStateOf(ContextCompat.checkSelfPermission(ctx, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) }
@@ -204,7 +212,7 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
         }
         onDispose {
             presencia.value?.close(); presencia.value = null
-            compania.pausar(); dock.detener(); visible = null
+            compania.pausar(); dockActual.detener(); visible = null
         }
     }
 
@@ -237,7 +245,22 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
 
     LaunchedEffect(ronda) { if (ronda > 0) turno() }
 
-    Column(Modifier.fillMaxSize().background(Tema.Fondo).padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    // ---- Base USB: se busca al abrir (y con el boton); si no hay, queda la simulada. Al salir se manda STOP y se cierra ----
+    LaunchedEffect(reintentoUsb) {
+        usbEstado = 1
+        DockUsb.conectar(ctx, alEvento = { e -> if (e == "BTN") ronda++ }) { d ->
+            if (d != null) { (dock as? DockConectado)?.cerrar(); dock = d; usbEstado = 2 } else usbEstado = 0
+        }
+    }
+    DisposableEffect(Unit) { onDispose { (dockActual as? DockConectado)?.cerrar() } }
+    LaunchedEffect(usbEstado, camaraOn) { audioUsb = AudioExterno.nombre(ctx) }
+
+    // La cara ocupa un tercio de la altura (entre 120 y 320 dp) y todo se desplaza si no cabe (letra grande o pantalla baja).
+    val caraAlto = (androidx.compose.ui.platform.LocalConfiguration.current.screenHeightDp * 0.32f).coerceIn(120f, 320f).dp
+    Column(
+        Modifier.fillMaxSize().background(Tema.Fondo).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
             Row(
                 Modifier.heightIn(min = 52.dp).clip(RoundedCornerShape(26.dp)).clickable(role = Role.Button) { voz.callar(); cerrar() }.padding(end = 14.dp),
@@ -249,7 +272,7 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
             EstadoCamara(camaraOn, visible)
         }
 
-        Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+        Box(Modifier.fillMaxWidth().height(caraAlto), contentAlignment = Alignment.Center) {
             AidlyCara(paso.emocion(), Modifier.fillMaxHeight().aspectRatio(240f / 200f, matchHeightConstraintsFirst = true).widthIn(max = 420.dp).clickable(role = Role.Button) { if (!ocupado) ronda++ }.semantics { contentDescription = ctx.getString(R.string.dock_tocar_hablar) }, animar)
         }
         Text(
@@ -273,8 +296,16 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
             DialDock(angulo, Modifier.size(78.dp))
             Column(Modifier.weight(1f)) {
-                Text(stringResource(R.string.dock_simulado, angulo.toInt()), fontSize = 16.sp, color = Tema.TextoSuave)
-                Text(stringResource(R.string.dock_simulado_nota), fontSize = 13.sp, color = Tema.TextoSuave)
+                Text(
+                    if (usbEstado == 2) stringResource(R.string.dock_usb_conectada, angulo.toInt()) else stringResource(R.string.dock_simulado, angulo.toInt()),
+                    fontSize = 16.sp, color = Tema.TextoSuave,
+                )
+                Text(
+                    when (usbEstado) { 2 -> audioUsb?.let { stringResource(R.string.dock_audio_usb, it) } ?: stringResource(R.string.dock_audio_tel); 1 -> stringResource(R.string.dock_usb_buscando); else -> stringResource(R.string.dock_simulado_nota) },
+                    fontSize = 13.sp, color = Tema.TextoSuave,
+                )
+                if (usbEstado == 0) Text(stringResource(R.string.dock_usb_buscar), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa,
+                    modifier = Modifier.clickable(role = Role.Button) { reintentoUsb++ }.padding(vertical = 6.dp))
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {

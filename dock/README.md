@@ -28,6 +28,10 @@ Pared ─ cargador USB-C PD ─► [BASE] hub USB-C con paso de carga
 - Si, después de conversar un rato, la persona deja de verse, Aidly **la llama y le pregunta si está bien**. **No detecta caídas** ni es un dispositivo de emergencias.
 - En la app, el giro se muestra con un **simulador en pantalla** (interfaz `Dock` con `DockSimulado` hoy y `DockUsb` como futuro). El audio externo se prueba con un parlante Bluetooth.
 
+## Conexión con la app
+La app ya incluye el código para hablarle al dock por USB (`DockUsb.kt`, `ProtocoloDock.kt`, `AudioExterno.kt`; protocolo en [PROTOCOLO.md](PROTOCOLO.md)) y
+un firmware de prueba ([firmware-prueba/](firmware-prueba/)). **Probado solo con pruebas unitarias y un puerto simulado; no con una base real.**
+
 ## Por qué la Rev. C y no la B
 - Bluetooth HFP baja la calidad de voz (8/16 kHz); el audio USB la conserva, y Aidly midió su mejor precisión con el micrófono del teléfono.
 - Sin canal de control en la Rev. B (el ESP32 solo hacía audio). Por USB el teléfono manda órdenes de giro por un puerto serie.

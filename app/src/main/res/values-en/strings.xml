@@ -386,4 +386,9 @@
     <string name="v_bienestar_1_nombre">%1$s, are you there? Are you okay?</string>
     <string name="v_bienestar_2">I am still here. Can you hear me? Are you okay?</string>
     <string name="v_frase_ayuda">I need help, I feel sick</string>
+    <string name="dock_usb_conectada">USB base connected: %1$d°</string>
+    <string name="dock_usb_buscando">Looking for the base over USB…</string>
+    <string name="dock_usb_buscar">Look for the base again</string>
+    <string name="dock_audio_usb">Audio over USB: %1$s</string>
+    <string name="dock_audio_tel">Audio: the phone\'s own</string>
 </resources>

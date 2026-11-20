@@ -43,7 +43,7 @@ object GeminiStt {
     /** Devuelve el texto, o null si no hubo voz. Lanza excepcion si falla el microfono o la nube. */
     suspend fun escuchar(ctx: android.content.Context): String? {
         Privacidad.exigirNube()
-        val pcm = withContext(Dispatchers.IO) { grabarFrase() } ?: return null
+        val pcm = withContext(Dispatchers.IO) { grabarFrase(ctx) } ?: return null
         return transcribirWav(ctx, SttCompare.wav(pcm), pcm.size / 32)
     }
 
@@ -87,13 +87,15 @@ object GeminiStt {
     }
 
     /** Graba con deteccion simple de voz por energia. Devuelve null si nadie hablo. */
-    private fun grabarFrase(): ByteArray? {
+    private fun grabarFrase(ctx: android.content.Context): ByteArray? {
         val min = AudioRecord.getMinBufferSize(RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT)
         @Suppress("MissingPermission")
         val rec = AudioRecord(
             MediaRecorder.AudioSource.VOICE_RECOGNITION, RATE,
             AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, maxOf(min, RATE),
         )
+        // Con el dock por USB, el microfono es el suyo (y se dice en pantalla); si no, el del telefono.
+        AudioExterno.entrada(ctx)?.let { rec.setPreferredDevice(it); SpikeLog.log("MIC: uso el microfono USB ${it.productName}") }
         if (rec.state != AudioRecord.STATE_INITIALIZED) {
             rec.release(); throw IllegalStateException("microfono no disponible")
         }
