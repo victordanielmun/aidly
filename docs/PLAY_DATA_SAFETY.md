@@ -30,6 +30,7 @@ no actúa en nombre de Aidly; Google (Gemini/Firebase) procesa por encargo de Ai
 | ID de dispositivo u otros ID | ID de usuario anónimo de Firebase Auth; token de App Check | Sí | Seguridad y prevención de fraude | No | No (necesario para Mi familia/IA) |
 
 ## 3. Datos a los que la app accede pero NO recopila
+- Cámara frontal en el modo dock (si la persona lo acepta): se procesa en el teléfono con MediaPipe; no se almacena ni se transmite ninguna imagen.
 - Contactos (READ_CONTACTS): solo para decir el nombre de quien llama y llamar por nombre; se procesan en el teléfono.
 - Calendario: se lee y escribe en el calendario del propio teléfono.
 - Notificaciones de mensajería (acceso a notificaciones): el texto se lee en voz alta y se guarda hasta 48 h cifrado en el teléfono.
@@ -39,7 +40,7 @@ no actúa en nombre de Aidly; Google (Gemini/Firebase) procesa por encargo de Ai
 | Permiso | Por qué |
 |---|---|
 | RECORD_AUDIO | Escuchar a la persona |
-| CAMERA | Fotografiar medicinas y papeles |
+| CAMERA | Fotografiar lo que se quiere leer y, en el modo dock, saber si la persona está frente a Aidly (solo en el teléfono) |
 | READ_CONTACTS | Decir quién llama y llamar por nombre |
 | READ/WRITE_CALENDAR | Leer y crear citas por voz |
 | ACCESS_COARSE/FINE_LOCATION | Compartir ubicación con la familia y SOS (solo si se activa) |

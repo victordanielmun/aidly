@@ -38,6 +38,9 @@ kotlin {
 
 dependencies {
     // El SDK on-device aun no esta en el BoM: fijar versiones a mano.
+    // Deteccion de presencia en el telefono (Modo dock). Apache-2.0; los modelos van en assets/mediapipe.
+    implementation("com.google.mediapipe:tasks-vision:1.2.3")
+    testImplementation("junit:junit:4.13.2")
     implementation("com.google.firebase:firebase-ai:18.2.0")
     implementation("com.google.firebase:firebase-ai-ondevice:16.0.0-beta08")
     // App Check (exigido en el proyecto). Debug para desarrollo; en produccion usar Play Integrity.

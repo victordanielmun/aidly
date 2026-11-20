@@ -25,6 +25,7 @@ class Lexico(
     val destinoMapa: Regex,
     val tituloBusqueda: Regex,
     val porFavor: Regex,
+    val modoDock: Regex,
 ) {
     companion object {
         private fun r(s: String) = Regex(s)
@@ -101,6 +102,7 @@ class Lexico(
             destinoMapa = r("\\b(?:llevame|navega|navegar|llegar|llego|ruta)\\s+(?:a|al|hasta|hacia|para)?\\s*(.+)$"),
             tituloBusqueda = r("\\b(?:de|del|sobre|llamad[ao]|titulad[ao]|que se llama)\\s+(.+)$"),
             porFavor = r("\\bpor favor\\b"),
+            modoDock = r("\\b(modo dock|modo mesa|modo base|el dock)\\b"),
         )
 
         val EN = Lexico(
@@ -177,6 +179,7 @@ class Lexico(
             destinoMapa = r("\\b(?:take me|navigate|directions|route|get)\\s+(?:to|toward|towards)?\\s*(.+)$"),
             tituloBusqueda = r("\\b(?:by|of|called|named|titled|about)\\s+(.+)$"),
             porFavor = r("\\bplease\\b"),
+            modoDock = r("\\b(dock mode|table mode|desk mode|the dock)\\b"),
         )
 
         fun de(ctx: Context): Lexico = if (Idioma.resolver(ctx) == "en") EN else ES

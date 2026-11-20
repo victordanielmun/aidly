@@ -60,6 +60,10 @@ object Privacidad {
 
     fun nubeActiva() = nube
 
+    /** La persona acepto que la camara frontal vea si esta frente a Aidly (Modo dock). Todo se procesa en el telefono. */
+    fun camaraAceptada(ctx: Context) = prefs(ctx).getBoolean("camara", false)
+    fun fijarCamaraAceptada(ctx: Context, v: Boolean) { prefs(ctx).edit().putBoolean("camara", v).apply(); SpikeLog.log("PRIVACIDAD: camara del modo dock ${if (v) "aceptada" else "retirada"}") }
+
     fun fijarNube(ctx: Context, v: Boolean) {
         prefs(ctx).edit().putBoolean(CLAVE, v).apply(); nube = v
         SpikeLog.log("PRIVACIDAD: nube ${if (v) "encendida" else "apagada"}")

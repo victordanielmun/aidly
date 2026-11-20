@@ -51,6 +51,10 @@ object Agente {
             L.crearCita.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=agendar cita"); crearCita(ctx, frase) }
             L.verAgenda.containsMatchIn(n) && L.cuandoAgenda.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=ver agenda"); verAgenda(ctx, n) }
             L.horaFecha.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=hora/fecha"); horaFecha(ctx, n, L) }
+            L.modoDock.containsMatchIn(n) -> {
+                SpikeLog.log("AGENTE: ruta=modo dock")
+                pantalla(ctx, ModoDockActivity::class.java, t(ctx, R.string.v_modo_dock))
+            }
             L.medicina.containsMatchIn(n) && L.leerAlgo.containsMatchIn(n) -> {
                 SpikeLog.log("AGENTE: ruta=medicina")
                 pantalla(ctx, MedicinaActivity::class.java, t(ctx, R.string.v_pantalla_medicina))

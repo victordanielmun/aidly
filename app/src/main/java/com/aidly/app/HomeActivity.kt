@@ -147,6 +147,7 @@ private fun HomeScreen() {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 FilaAccion(Iconos.Campana, stringResource(R.string.home_recordatorios), proximo) { abrir(RecordatoriosActivity::class.java) }
                 FilaAccion(Iconos.Personas, stringResource(R.string.home_familia), stringResource(R.string.home_familia_sub)) { abrir(FamiliaActivity::class.java) }
+                FilaAccion(Iconos.Celular, stringResource(R.string.home_dock), stringResource(R.string.home_dock_sub)) { abrir(ModoDockActivity::class.java) }
                 FilaAccion(Iconos.Telefono, stringResource(R.string.home_marcar), stringResource(R.string.home_marcar_sub)) { abrir(MarcarActivity::class.java) }
                 FilaAccion(Iconos.Documento, stringResource(R.string.home_papel), stringResource(R.string.home_papel_sub), amarilla = true) { abrir(AnalizaActivity::class.java) }
             }

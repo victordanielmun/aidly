@@ -21,6 +21,9 @@ Solo cuando usas la función, y solo con la nube encendida:
 
 Google procesa esos datos para responderte. Aidly no los guarda en sus propios servidores.
 
+### Cámara del modo dock (opcional)
+Si activas el modo dock y aceptas, la cámara frontal del teléfono sirve para saber si estás frente a Aidly y para que la base gire hacia ti. Las imágenes se procesan **en tu teléfono**: no se muestran, no se guardan y no se envían. Si después de conversar dejo de verte, te preguntaré en voz alta si estás bien. No detecta caídas ni emergencias. Puedes pausarla cuando quieras.
+
 ### Tu familia (opcional)
 Si activas «Mi familia», se crea un código aleatorio y se guarda en Google Firebase solo lo que tú elijas compartir: nombre, última actividad, estado de las medicinas, ubicación y cómo te sientes. Quien tenga el código ve esos datos. Si pides ayuda (SOS) se comparte la hora y, si hay permiso, la ubicación. Al dejar de compartir se borra todo en la nube.
 
@@ -57,6 +60,9 @@ Only when you use the feature, and only with the cloud turned on:
 - **Search the internet:** your question.
 
 Google processes this data to answer you. Aidly does not store it on its own servers.
+
+### Dock-mode camera (optional)
+If you turn on dock mode and accept, the phone's front camera is used to know whether you are in front of Aidly and so the base can turn toward you. Images are processed **on your phone**: they are not shown, saved or sent. If I stop seeing you after we talk, I will ask aloud whether you are okay. It does not detect falls or emergencies. You can pause it any time.
 
 ### Your family (optional)
 If you turn on "My family", a random code is created and only what you choose to share is stored in Google Firebase: name, last activity, medicine status, location and how you feel. Whoever has the code sees that data. If you ask for help (SOS) the time and, with permission, the location are shared. When you stop sharing, everything is deleted from the cloud.

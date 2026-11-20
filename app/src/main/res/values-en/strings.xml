@@ -363,4 +363,27 @@
     <string name="v_diez_min">Okay. I will remind you in ten minutes.</string>
     <string name="v_riesgo_urgente">That is important and I should not answer it. Call your doctor or pharmacy now. If you feel very ill or have trouble breathing, call %1$s.</string>
     <string name="v_riesgo_dosis">For a missed dose, do not take a double dose on your own. Ask your doctor or pharmacist what to do with this medicine. I can only read you what the box says.</string>
+    <!-- Dock mode -->
+    <string name="home_dock">Dock mode</string>
+    <string name="home_dock_sub">Aidly on the table, listens and follows you</string>
+    <string name="dock_reposo">Tap the face or the button to talk to me.</string>
+    <string name="dock_tocar_hablar">Tap to talk to Aidly</string>
+    <string name="dock_hablar">TALK</string>
+    <string name="dock_pausar">PAUSE CAMERA</string>
+    <string name="dock_reanudar">TURN ON CAMERA</string>
+    <string name="dock_camara_off">Camera off</string>
+    <string name="dock_camara_on">Camera on · nothing is saved</string>
+    <string name="dock_camara_te_veo">I see you · nothing is saved</string>
+    <string name="dock_camara_error">I could not turn the camera on.</string>
+    <string name="dock_sin_respuesta">I could not confirm that you are okay.</string>
+    <string name="dock_acepta_t">Do you want Aidly to see you?</string>
+    <string name="dock_acepta">The phone camera is used to know if you are in front of Aidly and so the base can turn toward you. Images are processed on your phone: they are not shown on screen, not saved and not sent. If I stop seeing you after we talk, I will ask if you are okay. You can pause it any time. It does not detect falls or emergencies.</string>
+    <string name="dock_acepta_si">YES, TURN ON THE CAMERA</string>
+    <string name="dock_simulado">Simulated base: %1$d°</string>
+    <string name="dock_simulado_nota">This is how the dock would turn (no base connected)</string>
+    <string name="v_modo_dock">Sure. Opening dock mode.</string>
+    <string name="v_bienestar_1">Are you there? Are you okay?</string>
+    <string name="v_bienestar_1_nombre">%1$s, are you there? Are you okay?</string>
+    <string name="v_bienestar_2">I am still here. Can you hear me? Are you okay?</string>
+    <string name="v_frase_ayuda">I need help, I feel sick</string>
 </resources>

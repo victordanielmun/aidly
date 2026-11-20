@@ -71,7 +71,7 @@ class MainActivity : ActividadAidly() {
         }
         // --es abrir "SosActivity" abre esa pantalla (las demas no estan exportadas y adb no puede abrirlas directo).
         intent.getStringExtra("abrir")?.let { n ->
-            try { startActivity(Intent(this, Class.forName("com.aidly.app.$n"))) } catch (e: Exception) { SpikeLog.log("abrir $n: ${e.message}") }
+            try { startActivity(Intent(this, Class.forName("com.aidly.app.$n")).putExtras(intent)) } catch (e: Exception) { SpikeLog.log("abrir $n: ${e.message}") }
         }
         // --ez reiniciarBienvenida true: vuelve a mostrar la bienvenida en el proximo arranque (sin borrar datos).
         if (intent.getBooleanExtra("reiniciarBienvenida", false)) Preferencias.fijarBienvenidaHecha(this, false)

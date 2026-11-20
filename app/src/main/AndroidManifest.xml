@@ -94,6 +94,11 @@
             android:theme="@style/Theme.Aidly" />
 
         <activity
+            android:name=".ModoDockActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aidly" />
+
+        <activity
             android:name=".AjustesActivity"
             android:exported="false"
             android:theme="@style/Theme.Aidly" />

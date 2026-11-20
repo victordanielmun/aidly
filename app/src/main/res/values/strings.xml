@@ -363,4 +363,27 @@
     <string name="v_diez_min">De acuerdo. Te aviso en diez minutos.</string>
     <string name="v_riesgo_urgente">Eso es importante y no debo responderlo yo. Llama ahora a tu médico o a tu farmacia. Si te sientes muy mal o tienes dificultad para respirar, llama al %1$s.</string>
     <string name="v_riesgo_dosis">Para una dosis olvidada, no tomes doble por tu cuenta. Pregunta a tu médico o a tu farmacéutico qué hacer con esta medicina. Yo solo puedo leerte lo que dice la caja.</string>
+    <!-- Modo dock -->
+    <string name="home_dock">Modo dock</string>
+    <string name="home_dock_sub">Aidly en la mesa, te escucha y te sigue</string>
+    <string name="dock_reposo">Toca la cara o el botón para hablar conmigo.</string>
+    <string name="dock_tocar_hablar">Toca para hablar con Aidly</string>
+    <string name="dock_hablar">HABLAR</string>
+    <string name="dock_pausar">PAUSAR CÁMARA</string>
+    <string name="dock_reanudar">ACTIVAR CÁMARA</string>
+    <string name="dock_camara_off">Cámara apagada</string>
+    <string name="dock_camara_on">Cámara activa · no se guarda nada</string>
+    <string name="dock_camara_te_veo">Te veo · no se guarda nada</string>
+    <string name="dock_camara_error">No pude encender la cámara.</string>
+    <string name="dock_sin_respuesta">No pude confirmar que estás bien.</string>
+    <string name="dock_acepta_t">¿Quieres que Aidly te vea?</string>
+    <string name="dock_acepta">La cámara del teléfono sirve para saber si estás frente a Aidly y para que la base gire hacia ti. Las imágenes se procesan en tu teléfono: no se ven en pantalla, no se guardan y no se envían. Si dejo de verte después de conversar, te preguntaré si estás bien. Puedes pausarla cuando quieras. No detecta caídas ni emergencias.</string>
+    <string name="dock_acepta_si">SÍ, ACTIVAR LA CÁMARA</string>
+    <string name="dock_simulado">Base simulada: %1$d°</string>
+    <string name="dock_simulado_nota">Así giraría el dock (sin base conectada)</string>
+    <string name="v_modo_dock">Claro. Abriendo el modo dock.</string>
+    <string name="v_bienestar_1">¿Estás por ahí? ¿Estás bien?</string>
+    <string name="v_bienestar_1_nombre">%1$s, ¿estás por ahí? ¿Estás bien?</string>
+    <string name="v_bienestar_2">Sigo aquí. ¿Me escuchas? ¿Estás bien?</string>
+    <string name="v_frase_ayuda">necesito ayuda, me siento mal</string>
 </resources>

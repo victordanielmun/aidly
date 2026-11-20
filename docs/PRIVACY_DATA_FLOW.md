@@ -26,6 +26,8 @@ Idea tomada de la tabla de flujos del repo `fun-phone` (reimplementada, sin copi
 
 | F12 | "Decir quién llama" (opcional, Android 10+; la persona concede el rol de filtrado de llamadas) | Ninguno: el número entrante se busca en favoritos y contactos del propio teléfono y Aidly lo dice en voz alta. Aidly nunca bloquea ni contesta la llamada | No sale | Desactivado hasta que se concede el rol | `Llamadas.kt` |
 
+| F13 | **Modo dock** con cámara (opcional, apagada hasta que la persona acepta en esa pantalla; se puede pausar) | Ninguno: la cámara frontal se analiza **en el teléfono** con MediaPipe (detector de caras y pose ligera). No hay vista previa, no se guarda ni se envía ningún cuadro; de cada cuadro solo se usa "se ve / no se ve" y la posición horizontal. Si la persona deja de verse tras haber conversado, Aidly le pregunta en voz alta si está bien (**no detecta caídas ni emergencias**) | No sale | Apagada hasta que se acepta; con la cámara pausada no se analiza nada | `ModoDockActivity.kt`, `PresenciaCamara.kt`, `CompaniaAtenta.kt` |
+
 No sale nunca del teléfono: el texto de los mensajes y correos que Aidly lee en voz alta (viene de las notificaciones), la lista de recordatorios, los favoritos, el número de quien llama, el contenido del calendario (solo se lee o se escribe en el calendario del propio teléfono).
 
 ## 3. Lo que se guarda en el teléfono
@@ -37,7 +39,7 @@ No sale nunca del teléfono: el texto de los mensajes y correos que Aidly lee en
 | `favoritos` | Hasta 4 contactos (nombre y número) | Hasta que se quiten | `Datos.kt` |
 | `circulo` | Código familiar y qué se comparte | Hasta que se deje de compartir | `Circulo.kt` |
 | `ajustes` | Idioma, movimiento, nombre, bienvenida hecha | — | `Datos.kt`, `Idioma.kt` |
-| `privacidad` | Elección de nube | — | `Privacidad.kt` |
+| `privacidad` | Elección de nube y aceptación de la cámara del modo dock | — | `Privacidad.kt` |
 
 - Almacenamiento privado de la app; `allowBackup=false`: **no hay respaldo en la nube de Android** ni transferencia automática (AndroidManifest).
 - **Cifrado en reposo** (`Cifrado.kt`): `bandeja`, `recordatorios` (avisos e historial de medicinas), `favoritos`, y el código, nombre y coordenadas de SOS del `circulo` se guardan con AES-256-GCM y una clave del Android Keystore que no sale del aparato. Protege contra la copia de los archivos de la app; no contra alguien con el teléfono desbloqueado ni contra root ejecutando la propia app. Los datos antiguos sin cifrar se cifran solos al guardarse de nuevo. `ajustes` y `privacidad` (idioma, movimiento, elección de nube) no se cifran porque no son sensibles.

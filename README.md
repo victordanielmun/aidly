@@ -29,7 +29,7 @@ rules in [`firestore.rules`](firestore.rules)) and **Firebase Hosting** (family 
 
 ## Features
 Voice assistant (messages and email by notification, reminders with exact alarms, calendar, web questions, call/open apps) · "What does this say?" camera reader ·
-daily check-in · consent-based family circle with a code · SOS · big-key dialer · optional caller announcement · animated face · widgets · Spanish and English UI **and voice** (commands, spoken answers, speech recognition and AI prompts follow the app language).
+daily check-in · **dock mode** (big animated face, voice through the dock, optional on-device presence detection with MediaPipe that asks "are you okay?" if it stops seeing you after a conversation; no images are stored or sent) · · consent-based family circle with a code · SOS · big-key dialer · optional caller announcement · animated face · widgets · Spanish and English UI **and voice** (commands, spoken answers, speech recognition and AI prompts follow the app language).
 
 ## Privacy
 [`docs/PRIVACY.md`](docs/PRIVACY.md) (ES/EN), [`docs/PRIVACY_DATA_FLOW.md`](docs/PRIVACY_DATA_FLOW.md) (every data flow and its source file) and
@@ -48,7 +48,7 @@ Requirements: Android Studio or JDK 17 and the Android SDK, minSdk 26, an Androi
 Checks: `python pruebas/validar_textos.py`, `python pruebas/validar_idiomas.py`, `python pruebas/verificar_release.py`.
 
 ## Third-party
-Atkinson Hyperlegible font (SIL Open Font License 1.1, `app/src/main/assets/licencias/`), AndroidX, Jetpack Compose, Glance, CameraX and Firebase SDKs (Apache-2.0).
+Atkinson Hyperlegible font (SIL Open Font License 1.1, `app/src/main/assets/licencias/`), AndroidX, Jetpack Compose, Glance, CameraX, Firebase SDKs and MediaPipe Tasks Vision with its BlazeFace and Pose Landmarker (lite) models (Apache-2.0).
 
 ## License
 [Apache License 2.0](LICENSE).
