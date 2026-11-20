@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -169,13 +170,13 @@ fun EncabezadoPantalla(titulo: String, volver: () -> Unit) {
         IconoAidly(Iconos.ChevronIzquierda, Tema.Texto, 30.dp)
         Text(stringResource(R.string.volver), fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Tema.Texto)
     }
-    Text(titulo, fontSize = 38.sp, fontWeight = FontWeight.Bold, color = Tema.Texto)
+    Text(titulo, fontSize = 38.sp, fontWeight = FontWeight.Bold, color = Tema.Texto, modifier = Modifier.semantics { heading() })
 }
 
 /** Encabezado de seccion dentro de una pantalla. */
 @Composable
 fun TituloSeccion(texto: String) {
-    Text(texto, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa, modifier = Modifier.padding(top = 6.dp))
+    Text(texto, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa, modifier = Modifier.padding(top = 6.dp).semantics { heading() })
 }
 
 @Composable

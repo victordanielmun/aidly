@@ -53,6 +53,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -282,7 +284,8 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
         }
         Text(
             dicho.ifBlank { aviso.ifBlank { stringResource(R.string.dock_reposo) } },
-            fontSize = 22.sp, color = Tema.Texto, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().heightIn(min = 60.dp),
+            fontSize = 22.sp, color = Tema.Texto, textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().heightIn(min = 60.dp).semantics { liveRegion = LiveRegionMode.Polite },
         )
 
         if (!aceptada) {
@@ -303,14 +306,14 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
             Column(Modifier.weight(1f)) {
                 Text(
                     if (usbEstado == 2) stringResource(R.string.dock_usb_conectada, angulo.toInt()) else stringResource(R.string.dock_simulado, angulo.toInt()),
-                    fontSize = 16.sp, color = Tema.TextoSuave,
+                    fontSize = 17.sp, color = Tema.TextoSuave,
                 )
                 Text(
                     when (usbEstado) { 2 -> audioUsb?.let { stringResource(R.string.dock_audio_usb, it) } ?: stringResource(R.string.dock_audio_tel); 1 -> stringResource(R.string.dock_usb_buscando); else -> stringResource(R.string.dock_simulado_nota) },
-                    fontSize = 13.sp, color = Tema.TextoSuave,
+                    fontSize = 15.sp, color = Tema.TextoSuave,
                 )
-                if (usbEstado == 0) Text(stringResource(R.string.dock_usb_buscar), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa,
-                    modifier = Modifier.clickable(role = Role.Button) { reintentoUsb++ }.padding(vertical = 6.dp))
+                if (usbEstado == 0) Text(stringResource(R.string.dock_usb_buscar), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa,
+                    modifier = Modifier.heightIn(min = 48.dp).clickable(role = Role.Button) { reintentoUsb++ }.padding(vertical = 12.dp))
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
