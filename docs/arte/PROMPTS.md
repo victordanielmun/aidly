@@ -1,7 +1,8 @@
 # Imágenes para la entrega: instrucciones de generación
 
-Se generan con el modelo de imágenes de Google que ofrezca la cuenta de cuota del Sprint 2 (Google AI Studio o Vertex AI Studio). **Descargar cada archivo
-de inmediato** a esta carpeta (`docs/arte/`): al vencer la cuenta se borra el proyecto y todo lo que haya dentro.
+Generadas el 20-nov-2026 con **Qwen Image 2.1 7B** (int8) en Maestro, local, 40 pasos y CFG 1. Junto a cada imagen hay un `<archivo>.txt` con el modelo y el
+prompt exacto. Tamaños: 1024×1024 (cuadradas) y 1152×768 (3:2). Licencia del modelo: Qwen Research License (investigación y evaluación no comercial);
+revisar que el uso en la entrega encaje antes de publicarlas. La cuenta de cuota del Sprint 2 queda como alternativa si hace falta otra versión.
 
 Reglas (las del concurso): sin logotipos, marcas ni publicidad de terceros; sin texto dentro de la imagen (los modelos lo escriben mal; el texto se pone después);
 sin personas reales identificables; todo lo generado se rotula como generado cuando se publique.

@@ -1,0 +1,3 @@
+Modelo: Qwen Image 2.1 7B (Maestro, local), 1024x1024, 40 pasos, CFG 1. Generado el 2026-11-20.
+Licencia del modelo: Qwen Research License (investigacion/evaluacion no comercial).
+Prompt: Same style icon of a rounded teal robot face with yellow side ears on a dark olive background, happy expression: eyes as curved happy arcs and a wide open smile, flat vector, no text, no logos

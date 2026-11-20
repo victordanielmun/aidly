@@ -1,0 +1,3 @@
+Modelo: Qwen Image 2.1 7B (Maestro, local), 1152x768, 40 pasos, CFG 1. Generado el 2026-11-20.
+Licencia del modelo: Qwen Research License (investigacion/evaluacion no comercial).
+Prompt: Concept render of a small tabletop dock for a smartphone: a rounded base with two speaker grilles and a rotating cradle holding a phone that shows a teal robot face, USB-C cable coming out the back, matte off-white plastic with teal accent, clean studio lighting, no brand names, no logos, no text
