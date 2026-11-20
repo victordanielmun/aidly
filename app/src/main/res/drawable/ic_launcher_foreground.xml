@@ -1,8 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- La mascota dentro de la zona segura (66 dp) del icono adaptable de 108 dp. -->
-<inset xmlns:android="http://schemas.android.com/apk/res/android"
-    android:drawable="@drawable/mascota"
-    android:insetLeft="24dp"
-    android:insetTop="29dp"
-    android:insetRight="24dp"
-    android:insetBottom="29dp" />
+<!-- Icono adaptable (lienzo 108 dp, zona segura de 66 dp en el centro). La cara se dibuja aqui, casi cuadrada y grande,
+     en vez de reutilizar la mascota horizontal (que quedaba ancha, baja y pequena). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Auriculares -->
+    <path
+        android:fillColor="#FFE600"
+        android:pathData="M20,45 h5 a2,2 0 0 1 2,2 v14 a2,2 0 0 1 -2,2 h-5 a2,2 0 0 1 -2,-2 v-14 a2,2 0 0 1 2,-2 z" />
+    <path
+        android:fillColor="#FFE600"
+        android:pathData="M83,45 h5 a2,2 0 0 1 2,2 v14 a2,2 0 0 1 -2,2 h-5 a2,2 0 0 1 -2,-2 v-14 a2,2 0 0 1 2,-2 z" />
+
+    <!-- Cabeza (visor): cuadrado redondeado de 54 dp -->
+    <path
+        android:fillColor="#0B3C49"
+        android:strokeColor="#22E5FF"
+        android:strokeWidth="4"
+        android:pathData="M43,27 H65 A16,16 0 0 1 81,43 V65 A16,16 0 0 1 65,81 H43 A16,16 0 0 1 27,65 V43 A16,16 0 0 1 43,27 Z" />
+
+    <!-- Ojos -->
+    <path
+        android:fillColor="#FFE600"
+        android:pathData="M40.5,52 a3.6,6 0 1 0 7.2,0 a3.6,6 0 1 0 -7.2,0 z" />
+    <path
+        android:fillColor="#FFE600"
+        android:pathData="M60.3,52 a3.6,6 0 1 0 7.2,0 a3.6,6 0 1 0 -7.2,0 z" />
+
+    <!-- Sonrisa -->
+    <path
+        android:strokeColor="#FFE600"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M44,65 Q54,73 64,65" />
+</vector>
