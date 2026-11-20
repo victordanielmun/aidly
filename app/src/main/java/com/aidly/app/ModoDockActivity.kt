@@ -183,6 +183,7 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
             val mal = Lexico.de(ctx).sos.containsMatchIn(java.text.Normalizer.normalize(n, java.text.Normalizer.Form.NFD).replace(Regex("\\p{Mn}+"), "").replace(Regex("[^a-z0-9 ]"), " ").trim()) ||
                 Regex("\\b(no estoy bien|no me siento bien|i am not (ok|okay|fine|well)|im not (ok|okay|fine|well)|not okay)\\b").containsMatchIn(n)
             compania.respondio(System.currentTimeMillis())
+            Circulo.bienestarOk(ctx)
             if (mal) {
                 SpikeLog.log("DOCK: dijo que no esta bien; se avisa a la familia como en 'ayuda'")
                 val a = Agente.procesar(ctx, Idioma.vozTexto(ctx, R.string.v_frase_ayuda))
@@ -234,10 +235,14 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
     LaunchedEffect(Unit) {
         for (o in canal) {
             visible = o.visible
+            if (o.visible) Circulo.bienestarOk(ctx)       // si volvio despues de un "sin confirmar", la familia ve que ya esta
             dock.seguir(if (o.visible) o.x else null, o.ms)
             when (val a = compania.observar(o.ms, o.visible)) {
                 is CompaniaAtenta.Accion.Preguntar -> scope.launch { preguntarBienestar(a.repeticion) }
-                CompaniaAtenta.Accion.SinRespuesta -> { SpikeLog.log("DOCK: nadie respondio a las preguntas"); aviso = ctx.getString(R.string.dock_sin_respuesta) }
+                CompaniaAtenta.Accion.SinRespuesta -> {
+                    SpikeLog.log("DOCK: nadie respondio a las preguntas"); aviso = ctx.getString(R.string.dock_sin_respuesta)
+                    Circulo.bienestarSinConfirmar(ctx)
+                }
                 CompaniaAtenta.Accion.Nada -> {}
             }
         }

@@ -106,6 +106,8 @@ const T = {
     ck_ok: "✔ Contestó el aviso de hoy: está bien ({h})",
     ck_ayuda: "⚠ Dijo que no se siente bien ({h}). Llámale.",
     ck_sin_resp: "No contestó el aviso de las {h}. Conviene llamarle.",
+    bien_sin: "Aidly le preguntó a {n} si estaba bien y no pudo confirmarlo ({t}). Conviene llamarle.",
+    bien_ok: "{n} respondió que está bien ({t}).",
     ck_pend: "Esperando que conteste el aviso de las {h}…",
     t_actividad: "Última vez que usó el teléfono",
     t_medicinas: "Medicinas",
@@ -142,6 +144,8 @@ const T = {
     ck_ok: "✔ Answered today's check-in: doing fine ({h})",
     ck_ayuda: "⚠ Said they don't feel well ({h}). Call them.",
     ck_sin_resp: "Did not answer the {h} check-in. You may want to call.",
+    bien_sin: "Aidly asked {n} if they were okay and could not confirm it ({t}). You may want to call.",
+    bien_ok: "{n} said they are okay ({t}).",
     ck_pend: "Waiting for an answer to the {h} check-in…",
     t_actividad: "Last time the phone was used",
     t_medicinas: "Medicines",
@@ -211,6 +215,14 @@ function pintar() {
     b.append(el("div", "", t("pidio_ayuda", { n: quien, t: hace(sos.hora) })));
     b.append(el("div", "", t("llamale")));
     if (sos.lat != null && sos.lng != null) b.append(enlace(t("ver_donde"), mapa(sos.lat, sos.lng)));
+    est.append(b);
+  }
+
+  // 1b) "¿Estás bien?": Aidly pregunto en voz alta y nadie respondio (o ya volvio).
+  const bi = d.bienestar;
+  if (bi && bi.hora && Date.now() - bi.hora < 24 * 3600 * 1000 && c.bienestar !== false) {
+    const b = el("div", bi.estado === "ok" ? "banner ok" : "banner aviso"); b.setAttribute("role", bi.estado === "ok" ? "status" : "alert");
+    b.append(el("div", "", t(bi.estado === "ok" ? "bien_ok" : "bien_sin", { n: quien, t: hace(bi.hora) })));
     est.append(b);
   }
 

@@ -15,17 +15,21 @@ service cloud.firestore {
         && codigo.matches('^[A-Z0-9]{12}$')
         && request.resource.data.owner == request.auth.uid
         && request.resource.data.keys().hasOnly(['owner', 'nombre', 'actualizado', 'compartir', 'ultimaActividad',
-                                                  'medicinas', 'ubicacion', 'checkin', 'sos', 'idioma'])
+                                                  'medicinas', 'ubicacion', 'checkin', 'sos', 'idioma', 'bienestar'])
         && request.resource.data.nombre is string && request.resource.data.nombre.size() <= 40
-        && (!('idioma' in request.resource.data) || (request.resource.data.idioma is string && request.resource.data.idioma.size() <= 5));
+        && (!('idioma' in request.resource.data) || (request.resource.data.idioma is string && request.resource.data.idioma.size() <= 5))
+        && (!('bienestar' in request.resource.data) || (request.resource.data.bienestar.keys().hasOnly(['estado', 'hora'])
+            && request.resource.data.bienestar.estado in ['sin_confirmar', 'ok'] && request.resource.data.bienestar.hora is number));
 
       allow update: if request.auth != null
         && resource.data.owner == request.auth.uid
         && request.resource.data.owner == resource.data.owner
         && request.resource.data.keys().hasOnly(['owner', 'nombre', 'actualizado', 'compartir', 'ultimaActividad',
-                                                  'medicinas', 'ubicacion', 'checkin', 'sos', 'idioma'])
+                                                  'medicinas', 'ubicacion', 'checkin', 'sos', 'idioma', 'bienestar'])
         && request.resource.data.nombre is string && request.resource.data.nombre.size() <= 40
-        && (!('idioma' in request.resource.data) || (request.resource.data.idioma is string && request.resource.data.idioma.size() <= 5));
+        && (!('idioma' in request.resource.data) || (request.resource.data.idioma is string && request.resource.data.idioma.size() <= 5))
+        && (!('bienestar' in request.resource.data) || (request.resource.data.bienestar.keys().hasOnly(['estado', 'hora'])
+            && request.resource.data.bienestar.estado in ['sin_confirmar', 'ok'] && request.resource.data.bienestar.hora is number));
 
       allow delete: if request.auth != null && resource.data.owner == request.auth.uid;
     }

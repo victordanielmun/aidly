@@ -61,6 +61,9 @@ object Iconos {
             "ajustes", "M4 7h16", "M4 17h16", "M11.5 7a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0", "M17.5 17a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0",
         )
     }
+    val Calendario by lazy {
+        icono("calendario", "M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z", "M16 2v4", "M8 2v4", "M3 10h18")
+    }
     val Celular by lazy {
         icono("celular", "M17 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z", "M12 18h.01")
     }

@@ -118,6 +118,7 @@ object Idioma {
                 putBoolean("ubicacion", cir.optBoolean("compartir_ubicacion", false))
                 putBoolean("actividad", cir.optBoolean("compartir_actividad", true))
                 putBoolean("medicinas", cir.optBoolean("compartir_medicinas", true))
+                putBoolean("bienestar", cir.optBoolean("compartir_bienestar", true))
                 putBoolean("checkin", inicial(ctx).getJSONObject("checkin").optBoolean("activo", true))
                 putInt("horaMin", horaCheckinMin(ctx))
             }

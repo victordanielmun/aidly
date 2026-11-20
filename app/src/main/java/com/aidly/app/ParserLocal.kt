@@ -100,7 +100,7 @@ object ParserLocal {
                     "manana", "madrugada", "am" -> listOf(h % 12)
                     "tarde", "pm" -> listOf(if (h < 12) h + 12 else h)
                     "noche" -> listOf(if (h == 12) 0 else if (h < 12) h + 12 else h)
-                    else -> if (h > 12 || h == 0) listOf(h) else listOf(h % 12, h % 12 + 12)   // "a las 8": la proxima vez
+                    else -> if (h >= 12 || h == 0) listOf(h) else listOf(h % 12, h % 12 + 12)   // "a las 8": la proxima vez; "a las 12" es mediodia
                 }
                 candidatas.mapNotNull { Interprete.cuando("%02d:%02d".format(it, m), fecha, 0, ahora) }.minOrNull()
             }

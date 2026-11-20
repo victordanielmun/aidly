@@ -69,7 +69,7 @@
         },
         "circulo": {
           "compartir_actividad": true,
-          "compartir_medicinas": true,
+          "compartir_medicinas": true, "compartir_bienestar": true,
           "compartir_ubicacion": false,
           "checkin_siempre_visible": true,
           "sos_incluye_ubicacion": true
@@ -196,7 +196,7 @@
         },
         "circulo": {
           "compartir_actividad": true,
-          "compartir_medicinas": true,
+          "compartir_medicinas": true, "compartir_bienestar": true,
           "compartir_ubicacion": false,
           "checkin_siempre_visible": true,
           "sos_incluye_ubicacion": true

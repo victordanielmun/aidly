@@ -99,7 +99,7 @@ object ParserLocalEn {
                     "manana", "am" -> listOf(h % 12)
                     "tarde", "pm" -> listOf(if (h < 12) h + 12 else h)
                     "noche" -> listOf(if (h == 12) 0 else if (h < 12) h + 12 else h)
-                    else -> if (h > 12 || h == 0) listOf(h) else listOf(h % 12, h % 12 + 12)   // "at 8": next occurrence
+                    else -> if (h >= 12 || h == 0) listOf(h) else listOf(h % 12, h % 12 + 12)   // "at 8": next occurrence; "at 12" is noon
                 }
                 candidatas.mapNotNull { Interprete.cuando("%02d:%02d".format(it, m), fecha, 0, ahora) }.minOrNull()
             }

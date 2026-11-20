@@ -116,6 +116,11 @@
             android:theme="@style/Theme.Aidly" />
 
         <activity
+            android:name=".RecordatorioDetalleActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aidly" />
+
+        <activity
             android:name=".RecordatorioActivity"
             android:exported="false"
             android:launchMode="singleTop"

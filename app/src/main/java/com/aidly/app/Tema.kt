@@ -3,6 +3,7 @@ package com.aidly.app
 import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
@@ -88,7 +89,10 @@ fun AidlyTema(contenido: @Composable () -> Unit) {
     )
     MaterialTheme(colorScheme = colores, typography = tipografia) {
         // Fondo y color de texto por defecto: sin esto, un Text sin color sale negro sobre el fondo oscuro.
-        Surface(modifier = Modifier.fillMaxSize(), color = Tema.Fondo, contentColor = Tema.Texto, content = contenido)
+        // Android 15 dibuja la app bajo la barra de estado y la de navegacion: el contenido se separa de ellas (el fondo sigue llegando al borde).
+        Surface(modifier = Modifier.fillMaxSize(), color = Tema.Fondo, contentColor = Tema.Texto) {
+            androidx.compose.foundation.layout.Box(Modifier.fillMaxSize().systemBarsPadding()) { contenido() }
+        }
     }
 }
 

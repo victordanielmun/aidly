@@ -143,6 +143,9 @@ private fun Pantalla(cerrar: () -> Unit) {
                     Circulo.editar(ctx) { putBoolean("ubicacion", on) }; Circulo.sincronizarAsync(ctx); recargar()
                 }
             }
+            Interruptor(stringResource(R.string.circ_bienestar), a.bienestar) {
+                Circulo.editar(ctx) { putBoolean("bienestar", it) }; Circulo.sincronizarAsync(ctx); recargar()
+            }
             Interruptor(stringResource(R.string.circ_checkin), a.checkin) {
                 Circulo.editar(ctx) { putBoolean("checkin", it) }; Circulo.programarCheckin(ctx); Circulo.sincronizarAsync(ctx); recargar()
             }

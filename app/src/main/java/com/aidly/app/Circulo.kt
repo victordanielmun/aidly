@@ -45,7 +45,7 @@ object Circulo {
     class Ajustes(
         val activo: Boolean, val codigo: String, val nombre: String,
         val ubicacion: Boolean, val actividad: Boolean, val medicinas: Boolean,
-        val checkin: Boolean, val horaMin: Int,
+        val checkin: Boolean, val horaMin: Int, val bienestar: Boolean = true,
     ) {
         /** "ABCD-EFGH-JKLM" para leerlo en voz alta o dictarlo. */
         val codigoBonito get() = codigo.chunked(4).joinToString("-")
@@ -57,7 +57,7 @@ object Circulo {
         Ajustes(
             it.getBoolean("activo", false), Cifrado.abrir(it.getString("codigo", "")).orEmpty(), Cifrado.abrir(it.getString("nombre", "")).orEmpty(),
             it.getBoolean("ubicacion", false), it.getBoolean("actividad", true), it.getBoolean("medicinas", true),
-            it.getBoolean("checkin", true), it.getInt("horaMin", 9 * 60),
+            it.getBoolean("checkin", true), it.getInt("horaMin", 9 * 60), it.getBoolean("bienestar", true),
         )
     }
 
@@ -85,6 +85,7 @@ object Circulo {
             putBoolean("ubicacion", cir.optBoolean("compartir_ubicacion", false))
             putBoolean("actividad", cir.optBoolean("compartir_actividad", true))
             putBoolean("medicinas", cir.optBoolean("compartir_medicinas", true))
+            putBoolean("bienestar", cir.optBoolean("compartir_bienestar", true))
             putBoolean("checkin", Idioma.inicial(ctx).getJSONObject("checkin").optBoolean("activo", true))
             putInt("horaMin", Idioma.horaCheckinMin(ctx))
             putLong("toque", System.currentTimeMillis()); remove("sosHora")
@@ -164,6 +165,22 @@ object Circulo {
         sincronizar(ctx)
     }
 
+    /** Aidly pregunto "¿estas bien?" varias veces y nadie respondio: lo ve la familia (si la persona lo permitio). */
+    fun bienestarSinConfirmar(ctx: Context) {
+        if (!ajustes(ctx).activo) return
+        editar(ctx) { putString("bienestarEstado", "sin_confirmar"); putLong("bienestarHora", System.currentTimeMillis()) }
+        SpikeLog.log("CIRCULO: bienestar sin confirmar")
+        sincronizarAsync(ctx)
+    }
+
+    /** La persona volvio o respondio despues de un "sin confirmar": se actualiza a "ok". */
+    fun bienestarOk(ctx: Context) {
+        val p = prefs(ctx)
+        if (!p.getBoolean("activo", false) || p.getString("bienestarEstado", "") != "sin_confirmar") return
+        editar(ctx) { putString("bienestarEstado", "ok"); putLong("bienestarHora", System.currentTimeMillis()) }
+        sincronizarAsync(ctx)
+    }
+
     fun limpiarSos(ctx: Context) {
         if (!prefs(ctx).contains("sosHora")) return
         editar(ctx) { remove("sosHora"); remove("sosLat"); remove("sosLng") }
@@ -185,7 +202,7 @@ object Circulo {
         val ahora = System.currentTimeMillis()
         val m = hashMapOf<String, Any?>(
             "owner" to uid, "nombre" to a.nombre, "actualizado" to ahora,
-            "compartir" to mapOf("ubicacion" to a.ubicacion, "actividad" to a.actividad, "medicinas" to a.medicinas, "checkin" to a.checkin),
+            "compartir" to mapOf("ubicacion" to a.ubicacion, "actividad" to a.actividad, "medicinas" to a.medicinas, "checkin" to a.checkin, "bienestar" to a.bienestar),
             "idioma" to Idioma.resolver(ctx),
         )
         if (a.actividad) m["ultimaActividad"] = p.getLong("toque", ahora)
@@ -204,6 +221,11 @@ object Circulo {
                 Recordatorios.Estado.OMITIDO -> "sin_respuesta"
                 else -> "pendiente"
             }, "hora" to it.hora, "programada" to it.programada)
+        }
+        // "No pude confirmar que esta bien": solo si ella lo permitio y de las ultimas 24 horas (ver ModoDockActivity).
+        val bienHora = p.getLong("bienestarHora", 0)
+        if (a.bienestar && bienHora > 0 && ahora - bienHora < SOS_VIGENCIA_MS) {
+            m["bienestar"] = mapOf("estado" to p.getString("bienestarEstado", "sin_confirmar"), "hora" to bienHora)
         }
         val sosHora = p.getLong("sosHora", 0)
         if (sosHora > 0 && ahora - sosHora < SOS_VIGENCIA_MS) {
