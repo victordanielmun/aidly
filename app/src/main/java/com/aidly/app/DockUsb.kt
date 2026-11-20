@@ -13,6 +13,7 @@ import android.hardware.usb.UsbInterface
 import android.hardware.usb.UsbManager
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.flow.StateFlow
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -106,7 +107,7 @@ object DockUsb {
             Thread {
                 val puerto = abrir(ctx, dev)
                 if (puerto == null) { SpikeLog.log("DOCK USB: no pude abrir el puerto"); listo(null); return@Thread }
-                val cliente = ClienteDock(puerto, alEvento)
+                val cliente = ClienteDock(puerto, alEvento = alEvento)
                 if (!cliente.saludar()) { SpikeLog.log("DOCK USB: el dispositivo no es un dock Aidly (no saludo)"); puerto.cerrar(); listo(null); return@Thread }
                 SpikeLog.log("DOCK USB: conectado (protocolo ${cliente.version}, recorrido ${cliente.recorrido}°)")
                 listo(DockConectado(cliente))
@@ -116,28 +117,76 @@ object DockUsb {
 }
 
 /**
- * Dock real por USB. Usa el mismo control suave del simulador para decidir el angulo y manda `GOTO` solo si cambia >= 2 grados y
- * como mucho 5 veces por segundo, desde un hilo propio (la camara no se bloquea). Si algo falla, manda STOP y deja de enviar.
+ * Dock real por USB. Al conectar manda `HOME` y espera a que el dock termine (`MOVING 0`) antes de mover nada: el 0 de la app pasa a ser
+ * el origen fisico. Usa el mismo control suave del simulador (a la velocidad por defecto del firmware, 24 grados por segundo) para decidir
+ * el angulo y manda `GOTO` solo si cambia >= 2 grados y como mucho 5 veces por segundo, desde un hilo propio (la camara no se bloquea).
+ * Como `OK` solo significa "orden aceptada", un segundo despues del ultimo `GOTO` consulta `STATUS` y corrige el angulo si el dock quedo
+ * en otro sitio. `ERR BUSY` (el dock busca su origen) no es un fallo: se reintenta. Cualquier otro fallo manda STOP y deja de enviar.
  */
-class DockConectado(private val cliente: ClienteDock, private val control: DockSimulado = DockSimulado(maxGradosPorS = 30f)) : Dock {
+class DockConectado(
+    private val cliente: ClienteDock,
+    private val control: DockSimulado = DockSimulado(maxGradosPorS = ClienteDock.VELOCIDAD_GRADOS_S),
+    private val ejecutor: ExecutorService = Executors.newSingleThreadExecutor(),
+    private val tiempoOrigenMs: Long = 30_000,
+) : Dock {
     override val nombre = "usb"
     override val angulo: StateFlow<Float> get() = control.angulo
-    private val ejecutor = Executors.newSingleThreadExecutor()
     @Volatile private var ultimoEnviado = 0
     @Volatile private var ultimoMs = 0L
     @Volatile private var activo = true
+    /** Solo se mueve cuando el origen esta hecho. */
+    @Volatile private var conOrigen = false
+    @Volatile private var porVerificar = false
+    @Volatile private var ultimaVerificacionMs = 0L
+
+    init { ejecutor.execute { buscarOrigen() } }
+
+    private fun buscarOrigen() {
+        try {
+            if (cliente.origen() && cliente.esperarReposo(tiempoOrigenMs)) {
+                conOrigen = true
+                SpikeLog.log("DOCK USB: origen hecho")
+            } else {
+                SpikeLog.log("DOCK USB: no pude llevar el dock al origen (${cliente.ultimoError ?: "sin respuesta"}); no se mueve")
+                activo = false; cliente.parar()
+            }
+        } catch (_: Exception) { activo = false }
+    }
 
     override fun seguir(x: Float?, ms: Long) {
-        if (!activo) return
+        if (!activo || !conOrigen) return
         control.seguir(x, ms)
         val a = control.angulo.value.roundToInt()
         if (abs(a - ultimoEnviado) >= 2 && ms - ultimoMs >= 200) {
-            ultimoEnviado = a; ultimoMs = ms
-            ejecutor.execute { if (!cliente.irA(a)) { SpikeLog.log("DOCK USB: la orden fallo; se detiene"); activo = false; cliente.parar() } }
+            val antes = ultimoEnviado
+            ultimoEnviado = a; ultimoMs = ms; porVerificar = true
+            ejecutor.execute {
+                if (!cliente.irA(a)) {
+                    if (cliente.ocupado) { ultimoEnviado = antes; return@execute }          // buscando origen: se reintenta con el siguiente cuadro
+                    SpikeLog.log("DOCK USB: la orden fallo; se detiene"); activo = false; cliente.parar()
+                }
+            }
+        } else if (porVerificar && ms - ultimoMs >= 1000 && ms - ultimaVerificacionMs >= 500) {
+            ultimaVerificacionMs = ms
+            porVerificar = false
+            ejecutor.execute { verificar() }
+        }
+    }
+
+    /** "OK" fue solo aceptacion: se compara la posicion real con la que la app cree. */
+    private fun verificar() {
+        val e = cliente.estado() ?: return
+        if (e.moviendo) { porVerificar = true; return }
+        if (abs(e.grados - ultimoEnviado) > 3) {
+            SpikeLog.log("DOCK USB: el dock esta en ${e.grados} y la app creia ${ultimoEnviado}; se corrige")
+            ultimoEnviado = e.grados; control.fijar(e.grados.toFloat())
         }
     }
 
     override fun detener() { control.detener(); ejecutor.execute { try { cliente.parar() } catch (_: Exception) {} } }
 
     fun cerrar() { activo = false; ejecutor.execute { try { cliente.parar() } catch (_: Exception) {}; cliente.cerrar() }; ejecutor.shutdown() }
+
+    /** Para las pruebas: espera a que el hilo del dock termine lo que tiene pendiente. */
+    internal fun sincronizar() { ejecutor.submit {}.get() }
 }

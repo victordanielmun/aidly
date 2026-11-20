@@ -30,7 +30,7 @@ Pared ─ cargador USB-C PD ─► [BASE] hub USB-C con paso de carga
 
 ## Conexión con la app
 La app ya incluye el código para hablarle al dock por USB (`DockUsb.kt`, `ProtocoloDock.kt`, `AudioExterno.kt`; protocolo en [PROTOCOLO.md](PROTOCOLO.md)) y
-un firmware de prueba ([firmware-prueba/](firmware-prueba/)). **Probado solo con pruebas unitarias y un puerto simulado; no con una base real.**
+un firmware ([firmware/](firmware/)): el núcleo está probado en PC (55 comprobaciones) y el adaptador de placa no está compilado. **La app se prueba solo con un puerto simulado; nada se ha probado con una base real.**
 
 ## Por qué la Rev. C y no la B
 - Bluetooth HFP baja la calidad de voz (8/16 kHz); el audio USB la conserva, y Aidly midió su mejor precisión con el micrófono del teléfono.

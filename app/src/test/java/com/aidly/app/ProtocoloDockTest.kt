@@ -78,4 +78,71 @@ class ProtocoloDockTest {
         c.velocidad(99); c.velocidad(-5)
         assertEquals(listOf("HELLO", "SPEED 10", "SPEED 1"), p.escrito)
     }
+
+    @Test fun errBusyNoEsUnFalloDefinitivo() {
+        val p = PuertoFalso("AIDLY-DOCK 1 ROT=180", "ERR BUSY", "ERR RANGE")
+        val c = ClienteDock(p); c.saludar()
+        assertFalse(c.irA(10)); assertTrue(c.ocupado); assertEquals("ERR BUSY", c.ultimoError)
+        assertFalse(c.irA(10)); assertFalse(c.ocupado)
+    }
+
+    @Test fun okLimpiaElUltimoError() {
+        val p = PuertoFalso("AIDLY-DOCK 1 ROT=180", "ERR ARG", "OK")
+        val c = ClienteDock(p); c.saludar()
+        c.velocidad(3); assertEquals("ERR ARG", c.ultimoError)
+        assertTrue(c.parar()); assertEquals(null, c.ultimoError)
+    }
+
+    @Test fun esperarReposoConsultaHastaQueDejeDeMoverse() {
+        val p = PuertoFalso("AIDLY-DOCK 1 ROT=180", "POS 100 MOVING 1 LIM 0", "POS 40 MOVING 1 LIM 0", "POS 0 MOVING 0 LIM 0")
+        val c = ClienteDock(p, pausa = {}); c.saludar()
+        assertTrue(c.esperarReposo(5_000))
+        assertEquals(listOf("HELLO", "STATUS", "STATUS", "STATUS"), p.escrito)
+    }
+
+    @Test fun esperarReposoFallaSiElDockDejaDeResponder() {
+        val p = PuertoFalso("AIDLY-DOCK 1 ROT=180", "POS 100 MOVING 1 LIM 0")
+        val c = ClienteDock(p, pausa = {}); c.saludar()
+        assertFalse(c.esperarReposo(5_000))
+    }
+
+    // --- DockConectado: HOME al conectar, ERR BUSY y correccion con STATUS ---
+
+    private fun conectado(vararg r: String): Pair<DockConectado, PuertoFalso> {
+        val p = PuertoFalso("AIDLY-DOCK 1 ROT=180", *r)
+        val c = ClienteDock(p, pausa = {}); c.saludar()
+        val d = DockConectado(c)
+        d.sincronizar()                              // espera al HOME inicial del hilo del dock
+        return d to p
+    }
+
+    @Test fun alConectarHaceHomeYEsperaAntesDeMover() {
+        val (d, p) = conectado("OK", "POS 120 MOVING 1 LIM 0", "POS 0 MOVING 0 LIM 0", "OK")
+        d.seguir(1f, 1000); d.seguir(1f, 1500)      // 24 grados por segundo durante 0,5 s = 12 grados
+        d.sincronizar()
+        assertEquals(listOf("HELLO", "HOME", "STATUS", "STATUS", "GOTO 12"), p.escrito)
+    }
+
+    @Test fun siElOrigenFallaNuncaMueveYMandaStop() {
+        val (d, p) = conectado("ERR CMD", "OK")
+        d.sincronizar()
+        d.seguir(1f, 1000); d.seguir(1f, 1500); d.sincronizar()
+        assertEquals(listOf("HELLO", "HOME", "STOP"), p.escrito)
+    }
+
+    @Test fun errBusyNoDesactivaElDockYSeReintenta() {
+        val (d, p) = conectado("OK", "POS 0 MOVING 0 LIM 0", "ERR BUSY", "OK")
+        d.seguir(1f, 1000); d.seguir(1f, 1500); d.sincronizar()
+        d.seguir(1f, 1900); d.sincronizar()           // el siguiente cuadro vuelve a intentarlo
+        assertEquals(listOf("HELLO", "HOME", "STATUS", "GOTO 12"), p.escrito.take(4))
+        assertTrue(p.escrito[4].startsWith("GOTO "))   // reintento con el angulo ya actualizado; sin STOP
+    }
+
+    @Test fun corrigeElAnguloSiElDockQuedoEnOtroSitio() {
+        val (d, p) = conectado("OK", "POS 0 MOVING 0 LIM 0", "OK", "POS 5 MOVING 0 LIM 0")
+        d.seguir(1f, 1000); d.seguir(1f, 1500)       // GOTO 12
+        d.seguir(null, 2600); d.sincronizar()           // pasaron mas de 1 s: consulta STATUS
+        assertEquals("STATUS", p.escrito.last())
+        assertEquals(5f, d.angulo.value, 0.01f)
+    }
 }

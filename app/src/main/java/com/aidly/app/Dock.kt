@@ -33,4 +33,7 @@ class DockSimulado(private val maxGradosPorS: Float = 25f) : Dock {
     }
 
     override fun detener() { antes = 0L }
+
+    /** Corrige el angulo cuando el dock real informa de donde esta de verdad. */
+    fun fijar(grados: Float) { _angulo.value = grados.coerceIn(-180f, 180f) }
 }

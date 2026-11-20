@@ -22,6 +22,8 @@ android {
             isMinifyEnabled = false
         }
     }
+    // Las pruebas unitarias usan clases que registran con android.util.Log: que devuelvan valores por defecto en vez de fallar.
+    testOptions { unitTests.isReturnDefaultValues = true }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
