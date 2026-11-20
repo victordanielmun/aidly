@@ -132,7 +132,7 @@ class Lexico(
             objRec = r("\\b(reminder|reminders|alarm|alarms|alert|alerts)\\b"),
             listarRec = r("\\b(what|which|how many|list|show|tell me|do i have|have)\\b"),
             cancelarRec = r("\\b(cancel|delete|remove|erase|clear)\\b"),
-            tomado = r("\\b(i (already )?(took|did)( it| them)?|i have (taken|done)( it| them)?|already (took|did|done))\\b"),
+            tomado = r("\\b(i (already )?took (it|them|my pills?|my medicine|my medication)|i already took|i have taken (it|them|my )|i did it|already took (it|them))\\b"),
             sos = r(
                 "\\b(i fell|i have fallen|i need help|i feel (sick|bad|unwell|dizzy)|i dont feel well|i don t feel well|i do not feel well|" +
                     "chest pain|my chest hurts|i can t breathe|i cant breathe|emergency|tell my family|call my family|notify my family)\\b|" +

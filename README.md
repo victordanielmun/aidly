@@ -29,7 +29,7 @@ rules in [`firestore.rules`](firestore.rules)) and **Firebase Hosting** (family 
 
 ## Features
 Voice assistant (messages and email by notification, reminders with exact alarms, calendar, web questions, call/open apps) · "What does this say?" camera reader ·
-daily check-in · consent-based family circle with a code · SOS · big-key dialer · optional caller announcement · animated face · widgets · Spanish and English UI.
+daily check-in · consent-based family circle with a code · SOS · big-key dialer · optional caller announcement · animated face · widgets · Spanish and English UI **and voice** (commands, spoken answers, speech recognition and AI prompts follow the app language).
 
 ## Privacy
 [`docs/PRIVACY.md`](docs/PRIVACY.md) (ES/EN), [`docs/PRIVACY_DATA_FLOW.md`](docs/PRIVACY_DATA_FLOW.md) (every data flow and its source file) and

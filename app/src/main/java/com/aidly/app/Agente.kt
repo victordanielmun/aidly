@@ -47,7 +47,7 @@ object Agente {
             L.objRec.containsMatchIn(n) && L.listarRec.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=listar recordatorios"); listarRecordatorios(ctx) }
             L.sos.containsMatchIn(n) && !L.llamar.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=pedir ayuda"); pedirAyuda(ctx) }
             L.estoyBien.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=estoy bien"); estoyBien(ctx) }
-            L.tomado.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=ya lo hice"); yaLoHice(ctx) }
+            L.tomado.containsMatchIn(n) && MedicinaValidador.respuestaSegura(ctx, frase) == null -> { SpikeLog.log("AGENTE: ruta=ya lo hice"); yaLoHice(ctx) }
             L.crearCita.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=agendar cita"); crearCita(ctx, frase) }
             L.verAgenda.containsMatchIn(n) && L.cuandoAgenda.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=ver agenda"); verAgenda(ctx, n) }
             L.horaFecha.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=hora/fecha"); horaFecha(ctx, n, L) }

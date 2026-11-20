@@ -72,8 +72,6 @@ class MedicinaActivity : ActividadAidly() {
 
 private enum class Fase { APUNTANDO, LEYENDO, RESULTADO }
 
-private const val INTRO = "Apunta la camara a la caja de tu medicina. Tomare la foto en cinco segundos."
-private const val DESCARGO = "Esto es lo que dice la caja. Confirma siempre con tu medico o farmaceutico antes de tomarla."
 
 @Composable
 private fun MedicinaScreen(voz: Voz) {
@@ -106,8 +104,8 @@ private fun MedicinaScreen(voz: Voz) {
     }
 
     fun hablar(r: MedicinaValidador.Resultado) {
-        voz.decir(r.resumenVoz.ifBlank { "Es ${r.nombre}." })
-        voz.decir(DESCARGO)
+        voz.decir(r.resumenVoz.ifBlank { Idioma.vozTexto(ctx, R.string.v_es_nombre, r.nombre) })
+        voz.decir(Idioma.vozTexto(ctx, R.string.v_descargo_medicina))
     }
 
     fun reintentar(@androidx.annotation.StringRes id: Int) {
@@ -122,7 +120,7 @@ private fun MedicinaScreen(voz: Voz) {
         fase = Fase.LEYENDO
         cuenta = 0
         aviso = ""
-        voz.decir("Un momento, estoy leyendo.")
+        voz.decir(Idioma.vozTexto(ctx, R.string.v_un_momento_leyendo))
         controller.takePicture(
             ContextCompat.getMainExecutor(ctx),
             object : ImageCapture.OnImageCapturedCallback() {
@@ -161,7 +159,7 @@ private fun MedicinaScreen(voz: Voz) {
         voz.callar()
         scope.launch {
             try {
-                kotlinx.coroutines.withTimeoutOrNull(15_000) { voz.decirYEsperar("Dime tu pregunta.") }
+                kotlinx.coroutines.withTimeoutOrNull(15_000) { voz.decirYEsperar(Idioma.vozTexto(ctx, R.string.v_dime_pregunta)) }
                 val q = GeminiStt.escuchar(ctx)
                 if (q == null) {
                     respuestaMed = ctx.getString(R.string.hablar_error_escuchar)
@@ -182,7 +180,7 @@ private fun MedicinaScreen(voz: Voz) {
     // Guia por voz y cuenta atras; la foto se toma sola (tambien hay un boton grande).
     LaunchedEffect(permiso, intento) {
         if (!permiso) return@LaunchedEffect
-        if (intento == 0) voz.decir(INTRO)
+        if (intento == 0) voz.decir(Idioma.vozTexto(ctx, R.string.v_intro_medicina))
         delay(if (intento == 0) 5500 else 3500)
         for (i in 5 downTo 1) {
             if (fase != Fase.APUNTANDO) return@LaunchedEffect

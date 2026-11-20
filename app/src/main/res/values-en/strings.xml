@@ -341,4 +341,26 @@
     <string name="v_abriendo">Opening %1$s.</string>
     <string name="v_te_llevo">Taking you to %1$s with %2$s.</string>
     <string name="v_buscando">Searching for %1$s on %2$s.</string>
+    <string name="v_dime_te_escucho">Tell me, I am listening.</string>
+    <string name="v_intro_medicina">Point the camera at your medicine box. I will take the photo in five seconds.</string>
+    <string name="v_descargo_medicina">This is what the box says. Always confirm with your doctor or pharmacist before taking it.</string>
+    <string name="v_es_nombre">It is %1$s.</string>
+    <string name="v_un_momento_leyendo">One moment, I am reading.</string>
+    <string name="v_dime_pregunta">Tell me your question.</string>
+    <string name="v_intro_analiza">Point the camera at what you want me to read: a bottle, a letter, a sign or a message. I will take the photo in five seconds.</string>
+    <string name="v_cuidado_estafa">Careful. This has signs of a scam.</string>
+    <string name="v_me_preocupa">What worries me: %1$s</string>
+    <string name="v_te_recomiendo">I recommend: %1$s</string>
+    <string name="v_un_momento_revisando">One moment, I am checking it.</string>
+    <string name="v_sos_intro">Do you need help? Tap the red button to alert your family.</string>
+    <string name="v_sos_avise">I alerted your family. If it is an emergency, call %1$s.</string>
+    <string name="v_que_bueno_alegra">Good. I am glad.</string>
+    <string name="v_hora_medicina">It is time for your medicine. %1$s.</string>
+    <string name="v_checkin">Good morning. How are you feeling today? Tap the blue button if you are okay.</string>
+    <string name="v_recordatorio">Reminder. %1$s.</string>
+    <string name="v_que_bueno_dia">Good. Have a lovely day.</string>
+    <string name="v_voy_avisar">I will alert your family. If it is an emergency, call %1$s.</string>
+    <string name="v_diez_min">Okay. I will remind you in ten minutes.</string>
+    <string name="v_riesgo_urgente">That is important and I should not answer it. Call your doctor or pharmacy now. If you feel very ill or have trouble breathing, call %1$s.</string>
+    <string name="v_riesgo_dosis">For a missed dose, do not take a double dose on your own. Ask your doctor or pharmacist what to do with this medicine. I can only read you what the box says.</string>
 </resources>

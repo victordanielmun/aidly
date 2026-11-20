@@ -24,3 +24,10 @@ Sirve para regresiones del enrutador y de la transcripción; **no prueba el micr
 Los scripts de generación están en la sesión de trabajo (`generar_audios.py`, cliente Gradio `tts_cliente.py`).
 Endpoint usado: `/generate_voice_design` (texto, idioma `Spanish`, descripción de la voz, semilla).
 Nota: el reconocedor del propio servidor confunde el idioma en frases de 1-3 palabras; no lo uses para validar.
+
+
+## Suite en inglés
+`audios_en/` tiene las mismas 25 frases en inglés (voz de Windows, `generador/generar_audios_en.ps1`) y se corre con
+`.\pruebas\correr_audios.ps1 -Serial emulator-5554 -Idioma en`. Resultado del 19-nov: **25 de 25 rutas correctas** (el audio 26, solo ruido,
+lo transcribe Gemini como una frase inventada; en la app real la detección de voz lo descarta antes). El nivel gratuito de Gemini limita las
+peticiones por minuto: si salen `QuotaExceededException`, espera un minuto y repite con `-Solo`.

@@ -341,4 +341,26 @@
     <string name="v_abriendo">Abriendo %1$s.</string>
     <string name="v_te_llevo">Te llevo a %1$s con %2$s.</string>
     <string name="v_buscando">Buscando %1$s en %2$s.</string>
+    <string name="v_dime_te_escucho">Dime, te escucho.</string>
+    <string name="v_intro_medicina">Apunta la cámara a la caja de tu medicina. Tomaré la foto en cinco segundos.</string>
+    <string name="v_descargo_medicina">Esto es lo que dice la caja. Confirma siempre con tu médico o farmacéutico antes de tomarla.</string>
+    <string name="v_es_nombre">Es %1$s.</string>
+    <string name="v_un_momento_leyendo">Un momento, estoy leyendo.</string>
+    <string name="v_dime_pregunta">Dime tu pregunta.</string>
+    <string name="v_intro_analiza">Apunta la cámara a lo que quieres que lea: un frasco, una carta, un cartel o un mensaje. Tomaré la foto en cinco segundos.</string>
+    <string name="v_cuidado_estafa">Cuidado. Esto tiene señales de estafa.</string>
+    <string name="v_me_preocupa">Lo que me preocupa: %1$s</string>
+    <string name="v_te_recomiendo">Te recomiendo: %1$s</string>
+    <string name="v_un_momento_revisando">Un momento, lo estoy revisando.</string>
+    <string name="v_sos_intro">¿Necesitas ayuda? Toca el botón rojo para avisar a tu familia.</string>
+    <string name="v_sos_avise">Avisé a tu familia. Si es una emergencia, llama al %1$s.</string>
+    <string name="v_que_bueno_alegra">Qué bueno. Me alegra.</string>
+    <string name="v_hora_medicina">Es hora de tu medicina. %1$s.</string>
+    <string name="v_checkin">Buenos días. ¿Cómo te sientes hoy? Toca el botón azul si estás bien.</string>
+    <string name="v_recordatorio">Recordatorio. %1$s.</string>
+    <string name="v_que_bueno_dia">Qué bueno. Que tengas un lindo día.</string>
+    <string name="v_voy_avisar">Voy a avisar a tu familia. Si es una emergencia, llama al %1$s.</string>
+    <string name="v_diez_min">De acuerdo. Te aviso en diez minutos.</string>
+    <string name="v_riesgo_urgente">Eso es importante y no debo responderlo yo. Llama ahora a tu médico o a tu farmacia. Si te sientes muy mal o tienes dificultad para respirar, llama al %1$s.</string>
+    <string name="v_riesgo_dosis">Para una dosis olvidada, no tomes doble por tu cuenta. Pregunta a tu médico o a tu farmacéutico qué hacer con esta medicina. Yo solo puedo leerte lo que dice la caja.</string>
 </resources>

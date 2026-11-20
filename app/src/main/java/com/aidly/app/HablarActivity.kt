@@ -95,7 +95,7 @@ private fun HablarScreen(voz: Voz, cerrar: () -> Unit) {
     LaunchedEffect(permiso, ronda) {
         if (!permiso) return@LaunchedEffect
         paso = Paso.ESCUCHANDO; pregunta = ""; respuesta = ""; motorFuente = ""; motorMs = 0L
-        withTimeoutOrNull(20_000) { voz.decirYEsperar("Dime, te escucho.") }
+        withTimeoutOrNull(20_000) { voz.decirYEsperar(Idioma.vozTexto(ctx, R.string.v_dime_te_escucho)) }
 
         val q = try { if (Privacidad.nubeActiva()) GeminiStt.escuchar(ctx) else EscuchaSistema.escuchar(ctx) } catch (e: Exception) {
             SpikeLog.log("HABLAR: fallo al escuchar (${e::class.simpleName}: ${e.message})"); null

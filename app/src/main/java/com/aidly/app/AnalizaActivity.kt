@@ -74,10 +74,6 @@ class AnalizaActivity : ActividadAidly() {
 
 private enum class FaseA { APUNTANDO, LEYENDO, RESULTADO }
 
-private const val INTRO_A =
-    "Apunta la camara a lo que quieres que lea: un frasco, una carta, un cartel o un mensaje. Tomare la foto en cinco segundos."
-private const val DESCARGO_A =
-    "Soy una ayuda, no un experto. Ante la duda, pregunta a un familiar de confianza antes de pagar o dar datos."
 
 @Composable
 private fun AnalizaScreen(voz: Voz, cerrar: () -> Unit) {
@@ -106,11 +102,11 @@ private fun AnalizaScreen(voz: Voz, cerrar: () -> Unit) {
 
     fun hablar(r: AnalizaValidador.Resultado) {
         voz.callar()
-        if (r.riesgo == "alto") voz.decir("Cuidado. Esto tiene señales de estafa.")
+        if (r.riesgo == "alto") voz.decir(Idioma.vozTexto(ctx, R.string.v_cuidado_estafa))
         voz.decir(r.resumenVoz)
-        if (r.senales.isNotBlank() && r.riesgo != "no_aplica" && r.riesgo != "bajo") voz.decir("Lo que me preocupa: ${r.senales}")
-        if (r.queHacer.isNotBlank()) voz.decir("Te recomiendo: ${r.queHacer}")
-        voz.decir(DESCARGO_A)
+        if (r.senales.isNotBlank() && r.riesgo != "no_aplica" && r.riesgo != "bajo") voz.decir(Idioma.vozTexto(ctx, R.string.v_me_preocupa, r.senales))
+        if (r.queHacer.isNotBlank()) voz.decir(Idioma.vozTexto(ctx, R.string.v_te_recomiendo, r.queHacer))
+        voz.decir(Idioma.vozTexto(ctx, R.string.ana_descargo))
     }
 
     fun reintentar(@androidx.annotation.StringRes id: Int) {
@@ -125,7 +121,7 @@ private fun AnalizaScreen(voz: Voz, cerrar: () -> Unit) {
         fase = FaseA.LEYENDO
         cuenta = 0
         aviso = ""
-        voz.decir("Un momento, lo estoy revisando.")
+        voz.decir(Idioma.vozTexto(ctx, R.string.v_un_momento_revisando))
         controller.takePicture(
             ContextCompat.getMainExecutor(ctx),
             object : ImageCapture.OnImageCapturedCallback() {
@@ -158,7 +154,7 @@ private fun AnalizaScreen(voz: Voz, cerrar: () -> Unit) {
 
     LaunchedEffect(permiso, intento) {
         if (!permiso) return@LaunchedEffect
-        if (intento == 0) voz.decir(INTRO_A)
+        if (intento == 0) voz.decir(Idioma.vozTexto(ctx, R.string.v_intro_analiza))
         delay(if (intento == 0) 6500 else 3500)
         for (i in 5 downTo 1) {
             if (fase != FaseA.APUNTANDO) return@LaunchedEffect

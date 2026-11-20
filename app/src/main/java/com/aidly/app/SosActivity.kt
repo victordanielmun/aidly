@@ -54,7 +54,7 @@ private fun Pantalla(voz: Voz, cerrar: () -> Unit) {
     var fase by remember { mutableStateOf(FaseSos.PREGUNTA) }
     val hayFamilia = remember { Circulo.ajustes(ctx).activo }
 
-    LaunchedEffect(Unit) { voz.decir("¿Necesitas ayuda? Toca el botón rojo para avisar a tu familia.") }
+    LaunchedEffect(Unit) { voz.decir(Idioma.vozTexto(ctx, R.string.v_sos_intro)) }
 
     fun marcador() {
         try { ctx.startActivity(Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", Emergencia.numero(ctx), null)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
@@ -83,7 +83,7 @@ private fun Pantalla(voz: Voz, cerrar: () -> Unit) {
                         voz.callar()
                         Circulo.sosAsync(ctx)
                         fase = FaseSos.AVISADO
-                        voz.decir("Avisé a tu familia. Si es una emergencia, llama al ${Emergencia.habla(ctx)}.")
+                        voz.decir(Idioma.vozTexto(ctx, R.string.v_sos_avise, Emergencia.habla(ctx)))
                     }
                 }
                 BotonGrande(stringResource(R.string.sos_llamar, Emergencia.numero(ctx)), Tema.Amarillo) { voz.callar(); marcador() }
@@ -94,7 +94,7 @@ private fun Pantalla(voz: Voz, cerrar: () -> Unit) {
                 Text(stringResource(R.string.sos_avisado_sub, Emergencia.numero(ctx)), fontSize = 22.sp, color = Tema.Texto, textAlign = TextAlign.Center)
                 BotonGrande(stringResource(R.string.sos_llamar, Emergencia.numero(ctx)), Tema.Amarillo) { marcador() }
                 BotonGrande(stringResource(R.string.sos_ya_bien), Tema.Turquesa) {
-                    voz.callar(); Circulo.limpiarSos(ctx); voz.decir("Qué bueno. Me alegra.") { cerrar() }
+                    voz.callar(); Circulo.limpiarSos(ctx); voz.decir(Idioma.vozTexto(ctx, R.string.v_que_bueno_alegra)) { cerrar() }
                 }
             }
         }

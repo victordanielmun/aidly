@@ -8,11 +8,12 @@
 param(
     [Parameter(Mandatory = $true)][string]$Serial,
     [string[]]$Solo = @(),
+    [ValidateSet("es","en")][string]$Idioma = "es",
     [string]$Adb = "C:\Android\sdk\platform-tools\adb.exe"
 )
 
 $raiz = Split-Path -Parent $MyInvocation.MyCommand.Path
-$audios = Join-Path $raiz "audios"
+$audios = Join-Path $raiz $(if ($Idioma -eq "en") { "audios_en" } else { "audios" })
 
 # audio -> ruta que debe elegir el agente ("*" = cualquiera, no se comprueba)
 $esperado = [ordered]@{
@@ -66,7 +67,11 @@ if ($copiado -notmatch "\.wav") {
     foreach ($n in $nombres) { A @("push", (Join-Path $audios "$n.wav"), "/sdcard/Android/data/com.aidly.app/files/audio/$n.wav") | Out-Null }
 }
 
-# 2) lanzar la prueba y esperar a "AUDIO fin"
+# 2) fijar idioma y nube (en una primera apertura), luego lanzar la prueba y esperar a "AUDIO fin"
+A @("shell", "am force-stop com.aidly.app") | Out-Null
+A @("shell", "am start -n com.aidly.app/.MainActivity --es idioma $Idioma --ez nube true") | Out-Null
+Start-Sleep -Seconds 4
+A @("shell", "am force-stop com.aidly.app") | Out-Null
 A @("logcat", "-G", "16M") | Out-Null
 A @("logcat", "-c") | Out-Null
 $lista = ($nombres | ForEach-Object { "$_.wav" }) -join "|"

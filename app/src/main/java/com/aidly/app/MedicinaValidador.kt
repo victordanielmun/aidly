@@ -89,7 +89,7 @@ object MedicinaValidador {
             model.generateContent(
                 content {
                     image(bmp)
-                    text(PROMPT)
+                    text(if (Idioma.ultimo == "en") PROMPT + " If the person uses English: write ALL the text values (names read aloud, summaries, data, advice) in simple English. Keep the JSON keys and the fixed values (alto/medio/bajo/no_aplica, alta/media/baja, tipo) exactly as specified." else PROMPT)
                 },
             )
         }
@@ -123,6 +123,12 @@ object MedicinaValidador {
     )
     private val DOSIS_OLVIDO = Regex("\\b(se me olvido|olvide|me falto|me salte|puedo tomar (dos|el doble)|tomo (dos|doble)|me tomo (dos|doble))\\b")
 
+    private val URGENTE_EN = Regex(
+        "\\b(overdose|took too much|took too many|took double|double dose|allerg\\w*|reaction|made me sick|i feel (sick|bad|strange|weird|dizzy)|" +
+            "chest pain|can t breathe|cant breathe|cannot breathe|dizz\\w*|faint\\w*|vomit\\w*|bleeding|poison\\w*)\\b",
+    )
+    private val DOSIS_OLVIDO_EN = Regex("\\b(i forgot|forgot to take|missed a dose|missed my dose|skipped|can i take (two|double)|took (two|double)|take (two|double))\\b")
+
     private fun plano(s: String) =
         java.text.Normalizer.normalize(s.lowercase(java.util.Locale.ROOT), java.text.Normalizer.Form.NFD).replace(Regex("\\p{Mn}+"), "")
 
@@ -146,6 +152,11 @@ object MedicinaValidador {
     /** Respuesta fija si la pregunta es de riesgo (sobredosis, alergia, sintomas, dosis olvidada o doble); si no, null. */
     fun respuestaSegura(ctx: Context, pregunta: String): String? {
         val p = plano(pregunta)
+        if (Idioma.resolver(ctx) == "en") {
+            if (URGENTE_EN.containsMatchIn(p)) return Idioma.vozTexto(ctx, R.string.v_riesgo_urgente, Emergencia.numero(ctx))
+            if (DOSIS_OLVIDO_EN.containsMatchIn(p)) return Idioma.vozTexto(ctx, R.string.v_riesgo_dosis)
+            return null
+        }
         if (URGENTE.containsMatchIn(p)) {
             return "Eso es importante y no debo responderlo yo. Llama ahora a tu médico o a tu farmacia. " +
                 "Si te sientes muy mal o tienes dificultad para respirar, llama al ${Emergencia.numero(ctx)}."
@@ -164,7 +175,7 @@ object MedicinaValidador {
             "Nombre" to r.nombre, "Principio activo" to r.principio, "Concentración" to r.concentracion,
             "Forma" to r.forma, "Indicaciones impresas en la caja" to r.indicaciones, "Advertencias impresas" to r.advertencias,
         ).filter { it.second.isNotBlank() }.joinToString("\n") { "${it.first}: ${it.second}" }
-        val prompt =
+        val prompt = (if (Idioma.ultimo == "en") "IMPORTANT: answer the person in simple English (the instructions below are in Spanish). " else "") +
             "Eres Aidly, un compañero amable para una persona mayor. La persona tiene en la mano una medicina; " +
                 "esto es lo que se leyó de su caja:\n$datos\n\n" +
                 "Responde su pregunta en español sencillo, máximo 4 frases cortas, sin tecnicismos, sin listas ni emojis. " +

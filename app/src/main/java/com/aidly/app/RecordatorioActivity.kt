@@ -64,9 +64,9 @@ private fun Pantalla(voz: Voz, regId: String, cerrar: () -> Unit) {
     LaunchedEffect(Unit) {
         val r = reg ?: return@LaunchedEffect
         val frase = when (r.tipo) {
-            Recordatorios.Tipo.MEDICINA -> "Es hora de tu medicina. ${r.texto}."
-            Recordatorios.Tipo.CHECKIN -> "Buenos días. ¿Cómo te sientes hoy? Toca el botón azul si estás bien."
-            else -> "Recordatorio. ${r.texto}."
+            Recordatorios.Tipo.MEDICINA -> Idioma.vozTexto(ctx, R.string.v_hora_medicina, r.texto)
+            Recordatorios.Tipo.CHECKIN -> Idioma.vozTexto(ctx, R.string.v_checkin)
+            else -> Idioma.vozTexto(ctx, R.string.v_recordatorio, r.texto)
         }
         val rv = Idioma.inicial(ctx).getJSONObject("recordatorios")
         repeat(rv.optInt("repeticiones_de_voz", 6)) {
@@ -113,13 +113,13 @@ private fun Pantalla(voz: Voz, regId: String, cerrar: () -> Unit) {
                     voz.callar()
                     Recordatorios.marcar(ctx, regId, Recordatorios.Estado.TOMADO)
                     estado = Recordatorios.Estado.TOMADO
-                    voz.decir("Qué bueno. Que tengas un lindo día.") { cerrar() }
+                    voz.decir(Idioma.vozTexto(ctx, R.string.v_que_bueno_dia)) { cerrar() }
                 }
                 BotonGrande(stringResource(R.string.rec_no_bien), Tema.Coral) {
                     voz.callar()
                     Recordatorios.marcar(ctx, regId, Recordatorios.Estado.AYUDA)
                     estado = Recordatorios.Estado.AYUDA
-                    voz.decir("Voy a avisar a tu familia. Si es una emergencia, llama al ${Emergencia.habla(ctx)}.")
+                    voz.decir(Idioma.vozTexto(ctx, R.string.v_voy_avisar, Emergencia.habla(ctx)))
                 }
             }
             estado == Recordatorios.Estado.PENDIENTE -> {
@@ -127,13 +127,13 @@ private fun Pantalla(voz: Voz, regId: String, cerrar: () -> Unit) {
                     voz.callar()
                     Recordatorios.marcar(ctx, regId, Recordatorios.Estado.TOMADO)
                     estado = Recordatorios.Estado.TOMADO
-                    voz.decir("Muy bien. Lo anoté.") { cerrar() }
+                    voz.decir(Idioma.vozTexto(ctx, R.string.v_anotado)) { cerrar() }
                 }
                 BotonGrande(stringResource(R.string.rec_en_10), Tema.Amarillo) {
                     voz.callar()
                     Recordatorios.posponer(ctx, regId)
                     estado = Recordatorios.Estado.POSPUESTO
-                    voz.decir("De acuerdo. Te aviso en diez minutos.") { cerrar() }
+                    voz.decir(Idioma.vozTexto(ctx, R.string.v_diez_min)) { cerrar() }
                 }
             }
             else -> {
