@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -135,6 +136,19 @@ private fun Pantalla(modo: String, cerrar: () -> Unit, irAlMenu: () -> Unit) {
 
         Texto(stringResource(R.string.privacidad_sin_nube_nota), Tema.TextoSuave)
         if (!primera && !necesita) {
+                        val modelo by ModeloLocal.estado.collectAsState()
+            Bloque(
+                stringResource(R.string.modelo_titulo),
+                when (val m = modelo) {
+                    ModeloLocal.Estado.Comprobando -> stringResource(R.string.modelo_comprobando)
+                    ModeloLocal.Estado.Listo -> stringResource(R.string.modelo_listo)
+                    ModeloLocal.Estado.Descargable -> stringResource(R.string.modelo_descargable)
+                    is ModeloLocal.Estado.Descargando ->
+                        if (m.porcentaje >= 0) stringResource(R.string.modelo_descargando, m.porcentaje) else stringResource(R.string.modelo_descargando_sin_total)
+                    ModeloLocal.Estado.NoDisponible -> stringResource(R.string.modelo_no_disponible)
+                    is ModeloLocal.Estado.Fallo -> stringResource(R.string.modelo_fallo)
+                },
+            )
             InterruptorFila(
                 null, stringResource(R.string.privacidad_switch),
                 stringResource(if (nube) R.string.privacidad_on else R.string.privacidad_off), nube,

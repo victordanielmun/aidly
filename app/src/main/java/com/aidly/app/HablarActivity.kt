@@ -85,7 +85,8 @@ private fun HablarScreen(voz: Voz, cerrar: () -> Unit) {
     var paso by remember { mutableStateOf(Paso.REPOSO) }
     var pregunta by remember { mutableStateOf("") }
     var respuesta by remember { mutableStateOf("") }
-    var detalle by remember { mutableStateOf("") }
+    var motorFuente by remember { mutableStateOf("") }
+    var motorMs by remember { mutableStateOf(0L) }
     var ronda by remember { mutableIntStateOf(0) }
     val animar = remember { !Preferencias.reducirMovimiento(ctx) }
 
@@ -93,7 +94,7 @@ private fun HablarScreen(voz: Voz, cerrar: () -> Unit) {
 
     LaunchedEffect(permiso, ronda) {
         if (!permiso) return@LaunchedEffect
-        paso = Paso.ESCUCHANDO; pregunta = ""; respuesta = ""; detalle = ""
+        paso = Paso.ESCUCHANDO; pregunta = ""; respuesta = ""; motorFuente = ""; motorMs = 0L
         withTimeoutOrNull(20_000) { voz.decirYEsperar("Dime, te escucho.") }
 
         val q = try { if (Privacidad.nubeActiva()) GeminiStt.escuchar() else EscuchaSistema.escuchar(ctx) } catch (e: Exception) {
@@ -117,7 +118,7 @@ private fun HablarScreen(voz: Voz, cerrar: () -> Unit) {
             return@LaunchedEffect
         }
         respuesta = r.texto
-        detalle = "${r.fuente} - ${r.ms} ms"
+        motorFuente = r.fuente; motorMs = r.ms
         paso = Paso.HABLANDO
         withTimeoutOrNull(60_000) { voz.decirYEsperar(r.texto) }
         paso = Paso.LISTO
@@ -150,7 +151,7 @@ private fun HablarScreen(voz: Voz, cerrar: () -> Unit) {
                     .semantics { liveRegion = LiveRegionMode.Polite }.padding(horizontal = 18.dp, vertical = 14.dp),
                 contentAlignment = Alignment.CenterStart,
             ) { Text(respuesta.ifBlank { ayuda }, fontSize = 22.sp, color = Tema.Texto) }
-            if (detalle.isNotBlank()) Text(detalle, fontSize = 13.sp, color = Tema.TextoSuave)
+            if (motorFuente.isNotBlank()) InsigniaMotor(motorFuente, motorMs)
         }
         if (paso == Paso.LISTO || paso == Paso.ERROR || (paso == Paso.REPOSO && permiso)) {
             EspacioV(12.dp)

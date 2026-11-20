@@ -61,6 +61,13 @@ object Iconos {
             "ajustes", "M4 7h16", "M4 17h16", "M11.5 7a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0", "M17.5 17a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0",
         )
     }
+    val Celular by lazy {
+        icono("celular", "M17 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z", "M12 18h.01")
+    }
+    val Nube by lazy { icono("nube", "M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z") }
+    val Reglas by lazy {
+        icono("reglas", "m3 17 2 2 4-4", "m3 7 2 2 4-4", "M13 6h8", "M13 12h8", "M13 18h8")
+    }
     val Check by lazy { icono("check", "M20 6 9 17l-5-5") }
     val Corazon by lazy {
         icono(

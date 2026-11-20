@@ -17,6 +17,7 @@ class AidlyApp : Application() {
         super.onCreate()
         Firebase.initialize(this)
         Privacidad.cargar(this)
+        ModeloLocal.iniciar()
         Firebase.appCheck.installAppCheckProviderFactory(DebugAppCheckProviderFactory.getInstance())
         AvisoRecordatorio.crearCanal(this)
         try { Recordatorios.reprogramarTodo(this) } catch (e: Exception) { SpikeLog.log("Recordatorios: ${e.message}") }

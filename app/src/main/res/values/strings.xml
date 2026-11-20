@@ -255,4 +255,20 @@
     <string name="ajustes_llamadas_on">Aidly dice el nombre al sonar. No bloquea ninguna llamada.</string>
     <string name="ajustes_llamadas_off">Apagado</string>
     <string name="ana_t_etiqueta">Esto dice</string>
+    <!-- Motor de cada respuesta y estado del modelo del telefono -->
+    <string name="motor_telefono">En tu teléfono</string>
+    <string name="motor_nube">En la nube de Google</string>
+    <string name="motor_reglas">Reglas del teléfono</string>
+    <string name="cam_confianza">Confianza de la lectura: %1$s</string>
+    <string name="conf_alta">alta</string>
+    <string name="conf_media">media</string>
+    <string name="conf_baja">baja</string>
+    <string name="modelo_titulo">Modelo del teléfono (Gemini Nano)</string>
+    <string name="modelo_comprobando">Comprobando…</string>
+    <string name="modelo_listo">Listo: Aidly puede responder en tu teléfono.</string>
+    <string name="modelo_descargable">Se puede descargar a tu teléfono.</string>
+    <string name="modelo_descargando">Descargando… %1$d %%</string>
+    <string name="modelo_descargando_sin_total">Descargando…</string>
+    <string name="modelo_no_disponible">No disponible en este teléfono. Aidly usa las reglas del teléfono y, si encendiste la nube, la nube de Google.</string>
+    <string name="modelo_fallo">No se pudo descargar. Se intentará de nuevo más tarde.</string>
 </resources>

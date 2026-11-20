@@ -11,7 +11,8 @@ and lets your family know you are okay, sharing only what *you* choose.
 - **Private and instant when it can be:** short reminders and conversation run first with rules and Gemini Nano on the phone.
 - **Cloud only when needed, and only if the person turns it on:** voice transcription, photos, web search. The first screen asks for consent and
   Settings > Privacy can turn the cloud off or delete all data at any time.
-- Every answer shows **where it came from** (phone, cloud or rules).
+- Every answer shows a badge with **where it came from** (on your phone, in Google's cloud, or phone rules) ([`Motor.kt`](app/src/main/java/com/aidly/app/Motor.kt)).
+- The on-device path uses `firebase-ai-ondevice` (latest, 16.0.0-beta08), which runs the phone's AICore Gemini Nano through the ML Kit Prompt API; which Nano version runs depends on the phone.
 
 ## How Firebase AI Logic is used at runtime
 | Feature | Inference mode | Code |
@@ -21,7 +22,7 @@ and lets your family know you are okay, sharing only what *you* choose.
 | "What does this say?" (photo of a label, bottle, letter, message) | `PREFER_IN_CLOUD` multimodal, structured JSON with a confidence field | [`AnalizaValidador.kt`](app/src/main/java/com/aidly/app/AnalizaValidador.kt), [`MedicinaValidador.kt`](app/src/main/java/com/aidly/app/MedicinaValidador.kt) |
 | Speech to text | Gemini (cloud) | [`GeminiStt.kt`](app/src/main/java/com/aidly/app/GeminiStt.kt) |
 | Web questions | Gemini with Google Search grounding | [`Busqueda.kt`](app/src/main/java/com/aidly/app/Busqueda.kt) |
-| On-device model status | `FirebaseAIOnDevice.checkStatus()` | [`HybridSpike.kt`](app/src/main/java/com/aidly/app/HybridSpike.kt) |
+| On-device model status and background download | `FirebaseAIOnDevice.checkStatus()` and `download()` at app start; shown in Settings > Privacy | [`ModeloLocal.kt`](app/src/main/java/com/aidly/app/ModeloLocal.kt) |
 
 Also used: **Firebase App Check** (debug provider for development and submission), **Anonymous Auth + Cloud Firestore** (consent-based family circle,
 rules in [`firestore.rules`](firestore.rules)) and **Firebase Hosting** (family web page in [`familia/`](familia/)).

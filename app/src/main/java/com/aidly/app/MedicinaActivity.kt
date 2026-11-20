@@ -239,7 +239,8 @@ private fun MedicinaScreen(voz: Voz) {
                         Text("$k: $v", fontSize = 24.sp)
                     }
                     Text(stringResource(R.string.med_confirma), fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                    Text(stringResource(R.string.cam_lectura, r.confianza, r.fuente, r.ms), fontSize = 14.sp)
+                    InsigniaMotor(r.fuente, r.ms)
+                    Text(stringResource(R.string.cam_confianza, confianzaTexto(r.confianza)), fontSize = 16.sp, color = Tema.TextoSuave)
                     Text(stringResource(R.string.med_duda), fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     Button(
                         onClick = {

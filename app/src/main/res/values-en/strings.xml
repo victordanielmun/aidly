@@ -255,4 +255,20 @@
     <string name="ajustes_llamadas_on">Aidly says the name when it rings. It never blocks a call.</string>
     <string name="ajustes_llamadas_off">Off</string>
     <string name="ana_t_etiqueta">This says</string>
+    <!-- Engine of each answer and phone model status -->
+    <string name="motor_telefono">On your phone</string>
+    <string name="motor_nube">In Google\'s cloud</string>
+    <string name="motor_reglas">Phone rules</string>
+    <string name="cam_confianza">Reading confidence: %1$s</string>
+    <string name="conf_alta">high</string>
+    <string name="conf_media">medium</string>
+    <string name="conf_baja">low</string>
+    <string name="modelo_titulo">Phone model (Gemini Nano)</string>
+    <string name="modelo_comprobando">Checking…</string>
+    <string name="modelo_listo">Ready: Aidly can answer on your phone.</string>
+    <string name="modelo_descargable">Can be downloaded to your phone.</string>
+    <string name="modelo_descargando">Downloading… %1$d %%</string>
+    <string name="modelo_descargando_sin_total">Downloading…</string>
+    <string name="modelo_no_disponible">Not available on this phone. Aidly uses the phone\'s rules and, if you turned it on, Google\'s cloud.</string>
+    <string name="modelo_fallo">The download failed. It will be tried again later.</string>
 </resources>
