@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Widget grande: 4x3 celdas (Hablar + Papel / Medicina / Ayuda). -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:initialLayout="@layout/glance_default_loading_layout"
+    android:previewLayout="@layout/aidly_widget_preview"
+    android:description="@string/widget_descripcion"
+    android:minWidth="250dp"
+    android:minHeight="220dp"
+    android:minResizeWidth="180dp"
+    android:minResizeHeight="110dp"
+    android:targetCellWidth="4"
+    android:targetCellHeight="3"
+    android:resizeMode="horizontal|vertical"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen" />

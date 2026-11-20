@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- La mascota dentro de la zona segura (66 dp) del icono adaptable de 108 dp. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/mascota"
+    android:insetLeft="24dp"
+    android:insetTop="29dp"
+    android:insetRight="24dp"
+    android:insetBottom="29dp" />

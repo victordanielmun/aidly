@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <!-- Avisos de medicinas y citas a la hora exacta. USE_EXACT_ALARM se concede solo (apps de calendario/alarmas). -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+
+    <!-- Android 11+: visibilidad de los servicios de voz del sistema -->
+    <queries>
+        <intent><action android:name="android.speech.RecognitionService" /></intent>
+        <intent><action android:name="android.intent.action.TTS_SERVICE" /></intent>
+        <!-- Apps que Aidly puede abrir por voz -->
+        <package android:name="com.spotify.music" />
+        <package android:name="com.google.android.youtube" />
+        <package android:name="com.netflix.mediaclient" />
+        <package android:name="com.google.android.apps.maps" />
+        <package android:name="com.amazon.avod.thirdpartyclient" />
+        <package android:name="com.disney.disneyplus" />
+        <package android:name="com.whatsapp" />
+        <package android:name="com.facebook.katana" />
+    </queries>
+
+    <application
+        android:name=".AidlyApp"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="Aidly"
+        android:theme="@style/Theme.Aidly">
+
+        <!-- Menu principal (lo que abre el icono de la app) -->
+        <activity
+            android:name=".HomeActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Aidly">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".HablarActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aidly" />
+
+        <activity
+            android:name=".MedicinaActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aidly" />
+
+        <activity
+            android:name=".AnalizaActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aidly" />
+
+        <activity
+            android:name=".CirculoActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aidly" />
+
+        <activity
+            android:name=".SosActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aidly" />
+
+        <activity
+            android:name=".BienvenidaActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aidly" />
+
+        <activity
+            android:name=".PrivacidadActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aidly" />
+
+        <activity
+            android:name=".MarcarActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aidly" />
+
+        <activity
+            android:name=".AjustesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aidly" />
+
+        <activity
+            android:name=".FamiliaActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aidly" />
+
+        <activity
+            android:name=".RecordatoriosActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aidly" />
+
+        <activity
+            android:name=".RecordatorioActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:theme="@style/Theme.Aidly" />
+
+        <receiver android:name=".RecordatorioReceiver" android:exported="false" />
+
+        <receiver android:name=".ArranqueReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Pantalla de pruebas tecnicas (spikes). Sin icono propio; se abre desde Ajustes. Solo en la version
+             de desarrollo se exporta (app/src/debug/AndroidManifest.xml) para poder usar adb. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <receiver
+            android:name=".AidlyWidgetReceiver"
+            android:exported="true"
+            android:label="Aidly (grande)">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/aidly_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".AidlyWidgetCompactoReceiver"
+            android:exported="true"
+            android:label="Aidly (compacto)">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/aidly_widget_compacto_info" />
+        </receiver>
+
+        <service
+            android:name=".AidlyService"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
+
+        <service
+            android:name=".AidlyCallScreeningService"
+            android:exported="true"
+            android:permission="android.permission.BIND_SCREENING_SERVICE">
+            <intent-filter>
+                <action android:name="android.telecom.CallScreeningService" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".AidlyNotificationListener"
+            android:exported="true"
+            android:label="Aidly"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>

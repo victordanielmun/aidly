@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Icono de la pantalla de arranque: el sistema lo recorta en un circulo, asi que la mascota va mas pequena. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/mascota"
+    android:insetLeft="30dp"
+    android:insetTop="34dp"
+    android:insetRight="30dp"
+    android:insetBottom="34dp" />

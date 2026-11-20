@@ -1,0 +1,300 @@
+{
+  "esquema": 1,
+  "descripcion": "Idiomas de Aidly y configuración inicial según el idioma. Los textos de pantalla viven en res/values*/strings.xml; aquí van las opciones de voz, formato, valores por defecto, comandos y datos por país.",
+  "predeterminado": "es",
+
+  "resolucion": {
+    "orden": ["preferencia_usuario", "idioma_del_sistema", "pais_de_la_sim", "predeterminado"],
+    "equivalencias": {
+      "es": "es", "es-419": "es", "es-CO": "es", "es-MX": "es", "es-ES": "es", "es-US": "es", "es-AR": "es",
+      "en": "en", "en-US": "en", "en-GB": "en", "en-CA": "en", "en-AU": "en"
+    },
+    "si_no_soportado": "en",
+    "cambiar_en_caliente": true,
+    "al_cambiar": ["recrear_actividades", "reiniciar_voz", "regrabar_alarmas_de_checkin", "actualizar_widgets"],
+    "nota": "Si el idioma del sistema no es es/en se usa 'si_no_soportado'. La preferencia del usuario (Ajustes) siempre gana."
+  },
+
+  "idiomas": {
+
+    "es": {
+      "nombre": "Español",
+      "nombre_en_ingles": "Spanish",
+      "estado": "completo",
+      "direccion": "ltr",
+      "trato": "tu",
+
+      "voz": {
+        "tts": { "locales_preferidos": ["es-MX", "es-US", "es-ES"], "velocidad": 0.95, "tono": 1.0 },
+        "stt": {
+          "cadena_idiomas": [null, "es-MX", "es-419", "es-ES"],
+          "gemini_idioma": "Spanish",
+          "palabras_si": ["si", "claro", "dale", "ok", "okay", "vale", "bueno", "afirmativo", "lee", "leelo", "leemelo", "responde", "respondele", "contesta", "contestale", "envia", "enviala", "mandala"],
+          "palabras_no": ["no", "nel", "luego", "despues", "cancela", "cancelar", "nada"],
+          "si_mal_oido": ["se", "ci", "sii", "siii", "sip", "sisi"],
+          "frases_contexto": ["Qué tengo hoy", "Léeme los mensajes", "Recuérdame tomar la pastilla", "Llama a mi hija", "Sí", "No"]
+        }
+      },
+
+      "formato": {
+        "fecha_larga": "EEEE d 'de' MMMM",
+        "fecha_corta": "EEE d MMM",
+        "hora_pantalla": "H:mm",
+        "hora_voz": {
+          "estilo": "periodos",
+          "articulo_una": "a la",
+          "articulo_otras": "a las",
+          "periodos": {
+            "madrugada": "de la madrugada",
+            "manana": "de la mañana",
+            "mediodia": "del día",
+            "tarde": "de la tarde",
+            "noche": "de la noche"
+          }
+        },
+        "dias_relativos": { "hoy": "hoy", "manana": "mañana", "pasado_manana": "pasado mañana" },
+        "primer_dia_semana": "lunes"
+      },
+
+      "saludos": { "manana": "Buenos días", "tarde": "Buenas tardes", "noche": "Buenas noches" },
+
+      "inicial": {
+        "checkin": { "activo": true, "hora": "09:00", "pregunta_voz": "Buenos días. ¿Cómo te sientes hoy? Toca el botón azul si estás bien." },
+        "recordatorios": {
+          "posponer_min": 10,
+          "marcar_omitido_tras_min": 30,
+          "aviso_previo_cita_min": [60, 10],
+          "repeticiones_de_voz": 6,
+          "intervalo_de_voz_seg": 25
+        },
+        "circulo": {
+          "compartir_actividad": true,
+          "compartir_medicinas": true,
+          "compartir_ubicacion": false,
+          "checkin_siempre_visible": true,
+          "sos_incluye_ubicacion": true
+        },
+        "companero_mensajes": { "activo": false },
+        "accesibilidad": { "reducir_movimiento": false, "tamano_letra": "sistema", "fuente": "Atkinson Hyperlegible" },
+        "favoritos_max": 4,
+        "saludo_de_arranque": "Hola, soy Aidly. Estoy aquí para ayudarte."
+      },
+
+      "bienvenida": {
+        "pasos": [
+          { "id": "idioma", "titulo": "Idioma", "texto": "Elige tu idioma.", "obligatorio": true },
+          { "id": "nombre", "titulo": "Tu nombre", "texto": "¿Cómo quieres que te llame?", "obligatorio": false },
+          { "id": "permisos_basicos", "titulo": "Para escucharte y avisarte", "texto": "Necesito el micrófono y poder mostrarte avisos.", "permisos": ["microfono", "notificaciones"], "obligatorio": true },
+          { "id": "mensajes", "titulo": "Tus mensajes", "texto": "Si quieres que te lea tus mensajes, dame acceso a las notificaciones.", "permisos": ["acceso_mensajes"], "obligatorio": false },
+          { "id": "calendario_contactos", "titulo": "Calendario y contactos", "texto": "Para agendar citas y llamar por nombre.", "permisos": ["calendario", "contactos"], "obligatorio": false },
+          { "id": "familia", "titulo": "Tu familia", "texto": "Si quieres, tu familia puede ver cómo estás. Tú decides qué se comparte.", "obligatorio": false },
+          { "id": "prueba", "titulo": "Pruébame", "texto": "Toca el botón grande y di: \"¿Qué hora es?\"", "obligatorio": false }
+        ]
+      },
+
+      "ejemplos": [
+        "Léeme los mensajes",
+        "Recuérdame tomar la pastilla a las ocho de la noche",
+        "Agéndame cita con el doctor el martes a las diez",
+        "¿Qué tengo hoy?",
+        "Llama a mi hija",
+        "Abre Netflix",
+        "Ponme música de Julio Iglesias",
+        "Auxilio, me siento mal"
+      ],
+
+      "comandos": {
+        "leer_mensajes": ["mensaje", "mensajes", "whatsapp", "wasap", "guasap"],
+        "leer_correo": ["correo", "correos", "mail", "email", "gmail", "outlook"],
+        "recordatorio_crear": ["recuerdame", "recordarme", "avisame", "ponme una alarma", "pon un recordatorio", "agrega un recordatorio"],
+        "recordatorio_listar": ["que recordatorios", "mis recordatorios", "cuales alarmas"],
+        "recordatorio_cancelar": ["cancela", "borra", "elimina", "quita"],
+        "ya_lo_hice": ["ya me tome", "ya la tome", "ya lo tome", "ya lo hice"],
+        "agendar_cita": ["agendame", "agendar", "apuntame una cita", "programame una cita"],
+        "ver_agenda": ["que tengo hoy", "que tengo manana", "mi agenda", "mis citas", "que citas tengo"],
+        "hora_fecha": ["que hora es", "que dia es", "que fecha es", "a cuanto estamos"],
+        "llamar": ["llama", "llamar", "llamale", "marca", "comunicame con"],
+        "camara": ["abre la camara", "toma una foto", "sacar una foto"],
+        "analizar": ["analiza", "analizar", "que dice esta carta", "es una estafa", "revisa esto"],
+        "medicina": ["medicina", "medicamento", "pastilla", "remedio"],
+        "ayuda_sos": ["auxilio", "socorro", "emergencia", "me siento mal", "no me siento bien", "me cai", "no puedo respirar", "avisa a mi familia"],
+        "estoy_bien": ["estoy bien", "me siento bien", "ya estoy bien"],
+        "abrir_app": ["abre", "abrir", "pon", "ponme", "quiero ver", "quiero escuchar", "reproduce"],
+        "buscar_web": ["internet", "google", "noticias", "clima", "dolar", "precio", "receta", "cuanto cuesta"]
+      },
+
+      "apps": {
+        "spotify": ["spotify"],
+        "youtube": ["youtube", "you tube"],
+        "netflix": ["netflix"],
+        "maps": ["google maps", "maps", "mapa", "mapas"],
+        "prime": ["prime video", "amazon prime"],
+        "disney": ["disney"],
+        "whatsapp": ["whatsapp"],
+        "facebook": ["facebook"]
+      },
+
+      "modelo": {
+        "instruccion_idioma": "Responde siempre en español neutro, con frases cortas y sencillas, sin tecnicismos, sin listas ni emojis.",
+        "aviso_medicina": "Confirma siempre con tu médico o farmacéutico.",
+        "aviso_estafa": "No puedo asegurar que algo sea seguro: confírmalo con un familiar o llamando al número oficial.",
+        "aviso_profesional": "Soy una ayuda, no un experto. Ante la duda, pregunta a un familiar de confianza antes de pagar o dar datos."
+      },
+
+      "web_familia": { "lang_html": "es", "titulo": "Aidly Familia", "selector_visible": true }
+    },
+
+    "en": {
+      "nombre": "English",
+      "nombre_en_ingles": "English",
+      "estado": "parcial",
+      "direccion": "ltr",
+      "trato": "neutral",
+
+      "voz": {
+        "tts": { "locales_preferidos": ["en-US", "en-GB"], "velocidad": 1.0, "tono": 1.0 },
+        "stt": {
+          "cadena_idiomas": [null, "en-US", "en-GB"],
+          "gemini_idioma": "English",
+          "palabras_si": ["yes", "yeah", "yep", "sure", "ok", "okay", "please", "read", "reply", "send", "go"],
+          "palabras_no": ["no", "nope", "cancel", "later", "nothing"],
+          "si_mal_oido": ["yis", "yas", "yess"],
+          "frases_contexto": ["What do I have today", "Read my messages", "Remind me to take my pill", "Call my daughter", "Yes", "No"]
+        }
+      },
+
+      "formato": {
+        "fecha_larga": "EEEE, MMMM d",
+        "fecha_corta": "EEE, MMM d",
+        "hora_pantalla": "h:mm a",
+        "hora_voz": {
+          "estilo": "am_pm",
+          "articulo_una": "at",
+          "articulo_otras": "at",
+          "periodos": {
+            "madrugada": "in the early morning",
+            "manana": "in the morning",
+            "mediodia": "at noon",
+            "tarde": "in the afternoon",
+            "noche": "at night"
+          }
+        },
+        "dias_relativos": { "hoy": "today", "manana": "tomorrow", "pasado_manana": "the day after tomorrow" },
+        "primer_dia_semana": "domingo"
+      },
+
+      "saludos": { "manana": "Good morning", "tarde": "Good afternoon", "noche": "Good evening" },
+
+      "inicial": {
+        "checkin": { "activo": true, "hora": "09:00", "pregunta_voz": "Good morning. How are you feeling today? Tap the blue button if you're okay." },
+        "recordatorios": {
+          "posponer_min": 10,
+          "marcar_omitido_tras_min": 30,
+          "aviso_previo_cita_min": [60, 10],
+          "repeticiones_de_voz": 6,
+          "intervalo_de_voz_seg": 25
+        },
+        "circulo": {
+          "compartir_actividad": true,
+          "compartir_medicinas": true,
+          "compartir_ubicacion": false,
+          "checkin_siempre_visible": true,
+          "sos_incluye_ubicacion": true
+        },
+        "companero_mensajes": { "activo": false },
+        "accesibilidad": { "reducir_movimiento": false, "tamano_letra": "sistema", "fuente": "Atkinson Hyperlegible" },
+        "favoritos_max": 4,
+        "saludo_de_arranque": "Hi, I'm Aidly. I'm here to help."
+      },
+
+      "bienvenida": {
+        "pasos": [
+          { "id": "idioma", "titulo": "Language", "texto": "Choose your language.", "obligatorio": true },
+          { "id": "nombre", "titulo": "Your name", "texto": "What should I call you?", "obligatorio": false },
+          { "id": "permisos_basicos", "titulo": "To hear you and alert you", "texto": "I need the microphone and to be able to show you alerts.", "permisos": ["microfono", "notificaciones"], "obligatorio": true },
+          { "id": "mensajes", "titulo": "Your messages", "texto": "If you want me to read your messages, give me access to notifications.", "permisos": ["acceso_mensajes"], "obligatorio": false },
+          { "id": "calendario_contactos", "titulo": "Calendar and contacts", "texto": "To schedule appointments and call by name.", "permisos": ["calendario", "contactos"], "obligatorio": false },
+          { "id": "familia", "titulo": "Your family", "texto": "If you like, your family can see how you're doing. You decide what is shared.", "obligatorio": false },
+          { "id": "prueba", "titulo": "Try me", "texto": "Tap the big button and say, in Spanish: \"¿Qué hora es?\"", "obligatorio": false }
+        ]
+      },
+
+      "ejemplos": [
+        "Read my messages",
+        "Remind me to take my pill at eight tonight",
+        "Schedule a doctor's appointment Tuesday at ten",
+        "What do I have today?",
+        "Call my daughter",
+        "Open Netflix",
+        "Play some music by Frank Sinatra",
+        "Help, I don't feel well"
+      ],
+
+      "comandos": {
+        "leer_mensajes": ["message", "messages", "text", "texts", "whatsapp"],
+        "leer_correo": ["email", "emails", "mail", "gmail", "outlook"],
+        "recordatorio_crear": ["remind me", "set a reminder", "set an alarm", "wake me", "let me know at"],
+        "recordatorio_listar": ["what reminders", "my reminders", "which alarms"],
+        "recordatorio_cancelar": ["cancel", "delete", "remove"],
+        "ya_lo_hice": ["i took it", "i already took", "i did it", "done"],
+        "agendar_cita": ["schedule", "book an appointment", "add an appointment", "put an appointment"],
+        "ver_agenda": ["what do i have today", "what do i have tomorrow", "my calendar", "my appointments"],
+        "hora_fecha": ["what time is it", "what day is it", "what is the date", "what's the date"],
+        "llamar": ["call", "phone", "dial"],
+        "camara": ["open the camera", "take a photo", "take a picture"],
+        "analizar": ["analyze", "check this", "what does this letter say", "is this a scam", "read this"],
+        "medicina": ["medicine", "medication", "pill", "pills", "prescription"],
+        "ayuda_sos": ["help", "emergency", "i don't feel well", "i feel sick", "i fell", "can't breathe", "call my family"],
+        "estoy_bien": ["i'm fine", "i am fine", "i'm okay", "i'm ok", "i feel fine"],
+        "abrir_app": ["open", "play", "put on", "i want to watch", "i want to listen"],
+        "buscar_web": ["internet", "google", "news", "weather", "dollar", "price", "recipe", "how much"]
+      },
+
+      "apps": {
+        "spotify": ["spotify"],
+        "youtube": ["youtube", "you tube"],
+        "netflix": ["netflix"],
+        "maps": ["google maps", "maps", "map"],
+        "prime": ["prime video", "amazon prime"],
+        "disney": ["disney"],
+        "whatsapp": ["whatsapp"],
+        "facebook": ["facebook"]
+      },
+
+      "modelo": {
+        "instruccion_idioma": "Always answer in plain English, in short and simple sentences, without jargon, lists or emojis.",
+        "aviso_medicina": "Always confirm with your doctor or pharmacist.",
+        "aviso_estafa": "I can't promise something is safe: check with a family member or call the official number.",
+        "aviso_profesional": "I'm a helper, not an expert. When in doubt, ask a trusted family member before paying or sharing details."
+      },
+
+      "web_familia": { "lang_html": "en", "titulo": "Aidly Family", "selector_visible": true }
+    }
+  },
+
+  "paises": {
+    "CO": { "emergencia": "123", "prefijo_tel": "57",  "idioma_sugerido": "es", "zona_horaria": "America/Bogota",       "unidad_temperatura": "C", "moneda": "COP" },
+    "MX": { "emergencia": "911", "prefijo_tel": "52",  "idioma_sugerido": "es", "zona_horaria": "America/Mexico_City",  "unidad_temperatura": "C", "moneda": "MXN" },
+    "ES": { "emergencia": "112", "prefijo_tel": "34",  "idioma_sugerido": "es", "zona_horaria": "Europe/Madrid",        "unidad_temperatura": "C", "moneda": "EUR" },
+    "AR": { "emergencia": "911", "prefijo_tel": "54",  "idioma_sugerido": "es", "zona_horaria": "America/Argentina/Buenos_Aires", "unidad_temperatura": "C", "moneda": "ARS" },
+    "EC": { "emergencia": "911", "prefijo_tel": "593", "idioma_sugerido": "es", "zona_horaria": "America/Guayaquil",    "unidad_temperatura": "C", "moneda": "USD" },
+    "UY": { "emergencia": "911", "prefijo_tel": "598", "idioma_sugerido": "es", "zona_horaria": "America/Montevideo",   "unidad_temperatura": "C", "moneda": "UYU" },
+    "PE": { "emergencia": "105", "prefijo_tel": "51",  "idioma_sugerido": "es", "zona_horaria": "America/Lima",         "unidad_temperatura": "C", "moneda": "PEN" },
+    "VE": { "emergencia": "171", "prefijo_tel": "58",  "idioma_sugerido": "es", "zona_horaria": "America/Caracas",      "unidad_temperatura": "C", "moneda": "VES" },
+    "PY": { "emergencia": "911", "prefijo_tel": "595", "idioma_sugerido": "es", "zona_horaria": "America/Asuncion",     "unidad_temperatura": "C", "moneda": "PYG" },
+    "CR": { "emergencia": "911", "prefijo_tel": "506", "idioma_sugerido": "es", "zona_horaria": "America/Costa_Rica",   "unidad_temperatura": "C", "moneda": "CRC" },
+    "PA": { "emergencia": "911", "prefijo_tel": "507", "idioma_sugerido": "es", "zona_horaria": "America/Panama",       "unidad_temperatura": "C", "moneda": "USD" },
+    "DO": { "emergencia": "911", "prefijo_tel": "1",   "idioma_sugerido": "es", "zona_horaria": "America/Santo_Domingo","unidad_temperatura": "C", "moneda": "DOP" },
+    "SV": { "emergencia": "911", "prefijo_tel": "503", "idioma_sugerido": "es", "zona_horaria": "America/El_Salvador",  "unidad_temperatura": "C", "moneda": "USD" },
+    "HN": { "emergencia": "911", "prefijo_tel": "504", "idioma_sugerido": "es", "zona_horaria": "America/Tegucigalpa",  "unidad_temperatura": "C", "moneda": "HNL" },
+    "US": { "emergencia": "911", "prefijo_tel": "1",   "idioma_sugerido": "en", "zona_horaria": "America/New_York",     "unidad_temperatura": "F", "moneda": "USD" },
+    "CA": { "emergencia": "911", "prefijo_tel": "1",   "idioma_sugerido": "en", "zona_horaria": "America/Toronto",      "unidad_temperatura": "C", "moneda": "CAD" },
+    "GB": { "emergencia": "999", "prefijo_tel": "44",  "idioma_sugerido": "en", "zona_horaria": "Europe/London",        "unidad_temperatura": "C", "moneda": "GBP" },
+    "*":  { "emergencia": "112", "prefijo_tel": "",    "idioma_sugerido": "en", "zona_horaria": "",                     "unidad_temperatura": "C", "moneda": "" }
+  },
+
+  "paises_sin_verificar": {
+    "nota": "No se incluyen hasta confirmar el número único de emergencias; mientras tanto usan '*' (112).",
+    "codigos": ["CL", "BR", "GT", "NI", "BO"]
+  }
+}

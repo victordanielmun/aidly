@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Aidly Familia</title>
+<style>
+  :root {
+    --fondo: #2b2b26; --tarjeta: #383832; --texto: #fff3dc; --suave: #cfc9ba;
+    --turquesa: #40ddda; --amarillo: #ffe000; --coral: #ff7f50; --verde: #3ddc84; --tinta: #1f1f1b;
+  }
+  @media (prefers-color-scheme: light) {
+    :root { --fondo: #f4efe3; --tarjeta: #ffffff; --texto: #1f1f1b; --suave: #5a5648; --turquesa: #007c91; --amarillo: #8a6d00; --coral: #c2410c; --verde: #15803d; --tinta: #1f1f1b; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--texto); font: 18px/1.45 "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 640px; margin: 0 auto; padding: 16px 16px 48px; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  h1 { font-size: 28px; margin: 8px 0 4px; }
+  h2 { font-size: 15px; margin: 0 0 6px; color: var(--suave); text-transform: uppercase; letter-spacing: .05em; }
+  .suave { color: var(--suave); }
+  .tarjeta { background: var(--tarjeta); border-radius: 16px; padding: 16px 18px; margin: 14px 0; }
+  .grande { font-size: 24px; font-weight: 700; }
+  .banner { border-radius: 16px; padding: 18px; margin: 14px 0; font-size: 22px; font-weight: 700; }
+  .ok { background: var(--verde); color: var(--tinta); }
+  .alerta { background: var(--coral); color: var(--tinta); }
+  .aviso { background: var(--amarillo); color: var(--tinta); }
+  .neutro { background: var(--tarjeta); color: var(--suave); }
+  .alerta a, .ok a, .aviso a { color: inherit; }
+  form { display: flex; gap: 10px; flex-wrap: wrap; }
+  input { flex: 1 1 200px; font: 700 26px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; padding: 14px; border-radius: 12px; border: 2px solid var(--suave); background: var(--tarjeta); color: var(--texto); }
+  input:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid var(--turquesa); outline-offset: 2px; }
+  button { font: 700 20px system-ui, sans-serif; padding: 14px 22px; border: 0; border-radius: 12px; background: var(--turquesa); color: var(--tinta); cursor: pointer; }
+  button.link { background: none; color: var(--suave); text-decoration: underline; padding: 8px 0; font-size: 16px; font-weight: 400; }
+  .idiomas { display: flex; gap: 6px; }
+  .idiomas button { padding: 8px 14px; font-size: 16px; border-radius: 20px; background: transparent; color: var(--suave); border: 2px solid var(--suave); }
+  .idiomas button[aria-pressed="true"] { background: var(--turquesa); color: var(--tinta); border-color: var(--turquesa); }
+  ul { list-style: none; padding: 0; margin: 6px 0 0; }
+  li { padding: 8px 0; border-top: 1px solid rgba(128,128,128,.25); }
+  li:first-child { border-top: 0; }
+  .dato { color: var(--turquesa); font-weight: 700; }
+  .error { color: var(--coral); font-weight: 700; }
+  footer { margin-top: 28px; font-size: 14px; color: var(--suave); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1 data-i="titulo">Aidly Familia</h1>
+    <div class="idiomas" role="group" aria-label="Idioma / Language">
+      <button type="button" id="b-es" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" id="b-en" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+  <p class="suave" id="sub" data-i="sub"></p>
+
+  <section id="entrada" hidden>
+    <div class="tarjeta">
+      <h2 data-i="codigo_titulo"></h2>
+      <form id="form" autocomplete="off">
+        <input id="codigo" inputmode="text" maxlength="20" placeholder="ABCD-EFGH-JKLM" aria-label="Código / Code" autocapitalize="characters" spellcheck="false">
+        <button type="submit" data-i="ver"></button>
+      </form>
+      <p id="msgEntrada" class="error" role="alert"></p>
+      <p class="suave" data-i="codigo_ayuda"></p>
+    </div>
+  </section>
+
+  <section id="panel" hidden aria-live="polite">
+    <div id="cabecera" class="tarjeta"></div>
+    <div id="estado"></div>
+    <div id="tarjetas"></div>
+    <button class="link" id="salir" type="button" data-i="salir"></button>
+  </section>
+
+  <footer data-i="pie"></footer>
+</main>
+
+<script src="config.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+// La configuracion web de Firebase vive en config.js (no se sube al repositorio; ver config.example.js).
+const app = initializeApp(window.FIREBASE_WEB_CONFIG);
+const db = getFirestore(app);
+
+// ---------- Textos (es / en). Toda clave nueva debe existir en los dos. ----------
+const T = {
+  es: {
+    titulo: "Aidly Familia",
+    sub: "Mira cómo está tu familiar. Solo ves lo que esa persona decidió compartir.",
+    codigo_titulo: "Código familiar",
+    ver: "VER",
+    codigo_ayuda: "El código te lo envía tu familiar desde la app Aidly (sección “Mi familia”).",
+    salir: "Dejar de ver este código en este dispositivo",
+    pie: "La información la envía el teléfono de tu familiar cuando lo usa; no es seguimiento en tiempo real. En una emergencia, llama a tu familiar y, si no responde, al número de emergencias de tu país.",
+    tu_familiar: "Tu familiar",
+    ultimo_envio: "Última vez que se envió información: {t}",
+    pidio_ayuda: "⚠ {n} pidió ayuda {t}",
+    llamale: "Llámale ahora. Si no contesta, llama a emergencias.",
+    ver_donde: "Ver dónde estaba al pedir ayuda",
+    ck_desactivado: "El aviso diario “¿cómo te sientes?” está desactivado.",
+    ck_sin: "Todavía no hay respuesta al aviso diario.",
+    ck_ok: "✔ Contestó el aviso de hoy: está bien ({h})",
+    ck_ayuda: "⚠ Dijo que no se siente bien ({h}). Llámale.",
+    ck_sin_resp: "No contestó el aviso de las {h}. Conviene llamarle.",
+    ck_pend: "Esperando que conteste el aviso de las {h}…",
+    t_actividad: "Última vez que usó el teléfono",
+    t_medicinas: "Medicinas",
+    t_ubicacion: "Ubicación aproximada",
+    no_comparte: "No lo está compartiendo.",
+    no_comparte_ella: "No la está compartiendo.",
+    sin_medicinas: "Todavía no hay avisos de medicinas.",
+    sin_ubicacion: "Todavía no hay ubicación.",
+    abrir_mapa: "Abrir en el mapa",
+    m_tomado: "✔ Hecho", m_omitido: "✖ No respondió", m_pospuesto: "↻ Pospuesto", m_pendiente: "… Esperando", m_ayuda: "⚠ Pidió ayuda",
+    err_codigo: "El código tiene 12 letras y números (por ejemplo ABCD-EFGH-JKLM).",
+    no_existe: "No encontré ese código. Revisa que esté bien escrito, o es posible que tu familiar haya dejado de compartir.",
+    sin_red: "No pude conectarme. Revisa tu internet e inténtalo de nuevo.",
+    demo: "Vista de demostración con datos de ejemplo.",
+    d_menos_min: "hace menos de un minuto", d_min: "hace {n} min", d_h: "hace {n} h", d_dia: "hace {n} día", d_dias: "hace {n} días",
+    medicina_texto_demo: ["tomar la pastilla de la presión", "tomar la vitamina"],
+    nombre_demo: "Abuela Rosa (demo)"
+  },
+  en: {
+    titulo: "Aidly Family",
+    sub: "See how your loved one is doing. You only see what they chose to share.",
+    codigo_titulo: "Family code",
+    ver: "VIEW",
+    codigo_ayuda: "Your relative sends you the code from the Aidly app (“My family” section).",
+    salir: "Stop viewing this code on this device",
+    pie: "The information is sent by your relative's phone when they use it; it is not real-time tracking. In an emergency, call your relative and, if there is no answer, your country's emergency number.",
+    tu_familiar: "Your relative",
+    ultimo_envio: "Last time information was sent: {t}",
+    pidio_ayuda: "⚠ {n} asked for help {t}",
+    llamale: "Call them now. If they don't answer, call emergency services.",
+    ver_donde: "See where they were when they asked for help",
+    ck_desactivado: "The daily “how are you feeling?” check-in is turned off.",
+    ck_sin: "No answer to the daily check-in yet.",
+    ck_ok: "✔ Answered today's check-in: doing fine ({h})",
+    ck_ayuda: "⚠ Said they don't feel well ({h}). Call them.",
+    ck_sin_resp: "Did not answer the {h} check-in. You may want to call.",
+    ck_pend: "Waiting for an answer to the {h} check-in…",
+    t_actividad: "Last time the phone was used",
+    t_medicinas: "Medicines",
+    t_ubicacion: "Approximate location",
+    no_comparte: "Not shared.",
+    no_comparte_ella: "Not shared.",
+    sin_medicinas: "No medicine reminders yet.",
+    sin_ubicacion: "No location yet.",
+    abrir_mapa: "Open in maps",
+    m_tomado: "✔ Done", m_omitido: "✖ No answer", m_pospuesto: "↻ Postponed", m_pendiente: "… Waiting", m_ayuda: "⚠ Asked for help",
+    err_codigo: "The code has 12 letters and numbers (for example ABCD-EFGH-JKLM).",
+    no_existe: "I couldn't find that code. Check that it is typed correctly, or your relative may have stopped sharing.",
+    sin_red: "I couldn't connect. Check your internet and try again.",
+    demo: "Demo view with sample data.",
+    d_menos_min: "less than a minute ago", d_min: "{n} min ago", d_h: "{n} h ago", d_dia: "{n} day ago", d_dias: "{n} days ago",
+    medicina_texto_demo: ["take the blood pressure pill", "take the vitamin"],
+    nombre_demo: "Grandma Rosa (demo)"
+  }
+};
+
+const $ = (id) => document.getElementById(id);
+const CLAVE = "aidly_codigo", CLAVE_LANG = "aidly_idioma";
+let lang = "es", datos = null, baja = null, esDemo = false;
+
+const guardar = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+const leer = (k) => { try { return localStorage.getItem(k) || ""; } catch (e) { return ""; } };
+const borrar = (k) => { try { localStorage.removeItem(k); } catch (e) {} };
+const limpiar = (s) => String(s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+const t = (k, v = {}) => String(T[lang][k] ?? T.es[k] ?? k).replace(/\{(\w+)\}/g, (_, n) => v[n] ?? "");
+const bcp = () => (lang === "en" ? "en-US" : "es-MX");
+
+function hace(ms) {
+  if (!ms) return "";
+  const s = Math.max(0, Math.round((Date.now() - ms) / 1000));
+  if (s < 60) return t("d_menos_min");
+  const m = Math.round(s / 60); if (m < 60) return t("d_min", { n: m });
+  const h = Math.round(m / 60); if (h < 24) return t("d_h", { n: h });
+  const d = Math.round(h / 24); return t(d === 1 ? "d_dia" : "d_dias", { n: d });
+}
+const hora = (ms) => new Date(ms).toLocaleTimeString(bcp(), { hour: "numeric", minute: "2-digit" });
+const diaHora = (ms) => new Date(ms).toLocaleString(bcp(), { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+const mapa = (lat, lng) => `https://www.google.com/maps?q=${encodeURIComponent(Number(lat))},${encodeURIComponent(Number(lng))}`;
+
+function el(tag, clase, texto) {
+  const e = document.createElement(tag);
+  if (clase) e.className = clase;
+  if (texto !== undefined) e.textContent = texto;   // textContent: nunca HTML de datos ajenos
+  return e;
+}
+function enlace(texto, href) { const a = el("a", "", texto); a.href = href; a.target = "_blank"; a.rel = "noopener noreferrer"; return a; }
+function tarjeta(titulo) { const c = el("div", "tarjeta"); c.append(el("h2", "", titulo)); return c; }
+
+function pintar() {
+  const d = datos;
+  const cab = $("cabecera"), est = $("estado"), tar = $("tarjetas");
+  cab.replaceChildren(); est.replaceChildren(); tar.replaceChildren();
+  if (!d) return;
+  const c = d.compartir || {};
+  const quien = d.nombre || t("tu_familiar");
+
+  cab.append(el("div", "grande", quien), el("div", "suave", t("ultimo_envio", { t: hace(d.actualizado) })));
+
+  // 1) Emergencia: lo primero que se ve.
+  const sos = d.sos;
+  if (sos && sos.hora && Date.now() - sos.hora < 24 * 3600 * 1000) {
+    const b = el("div", "banner alerta"); b.setAttribute("role", "alert");
+    b.append(el("div", "", t("pidio_ayuda", { n: quien, t: hace(sos.hora) })));
+    b.append(el("div", "", t("llamale")));
+    if (sos.lat != null && sos.lng != null) b.append(enlace(t("ver_donde"), mapa(sos.lat, sos.lng)));
+    est.append(b);
+  }
+
+  // 2) Aviso diario.
+  const k = d.checkin;
+  if (c.checkin === false) est.append(el("div", "banner neutro", t("ck_desactivado")));
+  else if (!k) est.append(el("div", "banner neutro", t("ck_sin")));
+  else if (k.estado === "ok") est.append(el("div", "banner ok", t("ck_ok", { h: hora(k.hora) })));
+  else if (k.estado === "ayuda") est.append(el("div", "banner alerta", t("ck_ayuda", { h: hora(k.hora) })));
+  else if (k.estado === "sin_respuesta") est.append(el("div", "banner aviso", t("ck_sin_resp", { h: hora(k.programada) })));
+  else est.append(el("div", "banner neutro", t("ck_pend", { h: hora(k.programada) })));
+
+  // 3) Última actividad.
+  const ta = tarjeta(t("t_actividad"));
+  if (c.actividad && d.ultimaActividad) {
+    const horas = (Date.now() - d.ultimaActividad) / 3600000;
+    const p = el("div", "grande", hace(d.ultimaActividad));
+    if (horas > 24) p.style.color = "var(--coral)"; else if (horas > 12) p.style.color = "var(--amarillo)";
+    ta.append(p, el("div", "suave", diaHora(d.ultimaActividad)));
+  } else ta.append(el("div", "suave", t("no_comparte")));
+  tar.append(ta);
+
+  // 4) Medicinas.
+  const tm = tarjeta(t("t_medicinas"));
+  if (!c.medicinas) tm.append(el("div", "suave", t("no_comparte")));
+  else if (!d.medicinas || !d.medicinas.length) tm.append(el("div", "suave", t("sin_medicinas")));
+  else {
+    const ul = el("ul");
+    for (const m of d.medicinas) {
+      const marca = { tomado: t("m_tomado"), omitido: t("m_omitido"), pospuesto: t("m_pospuesto"), pendiente: t("m_pendiente"), ayuda: t("m_ayuda") }[m.estado] || m.estado;
+      const li = el("li");
+      li.append(el("span", "dato", marca), document.createTextNode(` — ${m.texto || ""} · ${diaHora(m.programada)}`));
+      ul.append(li);
+    }
+    tm.append(ul);
+  }
+  tar.append(tm);
+
+  // 5) Ubicación.
+  const tu = tarjeta(t("t_ubicacion"));
+  if (c.ubicacion && d.ubicacion) tu.append(el("div", "grande", hace(d.ubicacion.hora)), enlace(t("abrir_mapa"), mapa(d.ubicacion.lat, d.ubicacion.lng)));
+  else tu.append(el("div", "suave", c.ubicacion ? t("sin_ubicacion") : t("no_comparte_ella")));
+  tar.append(tu);
+}
+
+// ---------- Idioma ----------
+function aplicarTextos() {
+  document.documentElement.lang = lang;
+  document.title = t("titulo");
+  document.querySelectorAll("[data-i]").forEach((e) => { e.textContent = t(e.dataset.i); });
+  if (esDemo) $("sub").textContent = t("demo");
+  $("b-es").setAttribute("aria-pressed", String(lang === "es"));
+  $("b-en").setAttribute("aria-pressed", String(lang === "en"));
+  if (datos) pintar();
+}
+function fijarIdioma(l, recordar) {
+  if (!T[l]) return;
+  lang = l;
+  if (recordar) guardar(CLAVE_LANG, l);
+  if (esDemo) demo(true);
+  aplicarTextos();
+}
+document.querySelectorAll(".idiomas button").forEach((b) => b.addEventListener("click", () => fijarIdioma(b.dataset.lang, true)));
+
+function mostrarEntrada(msgClave) {
+  if (baja) { baja(); baja = null; }
+  datos = null;
+  $("panel").hidden = true; $("entrada").hidden = false; $("msgEntrada").textContent = msgClave ? t(msgClave) : "";
+}
+
+function seguir(codigo) {
+  if (baja) { baja(); baja = null; }
+  $("msgEntrada").textContent = "";
+  baja = onSnapshot(doc(db, "circulos", codigo), (snap) => {
+    if (!snap.exists()) { borrar(CLAVE); mostrarEntrada("no_existe"); return; }
+    guardar(CLAVE, codigo);
+    datos = snap.data();
+    // Si la persona no ha elegido idioma en esta página, se usa el de su teléfono.
+    if (!leer(CLAVE_LANG) && T[datos.idioma] && datos.idioma !== lang) { lang = datos.idioma; aplicarTextos(); }
+    $("entrada").hidden = true; $("panel").hidden = false;
+    pintar();
+  }, () => mostrarEntrada("sin_red"));
+}
+
+function demo(soloRefrescar) {
+  esDemo = true;
+  const ahora = Date.now(), min = 60000, md = T[lang].medicina_texto_demo;
+  datos = {
+    nombre: T[lang].nombre_demo, actualizado: ahora - 3 * min,
+    compartir: { actividad: true, medicinas: true, ubicacion: true, checkin: true },
+    ultimaActividad: ahora - 3 * min,
+    checkin: { estado: "ok", hora: ahora - 95 * min, programada: ahora - 100 * min },
+    medicinas: [
+      { texto: md[0], estado: "tomado", programada: ahora - 60 * min },
+      { texto: md[1], estado: "omitido", programada: ahora - 26 * 60 * min },
+      { texto: md[0], estado: "pospuesto", programada: ahora - 30 * 60 * min }
+    ],
+    ubicacion: { lat: 19.4326, lng: -99.1332, hora: ahora - 12 * min }
+  };
+  $("entrada").hidden = true; $("panel").hidden = false;
+  if (!soloRefrescar) aplicarTextos();
+  $("sub").textContent = t("demo");
+  pintar();
+}
+
+$("form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const c = limpiar($("codigo").value);
+  if (c.length !== 12) { $("msgEntrada").textContent = t("err_codigo"); return; }
+  seguir(c);
+});
+$("salir").addEventListener("click", () => { borrar(CLAVE); history.replaceState(null, "", location.pathname); mostrarEntrada(""); });
+setInterval(() => { if (datos) pintar(); }, 30000);   // refresca los "hace X min"
+
+// ---------- Arranque ----------
+// Idioma: elegido en esta página > ?lang= > idioma del navegador. Luego, el de la persona (si aún no se eligió).
+const pedido = new URLSearchParams(location.search).get("lang");
+lang = T[pedido] ? pedido : (T[leer(CLAVE_LANG)] ? leer(CLAVE_LANG) : ((navigator.language || "es").toLowerCase().startsWith("en") ? "en" : "es"));
+aplicarTextos();
+
+// El código puede venir en el enlace (#ABCDEFGHJKLM): el fragmento no se envía a ningún servidor.
+const h = location.hash.replace(/^#/, "");
+if (h.toLowerCase() === "demo") demo();
+else {
+  const c = limpiar(h) || limpiar(leer(CLAVE));
+  if (c.length === 12) seguir(c); else mostrarEntrada("");
+}
+</script>
+</body>
+</html>

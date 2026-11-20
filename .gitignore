@@ -1,0 +1,28 @@
+# Compilacion y herramientas
+.gradle/
+.kotlin/
+build/
+*.iml
+.idea/
+*.hprof
+local.properties
+firebase-debug.log
+.firebase/
+*.apk
+*.aab
+
+# Claves y configuracion de Firebase (las reglas del concurso prohiben subir claves de produccion)
+app/google-services.json
+firebase/
+familia/config.js
+
+# Material interno que no forma parte del producto
+entrenamiento/
+Gemini_Generated_Image_*.jpg
+txt.pdf
+PLAN.md
+docs/ANALISIS-*.md
+docs/PLAN-FINAL.md
+docs/GUION-VIDEO.md
+docs/DEVPOST.md
+docs/fase0-notas.md

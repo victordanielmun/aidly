@@ -1,0 +1,38 @@
+rules_version = '2';
+
+// Aidly - Circulo familiar.
+// Un documento por codigo familiar (12 caracteres aleatorios, ~60 bits). Quien tiene el codigo puede LEERLO
+// (la familia, desde la pagina web); nadie puede listar ni adivinar codigos. Solo la persona que lo creo
+// (sesion anonima del telefono, campo "owner") puede escribirlo o borrarlo.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /circulos/{codigo} {
+      allow get: if true;
+      allow list: if false;
+
+      allow create: if request.auth != null
+        && codigo.matches('^[A-Z0-9]{12}$')
+        && request.resource.data.owner == request.auth.uid
+        && request.resource.data.keys().hasOnly(['owner', 'nombre', 'actualizado', 'compartir', 'ultimaActividad',
+                                                  'medicinas', 'ubicacion', 'checkin', 'sos', 'idioma'])
+        && request.resource.data.nombre is string && request.resource.data.nombre.size() <= 40
+        && (!('idioma' in request.resource.data) || (request.resource.data.idioma is string && request.resource.data.idioma.size() <= 5));
+
+      allow update: if request.auth != null
+        && resource.data.owner == request.auth.uid
+        && request.resource.data.owner == resource.data.owner
+        && request.resource.data.keys().hasOnly(['owner', 'nombre', 'actualizado', 'compartir', 'ultimaActividad',
+                                                  'medicinas', 'ubicacion', 'checkin', 'sos', 'idioma'])
+        && request.resource.data.nombre is string && request.resource.data.nombre.size() <= 40
+        && (!('idioma' in request.resource.data) || (request.resource.data.idioma is string && request.resource.data.idioma.size() <= 5));
+
+      allow delete: if request.auth != null && resource.data.owner == request.auth.uid;
+    }
+
+    // Todo lo demas, cerrado.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
