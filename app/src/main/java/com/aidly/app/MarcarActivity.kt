@@ -16,10 +16,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -140,7 +143,7 @@ private fun Pantalla(voz: Voz, cerrar: () -> Unit) {
             // Teclado 4 x 3. El 0 con pulsacion larga escribe "+".
             val filas = listOf(listOf("1", "2", "3"), listOf("4", "5", "6"), listOf("7", "8", "9"), listOf("*", "0", "#"))
             filas.forEach { fila ->
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     fila.forEach { t ->
                         val dicho = when (t) { "*" -> Idioma.vozTexto(ctx, R.string.marcar_asterisco); "#" -> Idioma.vozTexto(ctx, R.string.marcar_numeral); else -> t }
                         Tecla(t, Modifier.weight(1f), if (t == "0") stringResource(R.string.marcar_cero_mas) else null,
@@ -164,12 +167,12 @@ private fun Pantalla(voz: Voz, cerrar: () -> Unit) {
 private fun Tecla(texto: String, modifier: Modifier, pista: String?, onLargo: (() -> Unit)?, onClick: () -> Unit) {
     val forma = RoundedCornerShape(Tema.RadioFila)
     Column(
-        modifier.heightIn(min = 76.dp).clip(forma).background(Tema.Tarjeta).border(2.dp, Tema.Turquesa, forma)
+        modifier.heightIn(min = 76.dp).fillMaxHeight().clip(forma).background(Tema.Tarjeta).border(2.dp, Tema.Turquesa, forma)
             .combinedClickable(role = Role.Button, onClick = onClick, onLongClick = onLargo)
             .semantics { contentDescription = texto },
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
     ) {
         Text(texto, fontSize = 38.sp, fontWeight = FontWeight.Bold, color = Tema.Texto)
-        if (pista != null) Text(pista, fontSize = 14.sp, color = Tema.TextoSuave)
+        if (pista != null) Text(pista, fontSize = 14.sp, color = Tema.TextoSuave, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp))
     }
 }

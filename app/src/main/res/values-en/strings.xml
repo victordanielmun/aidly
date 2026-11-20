@@ -36,7 +36,6 @@
     <string name="ajustes_idioma">Language</string>
     <string name="idioma_automatico">Automatic (same as the phone)</string>
     <string name="idioma_activo">Active</string>
-    <string name="idioma_aviso_voz">Aidly\'s voice is still in Spanish.</string>
     <string name="ajustes_reducir">Reduce motion</string>
     <string name="ajustes_reducir_desc">Aidly\'s face stays still</string>
     <string name="ajustes_permisos">Permissions</string>
@@ -110,7 +109,7 @@
     <string name="rec_est_ayuda">I alerted your family. If it\'s an emergency, call %1$s.</string>
     <string name="rec_est_paso">This alert has passed.</string>
     <string name="recs_titulo">My reminders</string>
-    <string name="recs_vacio">You have no reminders. Tell Aidly (in Spanish): “recuérdame tomar mi pastilla a las 8 de la noche”.</string>
+    <string name="recs_vacio">You have no reminders. Tell Aidly: “remind me to take my pill at 8 tonight”.</string>
     <string name="recs_borrar">DELETE</string>
     <string name="recs_ultimos">Latest alerts</string>
     <string name="recs_hecho">✔ Done</string>
@@ -198,7 +197,6 @@
     <string name="bienv_configurar">SET UP NOW</string>
     <string name="bienv_nombre_hint">Your name</string>
     <string name="bienv_ejemplos">You can say things like:</string>
-    <string name="bienv_nota_voz">For now Aidly understands Spanish: say it in Spanish.</string>
     <string name="bienv_perm_microfono">Microphone</string>
     <string name="bienv_perm_ubicacion">Location</string>
     <string name="bienv_perm_camara">Camera</string>

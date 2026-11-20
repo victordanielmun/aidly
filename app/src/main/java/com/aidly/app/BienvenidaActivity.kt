@@ -128,10 +128,10 @@ private fun Pantalla(voz: Voz, terminar: () -> Unit) {
     LifecycleResumeEffect(Unit) { refresco++; onPauseOrDispose {} }
     val pedir = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { refresco++ }
 
-    // Al llegar al ultimo paso, saludo de arranque (la voz sigue en español en el nivel B).
+    // Al llegar al ultimo paso, saludo de arranque en el idioma activo.
     LaunchedEffect(ultimo) {
         if (ultimo) {
-            Idioma.configDe(ctx, "es")?.getJSONObject("inicial")?.optString("saludo_de_arranque")?.takeIf { it.isNotBlank() }?.let { voz.decir(it) }
+            Idioma.configDe(ctx, Idioma.resolver(ctx))?.getJSONObject("inicial")?.optString("saludo_de_arranque")?.takeIf { it.isNotBlank() }?.let { voz.decir(it) }
         }
     }
 
@@ -170,9 +170,6 @@ private fun Pantalla(voz: Voz, terminar: () -> Unit) {
                             if (idiomaPreferido == op.id) Iconos.Check else Iconos.ChevronDerecha, op.nombre, "", chevron = false,
                         ) { elegir(op.id) }
                     }
-                    if (Idioma.resolver(ctx) != "es") {
-                        Text(stringResource(R.string.idioma_aviso_voz), fontSize = 17.sp, color = Tema.TextoSuave, textAlign = TextAlign.Center)
-                    }
                 }
                 "nombre" -> OutlinedTextField(
                     value = nombre, onValueChange = { nombre = it.take(30); Preferencias.fijarNombre(ctx, it.take(30)) }, singleLine = true,
@@ -189,13 +186,9 @@ private fun Pantalla(voz: Voz, terminar: () -> Unit) {
                     ctx.startActivity(Intent(ctx, CirculoActivity::class.java))
                 }
                 "prueba" -> {
-                    Text(stringResource(R.string.bienv_ejemplos), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa)
-                    // En el nivel B Aidly solo entiende español: los ejemplos son siempre los de `es`.
-                    val ej = Idioma.configDe(ctx, "es")?.optJSONArray("ejemplos")
-                    (0 until minOf(ej?.length() ?: 0, 5)).forEach { Text("• " + ej!!.getString(it), fontSize = 20.sp, color = Tema.Texto) }
-                    if (Idioma.resolver(ctx) != "es") {
-                        Text(stringResource(R.string.bienv_nota_voz), fontSize = 17.sp, color = Tema.Amarillo, textAlign = TextAlign.Center)
-                    }
+                    Text(stringResource(R.string.bienv_ejemplos), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa, modifier = Modifier.fillMaxWidth())
+                    val ej = Idioma.configDe(ctx, Idioma.resolver(ctx))?.optJSONArray("ejemplos")
+                    (0 until minOf(ej?.length() ?: 0, 5)).forEach { Text("• " + ej!!.getString(it), fontSize = 20.sp, color = Tema.Texto, textAlign = TextAlign.Start, modifier = Modifier.fillMaxWidth()) }
                 }
             }
 

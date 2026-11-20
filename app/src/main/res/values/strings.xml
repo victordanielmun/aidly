@@ -36,7 +36,6 @@
     <string name="ajustes_idioma">Idioma</string>
     <string name="idioma_automatico">Automático (como el teléfono)</string>
     <string name="idioma_activo">Activo</string>
-    <string name="idioma_aviso_voz">La voz de Aidly sigue en español.</string>
     <string name="ajustes_reducir">Reducir movimiento</string>
     <string name="ajustes_reducir_desc">La cara de Aidly se queda quieta</string>
     <string name="ajustes_permisos">Permisos</string>
@@ -198,7 +197,6 @@
     <string name="bienv_configurar">CONFIGURAR AHORA</string>
     <string name="bienv_nombre_hint">Tu nombre</string>
     <string name="bienv_ejemplos">Puedes decirme cosas como:</string>
-    <string name="bienv_nota_voz">Por ahora Aidly entiende español: dilo en español.</string>
     <string name="bienv_perm_microfono">Micrófono</string>
     <string name="bienv_perm_ubicacion">Ubicación</string>
     <string name="bienv_perm_camara">Cámara</string>

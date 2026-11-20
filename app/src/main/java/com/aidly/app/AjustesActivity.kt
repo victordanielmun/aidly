@@ -109,10 +109,6 @@ private fun Pantalla(cerrar: () -> Unit) {
                 if (activo) stringResource(R.string.idioma_activo) else "", chevron = false,
             ) { elegirIdioma(op.id) }
         }
-        // En el nivel B la voz y los comandos siguen en español aunque la pantalla este en otro idioma.
-        if (Idioma.resolver(ctx) != "es") {
-            Text(stringResource(R.string.idioma_aviso_voz), fontSize = 17.sp, color = Tema.TextoSuave)
-        }
 
         InterruptorFila(null, stringResource(R.string.ajustes_reducir), stringResource(R.string.ajustes_reducir_desc), reducir) {
             reducir = it; Preferencias.fijarReducirMovimiento(ctx, it)

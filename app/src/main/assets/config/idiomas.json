@@ -215,7 +215,7 @@
           { "id": "mensajes", "titulo": "Your messages", "texto": "If you want me to read your messages, give me access to notifications.", "permisos": ["acceso_mensajes"], "obligatorio": false },
           { "id": "calendario_contactos", "titulo": "Calendar and contacts", "texto": "To schedule appointments and call by name.", "permisos": ["calendario", "contactos"], "obligatorio": false },
           { "id": "familia", "titulo": "Your family", "texto": "If you like, your family can see how you're doing. You decide what is shared.", "obligatorio": false },
-          { "id": "prueba", "titulo": "Try me", "texto": "Tap the big button and say, in Spanish: \"¿Qué hora es?\"", "obligatorio": false }
+          { "id": "prueba", "titulo": "Try me", "texto": "Tap the big button and say: \"What time is it?\"", "obligatorio": false }
         ]
       },
 
