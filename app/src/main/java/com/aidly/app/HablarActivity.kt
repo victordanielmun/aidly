@@ -92,6 +92,17 @@ private fun HablarScreen(voz: Voz, cerrar: () -> Unit) {
 
     LaunchedEffect(Unit) { if (!permiso) pedir.launch(Manifest.permission.RECORD_AUDIO) }
 
+    // Si la nube tarda, Aidly lo dice una sola vez (pantalla y voz) en vez de dejar a la persona en silencio.
+    var lento by remember { mutableStateOf(false) }
+    LaunchedEffect(paso, ronda) {
+        lento = false
+        if (paso == Paso.PENSANDO) {
+            kotlinx.coroutines.delay(8_000)
+            lento = true
+            voz.decir(Idioma.vozTexto(ctx, R.string.v_sigo_pensando))
+        }
+    }
+
     LaunchedEffect(permiso, ronda) {
         if (!permiso) return@LaunchedEffect
         paso = Paso.ESCUCHANDO; pregunta = ""; respuesta = ""; motorFuente = ""; motorMs = 0L
@@ -129,7 +140,7 @@ private fun HablarScreen(voz: Voz, cerrar: () -> Unit) {
     val ayuda = when (paso) {
         Paso.REPOSO -> stringResource(if (permiso) R.string.hablar_reposo else R.string.hablar_sin_mic)
         Paso.ESCUCHANDO -> stringResource(R.string.hablar_escuchando_ayuda)
-        Paso.PENSANDO -> stringResource(R.string.hablar_pensando_ayuda)
+        Paso.PENSANDO -> stringResource(if (lento) R.string.hablar_lento else R.string.hablar_pensando_ayuda)
         else -> ""
     }
 

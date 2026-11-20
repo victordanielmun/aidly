@@ -430,4 +430,6 @@
     <string name="det_guardar">Save</string>
     <string name="det_borrar">Delete reminder</string>
     <string name="det_borrar_seguro">Tap again to delete</string>
+    <string name="v_sigo_pensando">I\'m still thinking, one moment.</string>
+    <string name="hablar_lento">I\'m still thinking, one moment. Thanks for waiting.</string>
 </resources>

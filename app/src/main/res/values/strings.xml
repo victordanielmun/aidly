@@ -430,4 +430,6 @@
     <string name="det_guardar">Guardar</string>
     <string name="det_borrar">Borrar recordatorio</string>
     <string name="det_borrar_seguro">Toca otra vez para borrar</string>
+    <string name="v_sigo_pensando">Sigo pensando, un momento.</string>
+    <string name="hablar_lento">Sigo pensando, un momento. Gracias por esperar.</string>
 </resources>
