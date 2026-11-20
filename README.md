@@ -29,7 +29,29 @@ rules in [`firestore.rules`](firestore.rules)) and **Firebase Hosting** (family 
 
 ## Features
 Voice assistant (messages and email by notification, reminders with exact alarms, calendar, web questions, call/open apps) · "What does this say?" camera reader ·
-daily check-in · **dock mode** (USB-C code for the dock included, tested with a simulated port only; big animated face, voice through the dock, optional on-device presence detection with MediaPipe that asks "are you okay?" if it stops seeing you after a conversation; no images are stored or sent) · · consent-based family circle with a code · SOS · big-key dialer · optional caller announcement · animated face · widgets · Spanish and English UI **and voice** (commands, spoken answers, speech recognition and AI prompts follow the app language).
+daily check-in · **dock mode** (USB-C code for the dock included, unit-tested against a simulated port only; big animated face, voice through the dock, optional on-device presence detection with MediaPipe that asks "are you okay?" if it stops seeing you after a conversation; no images are stored or sent) · consent-based family circle with a code · SOS · big-key dialer · optional caller announcement · widgets · Spanish and English UI **and voice** (commands, spoken answers, speech recognition and AI prompts follow the app language).
+
+## How it is organised
+- **UI:** Jetpack Compose, one activity per screen, shared components in [`Componentes.kt`](app/src/main/java/com/aidly/app/Componentes.kt); high contrast, large type that scales to 200 %, Android 15 edge-to-edge handled in [`Tema.kt`](app/src/main/java/com/aidly/app/Tema.kt).
+- **Voice pipeline:** speech recognition (Gemini when the cloud is on, the system recognizer otherwise) → [`Agente.kt`](app/src/main/java/com/aidly/app/Agente.kt) routes the sentence using the per-language vocabulary in [`Lexico.kt`](app/src/main/java/com/aidly/app/Lexico.kt) → local rules → on-device or cloud model only when rules are not enough → text to speech in the app language. A safety gate in the medicine validators refuses to give dosing advice and points to a professional.
+- **Languages:** Spanish and English share the same code paths. Per-language settings live in [`idiomas.json`](app/src/main/assets/config/idiomas.json) and the `values` / `values-en` string resources.
+- **Dock (prototype):** [`dock/PROTOCOLO.md`](dock/PROTOCOLO.md) defines a small text protocol over USB serial; [`ProtocoloDock.kt`](app/src/main/java/com/aidly/app/ProtocoloDock.kt) and [`DockUsb.kt`](app/src/main/java/com/aidly/app/DockUsb.kt) implement the phone side. The attentive-companion rules (ask "are you okay?" after a silence, never detect falls) are a pure state machine in [`CompaniaAtenta.kt`](app/src/main/java/com/aidly/app/CompaniaAtenta.kt) with unit tests.
+
+## What has and has not been verified
+| Area | Status |
+|---|---|
+| Unit tests (attentive-companion state machine, dock protocol) | Passing (`./gradlew testDebugUnitTest`) |
+| All screens, Spanish and English, normal and 200 % type, Android 15 emulator | Reviewed with screenshots; accessibility tree checked for unnamed or tiny touch targets |
+| Voice routing | 25 English generated audio files route correctly through the real pipeline on the emulator (`pruebas/correr_audios.ps1 -Idioma en`); the Spanish suite predates the bilingual rewrite and is being re-run (free-tier quota) |
+| Cloud features (Gemini via Firebase AI Logic, App Check, Firestore family circle) | Exercised on the emulator against the real Firebase project; subject to free-tier quotas |
+| **Gemini Nano on a real phone** | **Not yet verified.** The emulator has no AICore, so the app shows the "rules / cloud" fallback there |
+| Camera presence detection (MediaPipe) frame rate, heat and battery | Not yet measured on a physical phone |
+| Call announcer (Android 10+ call-screening role) | Not testable on the emulator image used |
+| TalkBack walkthrough, USB audio and the dock hardware | Not yet verified; the dock is a design prototype |
+
+## Test build and family page
+A debug APK for judges will be linked from the Devpost submission. It uses the debug App Check provider.
+The family page is served from Firebase Hosting at https://aidly-d108b.web.app (enter the code shown in the app under "My family").
 
 ## Privacy
 [`docs/PRIVACY.md`](docs/PRIVACY.md) (ES/EN), [`docs/PRIVACY_DATA_FLOW.md`](docs/PRIVACY_DATA_FLOW.md) (every data flow and its source file) and
