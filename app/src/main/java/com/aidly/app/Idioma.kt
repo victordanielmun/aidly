@@ -48,7 +48,12 @@ object Idioma {
     fun fijar(ctx: Context, id: String) = prefs(ctx).edit().putString("idioma", id).apply()
 
     /** Idioma efectivo: preferencia, idioma del sistema, pais del SIM, predeterminado. */
-    fun resolver(ctx: Context): String {
+    /** Ultimo idioma resuelto: lo leen los textos habladas que no tienen contexto a mano (por ejemplo la descripcion de una hora). */
+    @Volatile var ultimo: String = "es"
+
+    fun resolver(ctx: Context): String = calcular(ctx).also { ultimo = it }
+
+    private fun calcular(ctx: Context): String {
         val d = datos(ctx)
         val existentes = d.getJSONObject("idiomas")
         preferido(ctx).takeIf { it.isNotEmpty() && existentes.has(it) }?.let { return it }
@@ -121,11 +126,51 @@ object Idioma {
         }
     }
 
-    /** Texto para la VOZ: hoy siempre en espanol (nivel B), aunque la pantalla este en otro idioma. */
+    /** Texto para la VOZ: en el idioma efectivo de la app (espanol o ingles; la voz sigue al idioma de la pantalla). */
     fun vozTexto(ctx: Context, @androidx.annotation.StringRes id: Int, vararg args: Any): String {
         val cfg = Configuration(ctx.resources.configuration)
-        cfg.setLocale(Locale("es"))
+        cfg.setLocale(locale(ctx))
         return ctx.createConfigurationContext(cfg).getString(id, *args)
+    }
+
+    // ---------- Voz por idioma (idiomas.<id>.voz del JSON) ----------
+
+    private fun vozCfg(ctx: Context): JSONObject = config(ctx).getJSONObject("voz")
+
+    /** Pone en el TextToSpeech la primera voz disponible de la lista del idioma y su velocidad. Devuelve el idioma usado, o null. */
+    fun aplicarVoz(ctx: Context, tts: android.speech.tts.TextToSpeech): Locale? {
+        val tt = vozCfg(ctx).getJSONObject("tts")
+        val arr = tt.getJSONArray("locales_preferidos")
+        for (i in 0 until arr.length()) {
+            val loc = Locale.forLanguageTag(arr.getString(i))
+            val r = tts.setLanguage(loc)
+            if (r != android.speech.tts.TextToSpeech.LANG_MISSING_DATA && r != android.speech.tts.TextToSpeech.LANG_NOT_SUPPORTED) {
+                tts.setSpeechRate(tt.optDouble("velocidad", 1.0).toFloat())
+                tts.setPitch(tt.optDouble("tono", 1.0).toFloat())
+                return loc
+            }
+        }
+        return null
+    }
+
+    /** Idiomas a probar con el reconocedor del sistema (null = el del telefono). */
+    fun sttCadena(ctx: Context): List<String?> {
+        val a = vozCfg(ctx).getJSONObject("stt").getJSONArray("cadena_idiomas")
+        return (0 until a.length()).map { if (a.isNull(it)) null else a.getString(it) }
+    }
+
+    /** Nombre del idioma para la instruccion de Gemini ("Spanish" / "English"). */
+    fun geminiIdioma(ctx: Context): String = vozCfg(ctx).getJSONObject("stt").optString("gemini_idioma", "English")
+
+    /** Palabras de si / no / si mal oido del idioma, ya normalizadas (minusculas, sin acentos). */
+    fun palabrasVoz(ctx: Context, clave: String): Set<String> {
+        val a = vozCfg(ctx).getJSONObject("stt").getJSONArray(clave)
+        return (0 until a.length()).map { a.getString(it).lowercase(Locale.ROOT) }.toSet()
+    }
+
+    fun frasesContexto(ctx: Context): List<String> {
+        val a = vozCfg(ctx).getJSONObject("stt").getJSONArray("frases_contexto")
+        return (0 until a.length()).map { a.getString(it) }
     }
 
     /** Saludo segun la hora (del JSON: `saludos`). */

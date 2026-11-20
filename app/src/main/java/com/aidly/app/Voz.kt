@@ -18,7 +18,7 @@ class Voz(ctx: Context) {
     init {
         tts = TextToSpeech(ctx.applicationContext) { st ->
             if (st != TextToSpeech.SUCCESS) { SpikeLog.log("VOZ: fallo init TTS ($st)"); return@TextToSpeech }
-            tts?.setLanguage(Locale("es", "MX"))
+            tts?.let { Idioma.aplicarVoz(ctx, it) }
             tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                 override fun onStart(id: String?) {}
                 override fun onDone(id: String?) { main.post { callbacks.remove(id)?.invoke() } }

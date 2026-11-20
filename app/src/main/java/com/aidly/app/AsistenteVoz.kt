@@ -20,6 +20,11 @@ object AsistenteVoz {
 
     class Respuesta(val texto: String, val fuente: String, val ms: Long)
 
+    private const val SISTEMA_EN =
+        "You are Aidly, a kind companion for an older adult. Answer in English with short, simple sentences (maximum 3), " +
+            "no jargon, lists or emojis. If they ask about health, give general information and recommend consulting their doctor. " +
+            "If you do not know something, say so honestly."
+
     private const val SISTEMA =
         "Eres Aidly, un companero amable para una persona mayor. Responde en espanol, con frases cortas y " +
             "sencillas (maximo 3), sin tecnicismos ni listas ni emojis. Si preguntan algo de salud, da " +
@@ -40,15 +45,16 @@ object AsistenteVoz {
             },
         )
 
-    suspend fun responder(pregunta: String): Respuesta {
+    suspend fun responder(ctx: android.content.Context, pregunta: String): Respuesta {
+        val en = Idioma.resolver(ctx) == "en"
         val t0 = System.currentTimeMillis()
         // Nube apagada: solo Gemini Nano en el telefono (lanza excepcion si no hay).
         val model = if (Privacidad.nubeActiva()) modelHibrido else modelLocal
         val r = withTimeout(30_000) {
-            model.generateContent("$SISTEMA\n\nLa persona dice: $pregunta\n\nTu respuesta:")
+            model.generateContent(if (en) "$SISTEMA_EN\n\nThe person says: $pregunta\n\nYour answer:" else "$SISTEMA\n\nLa persona dice: $pregunta\n\nTu respuesta:")
         }
         val ms = System.currentTimeMillis() - t0
-        val texto = r.text?.trim().orEmpty().ifBlank { "No supe que responderte. Puedes preguntarme de otra forma?" }
+        val texto = r.text?.trim().orEmpty().ifBlank { if (en) "I did not know what to answer. Could you ask me in another way?" else "No supe que responderte. Puedes preguntarme de otra forma?" }
         SpikeLog.log("HABLAR: fuente=${r.inferenceSource} $ms ms | pregunta='$pregunta' | respuesta='${texto.take(160)}'")
         return Respuesta(texto, r.inferenceSource.toString(), ms)
     }

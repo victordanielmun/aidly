@@ -38,7 +38,14 @@ object Agenda {
     )
 
     suspend fun interpretar(frase: String, ahora: Long = System.currentTimeMillis()): Evento? {
-        val prompt =
+        val prompt = if (Idioma.ultimo == "en")
+            "Convert a spoken request to schedule an appointment into data. Current date and time: ${Interprete.contexto(ahora)}. " +
+                "The person said: \"$frase\". " +
+                "Reply ONLY with a JSON object with: entendido, titulo, hora, fecha, duracion_min, lugar. " +
+                "Rules: 'on Tuesday' means the next Tuesday; 'tomorrow' is the day after today. " +
+                "'10 in the morning' is 10:00 and '4 in the afternoon' is 16:00. If they say a time with no am/pm, use the next future occurrence. " +
+                "The title is in English, starts with a capital letter and does not include 'schedule' (for example 'Doctor appointment'). If the time is missing, entendido=false."
+        else
             "Convierte una peticion hablada de agendar una cita en datos. Fecha y hora actuales: ${Interprete.contexto(ahora)}. " +
                 "La persona dijo: \"$frase\". " +
                 "Responde SOLO un objeto JSON con: entendido, titulo, hora, fecha, duracion_min, lugar. " +
@@ -105,7 +112,7 @@ object Agenda {
         val minutos = Idioma.inicial(ctx).getJSONObject("recordatorios").optJSONArray("aviso_previo_cita_min")
         val lista = (0 until (minutos?.length() ?: 0)).map { minutos!!.getLong(it) }.ifEmpty { listOf(60L, 10L) }
         val antes = lista.map { e.inicio - it * 60_000 }.firstOrNull { it > ahora + 60_000 } ?: return null
-        return Recordatorios.Item(UUID.randomUUID().toString(), "ir a ${e.titulo.replaceFirstChar { it.lowercase() }}", Recordatorios.Tipo.GENERAL, antes, 0)
+        return Recordatorios.Item(UUID.randomUUID().toString(), (if (Idioma.ultimo == "en") "go to " else "ir a ") + e.titulo.replaceFirstChar { it.lowercase() }, Recordatorios.Tipo.GENERAL, antes, 0)
     }
 
     /** Citas entre [desde] y [hasta] del calendario del telefono, ordenadas. Vacio si no hay permiso. */
@@ -123,7 +130,7 @@ object Agenda {
             )?.use { c ->
                 while (c.moveToNext()) {
                     if (c.getInt(4) == 1) continue          // dias festivos y cumpleanos de todo el dia suelen ser ruido
-                    lista += Evento(c.getString(0).orEmpty().ifBlank { "Evento" }, c.getLong(1), c.getLong(2), c.getString(3).orEmpty())
+                    lista += Evento(c.getString(0).orEmpty().ifBlank { if (Idioma.ultimo == "en") "Event" else "Evento" }, c.getLong(1), c.getLong(2), c.getString(3).orEmpty())
                 }
             }
         } catch (ex: Exception) {
@@ -133,15 +140,16 @@ object Agenda {
     }
 
     /** Limites [inicio, fin) del dia que se pide: hoy, manana, o los proximos 7 dias. */
-    fun rango(n: String, ahora: Long = System.currentTimeMillis()): Triple<Long, Long, String> {
+    fun rango(ctx: Context, n: String, ahora: Long = System.currentTimeMillis()): Triple<Long, Long, String> {
+        val en = Idioma.resolver(ctx) == "en"
         fun diaDesde(offset: Int) = Calendar.getInstance().apply {
             timeInMillis = ahora; add(Calendar.DAY_OF_MONTH, offset)
             set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
         }.timeInMillis
         return when {
-            "semana" in n -> Triple(ahora, diaDesde(7), "en los próximos siete días")
-            "manana" in n -> Triple(diaDesde(1), diaDesde(2), "mañana")
-            else -> Triple(ahora, diaDesde(1), "hoy")
+            "semana" in n || "week" in n -> Triple(ahora, diaDesde(7), if (en) "in the next seven days" else "en los próximos siete días")
+            "manana" in n || "tomorrow" in n -> Triple(diaDesde(1), diaDesde(2), if (en) "tomorrow" else "mañana")
+            else -> Triple(ahora, diaDesde(1), if (en) "today" else "hoy")
         }
     }
 }

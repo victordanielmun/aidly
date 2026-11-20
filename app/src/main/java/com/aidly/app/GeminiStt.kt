@@ -28,7 +28,7 @@ object GeminiStt {
     private const val MAX_FRAMES = 100            // 10 s maximo hablando
     private const val CLOUD_MODEL = "gemini-3.5-flash-lite"
 
-    private const val PROMPT =
+    private const val PROMPT_ES =
         "Transcribe en espanol lo que dice la persona. Usa puntuacion y mayusculas correctas, " +
             "sin anadir ni cambiar palabras. Responde solo con la transcripcion. " +
             "Contexto: es una persona mayor hablando con su asistente de voz; suelen ser frases cortas " +
@@ -41,27 +41,38 @@ object GeminiStt {
     }
 
     /** Devuelve el texto, o null si no hubo voz. Lanza excepcion si falla el microfono o la nube. */
-    suspend fun escuchar(): String? {
+    suspend fun escuchar(ctx: android.content.Context): String? {
         Privacidad.exigirNube()
         val pcm = withContext(Dispatchers.IO) { grabarFrase() } ?: return null
-        return transcribirWav(SttCompare.wav(pcm), pcm.size / 32)
+        return transcribirWav(ctx, SttCompare.wav(pcm), pcm.size / 32)
+    }
+
+    /** Instruccion de transcripcion en el idioma de la app (la lista de frases de ejemplo sale del JSON de idiomas). */
+    private fun prompt(ctx: android.content.Context): String {
+        if (Idioma.resolver(ctx) == "es") return PROMPT_ES
+        val ejemplos = Idioma.frasesContexto(ctx).joinToString(", ") { "'$it'" }
+        return "Transcribe in ${Idioma.geminiIdioma(ctx)} what the person says. Use correct punctuation and capitalization, " +
+            "without adding or changing words. Reply only with the transcription. " +
+            "Context: an older adult speaking to their voice assistant; usually short phrases (for example: $ejemplos). " +
+            "If you are unsure between two words, choose the one that makes sense in that context. " +
+            "If there is no clear voice, reply exactly: (silence)"
     }
 
     /** Transcribe un WAV ya grabado (16 kHz mono PCM16). Lo usan las pruebas con audios sinteticos. */
-    suspend fun transcribirWav(wav: ByteArray, duracionMs: Int = 0): String? {
+    suspend fun transcribirWav(ctx: android.content.Context, wav: ByteArray, duracionMs: Int = 0): String? {
         Privacidad.exigirNube()
         val t0 = System.currentTimeMillis()
         val r = withTimeout(30_000) {
             model.generateContent(
                 content {
                     inlineData(wav, "audio/wav")
-                    text(PROMPT)
+                    text(prompt(ctx))
                 },
             )
         }
         val texto = r.text?.trim().orEmpty()
         SpikeLog.log("GEMINI STT: nube ${System.currentTimeMillis() - t0} ms, audio $duracionMs ms")
-        return if (texto.isBlank() || texto.contains("(silencio)", ignoreCase = true)) null else texto
+        return if (texto.isBlank() || texto.contains("(silencio)", ignoreCase = true) || texto.contains("(silence)", ignoreCase = true)) null else texto
     }
 
     private fun rms(b: ByteArray): Double {

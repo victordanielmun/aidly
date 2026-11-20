@@ -97,7 +97,7 @@ private fun HablarScreen(voz: Voz, cerrar: () -> Unit) {
         paso = Paso.ESCUCHANDO; pregunta = ""; respuesta = ""; motorFuente = ""; motorMs = 0L
         withTimeoutOrNull(20_000) { voz.decirYEsperar("Dime, te escucho.") }
 
-        val q = try { if (Privacidad.nubeActiva()) GeminiStt.escuchar() else EscuchaSistema.escuchar(ctx) } catch (e: Exception) {
+        val q = try { if (Privacidad.nubeActiva()) GeminiStt.escuchar(ctx) else EscuchaSistema.escuchar(ctx) } catch (e: Exception) {
             SpikeLog.log("HABLAR: fallo al escuchar (${e::class.simpleName}: ${e.message})"); null
         }
         if (q == null) {

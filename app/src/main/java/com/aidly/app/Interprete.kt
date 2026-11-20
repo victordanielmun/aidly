@@ -73,7 +73,8 @@ object Interprete {
 
     /** "Ahora es jueves 19 de noviembre de 2026, 14:35 (zona America/Mexico_City)" para el prompt. */
     fun contexto(ahora: Long): String =
-        SimpleDateFormat("EEEE d 'de' MMMM 'de' yyyy, HH:mm", Locale("es", "MX")).format(Date(ahora)) +
+        if (Idioma.ultimo == "en") SimpleDateFormat("EEEE, MMMM d, yyyy, HH:mm", Locale.US).format(Date(ahora)) + " (timezone ${TimeZone.getDefault().id})"
+        else SimpleDateFormat("EEEE d 'de' MMMM 'de' yyyy, HH:mm", Locale("es", "MX")).format(Date(ahora)) +
             " (zona ${TimeZone.getDefault().id})"
 
     /**

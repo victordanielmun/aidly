@@ -179,12 +179,18 @@ object Recordatorios {
         val c = Calendar.getInstance().apply { timeInMillis = it.proxima }
         val hoy = Calendar.getInstance().apply { timeInMillis = ahora }
         val dias = diasEntre(hoy, c)
+        val en = Idioma.ultimo == "en"
         val dia = when (dias) {
-            0 -> "hoy"; 1 -> "mañana"
-            else -> "el ${c.get(Calendar.DAY_OF_MONTH)} de ${MESES[c.get(Calendar.MONTH)]}"
+            0 -> if (en) "today" else "hoy"; 1 -> if (en) "tomorrow" else "mañana"
+            else -> if (en) "on ${MESES_EN[c.get(Calendar.MONTH)]} ${c.get(Calendar.DAY_OF_MONTH)}" else "el ${c.get(Calendar.DAY_OF_MONTH)} de ${MESES[c.get(Calendar.MONTH)]}"
         }
         val hora = horaHablada(c)
-        return when {
+        return if (en) when {
+            it.cadaMin == 1440L -> "every day at $hora"
+            it.cadaMin > 0 && it.cadaMin % 60 == 0L -> "every ${it.cadaMin / 60} hours, the first time $dia at $hora"
+            it.cadaMin > 0 -> "every ${it.cadaMin} minutes, the first time $dia at $hora"
+            else -> "$dia at $hora"
+        } else when {
             it.cadaMin == 1440L -> "todos los días $hora"
             it.cadaMin > 0 && it.cadaMin % 60 == 0L -> "cada ${it.cadaMin / 60} horas, la primera vez $dia $hora"
             it.cadaMin > 0 -> "cada ${it.cadaMin} minutos, la primera vez $dia $hora"
@@ -192,6 +198,7 @@ object Recordatorios {
         }
     }
 
+    private val MESES_EN = listOf("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
     private val MESES = listOf("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre")
 
     private fun diasEntre(a: Calendar, b: Calendar): Int {
@@ -206,6 +213,7 @@ object Recordatorios {
         val h = c.get(Calendar.HOUR_OF_DAY)
         val m = c.get(Calendar.MINUTE)
         val h12 = when { h == 0 -> 12; h > 12 -> h - 12; else -> h }
+        if (Idioma.ultimo == "en") return (if (m == 0) "$h12" else "$h12:${m.toString().padStart(2, '0')}") + if (h < 12) " AM" else " PM"
         val periodo = when {
             h in 0..5 -> "de la madrugada"; h in 6..11 -> "de la mañana"; h == 12 -> "del día"
             h in 13..18 -> "de la tarde"; else -> "de la noche"
@@ -234,11 +242,20 @@ object Recordatorios {
      */
     suspend fun interpretar(frase: String, ahora: Long = System.currentTimeMillis()): Item? {
         // Primero las reglas locales: instantaneas, sin red y sin depender de que el modelo este disponible.
-        ParserLocal.recordatorio(frase, ahora)?.let {
+        val reglas = if (Idioma.ultimo == "en") ParserLocalEn.recordatorio(frase, ahora) else ParserLocal.recordatorio(frase, ahora)
+        reglas?.let {
             SpikeLog.log("RECORDATORIO: entendido por reglas locales (sin red): '${it.texto}' ${describir(it, ahora)}")
             return it
         }
-        val prompt =
+        val prompt = if (Idioma.ultimo == "en")
+            "Convert a spoken reminder request into data. Current date and time: ${Interprete.contexto(ahora)}. " +
+                "The person said: \"$frase\". " +
+                "Reply ONLY with a JSON object with: entendido, texto, tipo, hora, fecha, en_minutos, cada_horas. " +
+                "Rules: texto is the task in the infinitive without 'remind me to' (for example 'take your blood pressure pill'), in English, addressed to the person (use 'your', never 'my'). " +
+                "If they say a time with no am/pm (for example 'at 8'), use the next future occurrence. " +
+                "'8 in the evening' is 20:00. 'every day' is cada_horas 24. 'every 8 hours' is cada_horas 8. " +
+                "If you cannot tell when to remind, entendido=false."
+        else
             "Convierte una peticion hablada de recordatorio en datos. Fecha y hora actuales: ${Interprete.contexto(ahora)}. " +
                 "La persona dijo: \"$frase\". " +
                 "Responde SOLO un objeto JSON con: entendido, texto, tipo, hora, fecha, en_minutos, cada_horas. " +

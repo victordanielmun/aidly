@@ -86,7 +86,7 @@ class MainActivity : ActividadAidly() {
                         val privado = java.io.File(filesDir, "audio/$n")
                         val externo = java.io.File(getExternalFilesDir(null), "audio/$n")
                         val bytes = (if (privado.exists()) privado else externo).readBytes()
-                        val oido = GeminiStt.transcribirWav(bytes, (bytes.size - 44) / 32)
+                        val oido = GeminiStt.transcribirWav(this@MainActivity, bytes, (bytes.size - 44) / 32)
                         SpikeLog.log("AUDIO $n oido='${oido ?: "(silencio)"}'")
                         if (oido != null) {
                             val r = Agente.procesar(this@MainActivity, oido)
@@ -101,7 +101,7 @@ class MainActivity : ActividadAidly() {
         }
         // --es parseLocal "frase1|frase2|...": prueba el interprete local de recordatorios (sin guardar nada).
         intent.getStringExtra("parseLocal")?.split("|")?.forEach { f ->
-            val it = ParserLocal.recordatorio(f)
+            val it = if (Idioma.resolver(this) == "en") ParserLocalEn.recordatorio(f) else ParserLocal.recordatorio(f)
             SpikeLog.log("PARSER '$f' -> " + (it?.let { r -> "[${r.tipo}] '${r.texto}' ${Recordatorios.describir(r)} (cada ${r.cadaMin} min)" } ?: "no entendido (iria al modelo)"))
         }
         // --es probarModelos "a,b,c": consulta cada modelo con una frase trivial y registra si responde y cuanto tarda.
@@ -127,6 +127,8 @@ class MainActivity : ActividadAidly() {
                 claves.forEach { k -> p.getString(k, null)?.let { SpikeLog.log("CIFRADO $a.$k: " + (if (Cifrado.existe(it)) "cifrado" else "EN CLARO") + " (${it.length} car.)") } }
             }
         }
+        // --es idioma es|en|auto: cambia el idioma de la app y de la voz para las pruebas.
+        intent.getStringExtra("idioma")?.let { Idioma.fijar(this, if (it == "auto") "" else it) }
         // --ez nube true|false: enciende o apaga la nube de Privacidad (las pruebas con voz la necesitan encendida).
         if (intent.hasExtra("nube")) Privacidad.fijarNube(this, intent.getBooleanExtra("nube", false))
         intent.getStringExtra("frase")?.let { f ->

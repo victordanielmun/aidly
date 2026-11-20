@@ -18,12 +18,11 @@ import kotlin.coroutines.resume
  * (por eso la pantalla de Privacidad lo dice).
  */
 object EscuchaSistema {
-    private val IDIOMAS = listOf("es-MX", "es-419", "es-ES")
 
     /** Devuelve el texto o null si no hubo voz o no hay reconocedor. */
     suspend fun escuchar(ctx: Context): String? {
         if (!SpeechRecognizer.isRecognitionAvailable(ctx)) return null
-        for (idioma in IDIOMAS) {
+        for (idioma in Idioma.sttCadena(ctx).filterNotNull().ifEmpty { listOf(Idioma.locale(ctx).toLanguageTag()) }) {
             when (val r = una(ctx.applicationContext, idioma)) {
                 is Resultado.Texto -> return r.valor
                 Resultado.SinVoz -> return null

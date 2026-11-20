@@ -90,8 +90,8 @@ class AidlyService : Service() {
         tts = TextToSpeech(this) { status ->
             ttsReady = status == TextToSpeech.SUCCESS
             if (!ttsReady) { SpikeLog.log("TTS fallo init status=$status"); return@TextToSpeech }
-            val r = tts?.setLanguage(Locale("es", "MX"))
-            SpikeLog.log("TTS listo, idioma es-MX resultado=$r")
+            val r = tts?.let { Idioma.aplicarVoz(this, it) }
+            SpikeLog.log("TTS listo, idioma $r")
             tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                 override fun onStart(id: String?) {}
                 override fun onDone(id: String?) {
@@ -130,6 +130,7 @@ class AidlyService : Service() {
 
     /** Escucha con una cadena de idiomas: el error 12 (idioma no soportado) pasa al siguiente. */
     private fun listen(langIdx: Int = goodLangIdx) {
+        val LANGS = Idioma.sttCadena(this)
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
             SpikeLog.log("STT no disponible en este telefono"); endConvo(); return
         }
@@ -197,7 +198,7 @@ class AidlyService : Service() {
             delay(350)
             SpikeLog.log("GEMINI STT: escuchando...")
             try {
-                val texto = GeminiStt.escuchar()
+                val texto = GeminiStt.escuchar(this@AidlyService)
                 if (step != paso) return@launch          // la conversacion cambio mientras tanto
                 SpikeLog.log("GEMINI STT oyo: ${texto ?: "(sin voz)"}")
                 if (texto == null) reintentar() else oyo(listOf(texto), gemini = true)
@@ -220,7 +221,7 @@ class AidlyService : Service() {
             cola.addLast(c); SpikeLog.log("Ocupado: encolo mensaje de ${c.sender} (${cola.size} en cola)"); return
         }
         convo = c; step = Step.ASK_READ; retries = 0; serverRetries = 0
-        say("${c.sender} te escribio. Quieres que te lo lea?") { escuchar() }
+        say(Idioma.vozTexto(this, R.string.v_te_escribio, c.sender)) { escuchar() }
     }
 
     private fun oyo(alternativas: List<String>, gemini: Boolean = false) {
@@ -228,11 +229,11 @@ class AidlyService : Service() {
         when (step) {
             Step.ASK_READ -> when (intento(alternativas)) {
                 Intento.SI -> {
-                    say("${c.sender} dice: ${c.text}")
-                    if (c.reply != null) { avanzar(Step.ASK_REPLY); say("Quieres responder?") { escuchar() } }
-                    else endConvo("Eso es todo.")
+                    say(Idioma.vozTexto(this, R.string.v_dice, c.sender, c.text))
+                    if (c.reply != null) { avanzar(Step.ASK_REPLY); say(Idioma.vozTexto(this, R.string.v_quieres_responder)) { escuchar() } }
+                    else endConvo(Idioma.vozTexto(this, R.string.v_eso_es_todo))
                 }
-                Intento.NO -> endConvo("Esta bien, lo dejamos para despues.")
+                Intento.NO -> endConvo(Idioma.vozTexto(this, R.string.v_lo_dejamos))
                 Intento.NADA -> reintentar()
             }
             Step.ASK_REPLY -> {
@@ -240,27 +241,27 @@ class AidlyService : Service() {
                 val inline = respuestaInline(alternativas, gemini)
                 if (inline != null) {
                     dictated = inline; avanzar(Step.CONFIRM)
-                    say("Dijiste: $dictated. La envio?") { escuchar() }
+                    say(Idioma.vozTexto(this, R.string.v_dijiste_envio, dictated)) { escuchar() }
                 } else when (intento(alternativas)) {
-                    Intento.SI -> { avanzar(Step.DICTATE); say("Dime tu respuesta, te escucho.") { escuchar() } }
-                    Intento.NO -> endConvo("Esta bien, no respondo.")
+                    Intento.SI -> { avanzar(Step.DICTATE); say(Idioma.vozTexto(this, R.string.v_dime_respuesta)) { escuchar() } }
+                    Intento.NO -> endConvo(Idioma.vozTexto(this, R.string.v_no_respondo))
                     Intento.NADA -> reintentar()
                 }
             }
             Step.DICTATE -> {
                 dictated = alternativas.first().trim()
                 avanzar(Step.CONFIRM)
-                say("Dijiste: $dictated. La envio?") { escuchar() }
+                say(Idioma.vozTexto(this, R.string.v_dijiste_envio, dictated)) { escuchar() }
             }
             Step.CONFIRM -> when (intento(alternativas)) {
-                Intento.SI -> { enviar(c, dictated); endConvo("Listo, ya la envie.") }
-                Intento.NO -> { avanzar(Step.DICTATE); say("De acuerdo. Dime otra vez tu respuesta.") { escuchar() } }
+                Intento.SI -> { enviar(c, dictated); endConvo(Idioma.vozTexto(this, R.string.v_ya_envie)) }
+                Intento.NO -> { avanzar(Step.DICTATE); say(Idioma.vozTexto(this, R.string.v_otra_vez)) { escuchar() } }
                 Intento.NADA -> {
                     // Ni si ni no: lo mas probable es que este corrigiendo el texto ("dije buenas tardes").
                     val nueva = limpiarDictado(alternativas.first(), cortarComa = !gemini)
                     if (nueva.isNotBlank()) {
                         dictated = nueva; retries = 0
-                        say("Dijiste: $dictated. La envio?") { escuchar() }
+                        say(Idioma.vozTexto(this, R.string.v_dijiste_envio, dictated)) { escuchar() }
                     } else reintentar()
                 }
             }
@@ -272,14 +273,14 @@ class AidlyService : Service() {
 
     private fun reintentar() {
         if (step == Step.IDLE) return
-        if (++retries > 1) { endConvo("No te escuche bien. Lo dejamos para despues."); return }
+        if (++retries > 1) { endConvo(Idioma.vozTexto(this, R.string.v_no_escuche_dejamos)); return }
         say(
-            if (step == Step.DICTATE) "No te escuche. Dime tu respuesta otra vez."
-            else "No te escuche. Di si o no.",
+            if (step == Step.DICTATE) Idioma.vozTexto(this, R.string.v_no_escuche_respuesta)
+            else Idioma.vozTexto(this, R.string.v_no_escuche_si_no),
         ) { escuchar() }
     }
 
-    private fun fallo() = endConvo("Tuve un problema con el microfono.")
+    private fun fallo() = endConvo(Idioma.vozTexto(this, R.string.v_problema_micro))
 
     private fun endConvo(despedida: String? = null) {
         step = Step.IDLE; convo = null; retries = 0
@@ -306,10 +307,10 @@ class AidlyService : Service() {
     private fun intento(alts: List<String>): Intento {
         for (a in alts) {
             val tokens = normalizar(a).split(Regex("\\s+"))
-            if (tokens.any { it in NO }) return Intento.NO
-            if (tokens.any { it in SI }) return Intento.SI
+            if (tokens.any { it in Idioma.palabrasVoz(this, "palabras_no") }) return Intento.NO
+            if (tokens.any { it in Idioma.palabrasVoz(this, "palabras_si") }) return Intento.SI
             // El reconocedor a veces oye "si" como "se"/"ci": solo se acepta en respuestas de 1-2 palabras.
-            if (tokens.size <= 2 && tokens.any { it in SI_MAL_OIDO }) return Intento.SI
+            if (tokens.size <= 2 && tokens.any { it in Idioma.palabrasVoz(this, "si_mal_oido") }) return Intento.SI
         }
         return Intento.NADA
     }
@@ -317,7 +318,7 @@ class AidlyService : Service() {
     /** "Contestale buenas tardes" -> "buenas tardes". Devuelve null si no hay texto despues del verbo. */
     private fun respuestaInline(alts: List<String>, gemini: Boolean = false): String? {
         for (a in alts) {
-            val m = INLINE.find(a) ?: continue
+            val m = (if (Idioma.resolver(this) == "en") INLINE_EN else INLINE).find(a) ?: continue
             val t = limpiarDictado(m.groupValues[2], cortarComa = !gemini)
             if (t.isNotBlank()) return t
         }
@@ -399,15 +400,12 @@ class AidlyService : Service() {
         const val EXTRA_REPLY = "reply_action"
 
         private const val ERROR_SERVER_DISCONNECTED = 11
-
-        // Primero el idioma del sistema (null): en el A23 es el unico que funciona. El resto, de respaldo.
-        private val LANGS = listOf(null, "es-MX", "es-419", "es-ES")
+        private val INLINE_EN = Regex(
+            "(?i)\\b(reply|answer|respond|tell(?: (?:him|her|them))?|say)\\b[\\s,:]+(?:(?:that|to (?:him|her|them))\\b[\\s,:]+)?(.+)",
+        )
         private val INLINE = Regex(
             "(?i)\\b(cont[eé]sta(?:le|la|lo)?|resp[oó]nd[eé](?:le|la|lo)?|d[ií]le|d[ií]les)\\b[\\s,:]+(.+)",
         )
-        private val SI = setOf("si", "claro", "dale", "ok", "okay", "vale", "lee", "leelo", "leemelo", "bueno", "afirmativo", "responde", "respondele", "contesta", "contestale", "envia", "enviala", "mandala")
-        private val SI_MAL_OIDO = setOf("se", "ci", "sii", "siii", "sip", "sisi")
-        private val NO = setOf("no", "nel", "luego", "despues", "cancela", "cancelar", "nada")
 
         fun start(
             ctx: Context,

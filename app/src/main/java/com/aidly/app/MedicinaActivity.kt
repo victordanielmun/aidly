@@ -162,7 +162,7 @@ private fun MedicinaScreen(voz: Voz) {
         scope.launch {
             try {
                 kotlinx.coroutines.withTimeoutOrNull(15_000) { voz.decirYEsperar("Dime tu pregunta.") }
-                val q = GeminiStt.escuchar()
+                val q = GeminiStt.escuchar(ctx)
                 if (q == null) {
                     respuestaMed = ctx.getString(R.string.hablar_error_escuchar)
                 } else {
