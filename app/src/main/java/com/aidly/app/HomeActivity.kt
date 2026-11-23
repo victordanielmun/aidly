@@ -99,6 +99,7 @@ private fun HomeScreen() {
     var accesoCalendario by remember { mutableStateOf(true) }
     var accesoContactos by remember { mutableStateOf(true) }
     var proximo by remember { mutableStateOf("") }
+    var paraTiLinea by remember { mutableStateOf("") }
     var saludoTexto by remember { mutableStateOf(saludo(ctx)) }
     var horaTexto by remember { mutableStateOf(horaAhora(ctx)) }
     // La hora se actualiza sola, al cambiar el minuto.
@@ -134,6 +135,7 @@ private fun HomeScreen() {
         Circulo.tocar(ctx)
         saludoTexto = saludo(ctx)
         proximo = proximoRecordatorio(ctx)
+        paraTiLinea = if (Intereses.cargar(ctx).elegidos.isEmpty()) "" else FeedTarjetas.rapido(ctx).tarjetas.firstOrNull()?.titulo.orEmpty()
         accesoCalendario = Agenda.tienePermiso(ctx)
         accesoContactos = ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
         companeroActivo = AidlyService.running
@@ -161,6 +163,7 @@ private fun HomeScreen() {
 
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 FilaAccion(Iconos.Pastilla, stringResource(R.string.home_medicina), stringResource(R.string.home_medicina_sub), amarilla = true) { abrir(MedicinaActivity::class.java) }
+                FilaAccion(Iconos.Estrella, stringResource(R.string.home_parati), paraTiLinea.ifBlank { stringResource(R.string.home_parati_sub) }) { abrir(ParaTiActivity::class.java) }
                 FilaAccion(Iconos.Campana, stringResource(R.string.home_recordatorios), proximo) { abrir(RecordatoriosActivity::class.java) }
                 FilaAccion(Iconos.Personas, stringResource(R.string.home_familia), stringResource(R.string.home_familia_sub)) { abrir(FamiliaActivity::class.java) }
                 FilaAccion(Iconos.Telefono, stringResource(R.string.home_marcar), stringResource(R.string.home_marcar_sub)) { abrir(MarcarActivity::class.java) }

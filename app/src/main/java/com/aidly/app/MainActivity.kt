@@ -69,15 +69,25 @@ class MainActivity : ActividadAidly() {
             try { Circulo.sincronizar(this@MainActivity); SpikeLog.log("CIRCULO prueba: sincronizado") }
             catch (e: Exception) { SpikeLog.log("CIRCULO prueba: error ${e::class.simpleName}: ${e.message}") }
         }
+        // --es paratiq "pregunta": conversa sobre la primera tarjeta de "Para ti" (registra la respuesta en el log).
+        intent.getStringExtra("paratiq")?.let { q ->
+            lifecycleScope.launch {
+                try {
+                    val t = FeedTarjetas.rapido(this@MainActivity).tarjetas.firstOrNull() ?: error("sin tarjetas")
+                    val r = AsistenteVoz.responderSobre(this@MainActivity, t, q)
+                    SpikeLog.log("PARATI prueba: tarjeta='${t.titulo}' | q='$q' | [${r.fuente}] ${r.texto}")
+                } catch (e: Exception) { SpikeLog.log("PARATI prueba: error ${e::class.simpleName}: ${e.message?.take(160)}") }
+            }
+        }
         intent.getStringExtra("feedsonda")?.let { v -> lifecycleScope.launch { FeedTarjetas.sonda(this@MainActivity, v) } }
         // --es feed "musica,cocina[,limpiar]" fija esos intereses y trae las tarjetas de "Para ti" (registra el resultado en el log).
         intent.getStringExtra("feed")?.let { csv ->
             lifecycleScope.launch {
                 try {
                     FeedTarjetas.modeloPrueba = intent.getStringExtra("feedmodelo")
-                    val ids = csv.split(",").map { it.trim() }.filter { it.isNotEmpty() && it != "limpiar" }
+                    val ids = csv.split(",").map { it.trim() }.filter { it.isNotEmpty() && it != "limpiar" && it != "propuestas" }
                     if ("limpiar" in csv) Intereses.cambiar(this@MainActivity) { Perfil() }
-                    Intereses.cambiar(this@MainActivity) { p -> ids.fold(p) { acc, id -> acc.conElegido(id, true) } }
+                    Intereses.cambiar(this@MainActivity) { p -> ids.fold(p) { acc, id -> acc.conElegido(id, true) }.conPropuestas("propuestas" in csv) }
                     val r = FeedTarjetas.obtener(this@MainActivity, forzar = true)
                     r.tarjetas.forEach { SpikeLog.log("FEED tarjeta [${it.tema}] ${it.titulo} | ${it.resumen} | ${it.fuente} ${it.fecha}") }
                     SpikeLog.log("FEED prueba: ${r.tarjetas.size} tarjetas en ${r.ms} ms")

@@ -62,4 +62,21 @@ object AsistenteVoz {
         SpikeLog.log("HABLAR: fuente=${r.inferenceSource} $ms ms | pregunta='$pregunta' | respuesta='${texto.take(160)}'")
         return Respuesta(texto, r.inferenceSource.toString(), ms)
     }
+
+    /** Conversacion sobre una tarjeta de "Para ti": el modelo ve la tarjeta y responde corto. No busca en internet (usa el modelo del telefono si existe). */
+    suspend fun responderSobre(ctx: android.content.Context, tarjeta: Tarjeta, pregunta: String): Respuesta {
+        val en = Idioma.resolver(ctx) == "en"
+        val t0 = System.currentTimeMillis()
+        val model = if (Privacidad.nubeActiva()) modelHibrido else modelLocal
+        val contexto = if (en) "Card we are looking at: \"${tarjeta.titulo}\". ${tarjeta.resumen} (source: ${tarjeta.fuente}). Answer only about this card and general knowledge; if you do not know, say so."
+        else "Tarjeta que estamos viendo: \"${tarjeta.titulo}\". ${tarjeta.resumen} (fuente: ${tarjeta.fuente}). Responde solo sobre esta tarjeta y conocimiento general; si no sabes, dilo."
+        val r = withTimeout(40_000) {
+            model.generateContent(if (en) "$SISTEMA_EN\n\n$contexto\n\nThe person says: $pregunta\n\nYour answer:" else "$SISTEMA\n\n$contexto\n\nLa persona dice: $pregunta\n\nTu respuesta:")
+        }
+        val ms = System.currentTimeMillis() - t0
+        val texto = r.text?.trim().orEmpty().ifBlank { if (en) "I did not know what to answer. Could you ask me in another way?" else "No supe que responderte. Puedes preguntarme de otra forma?" }
+        SpikeLog.log("PARATI: fuente=${r.inferenceSource} $ms ms | pregunta='$pregunta' | respuesta='${texto.take(160)}'")
+        return Respuesta(texto, r.inferenceSource.toString(), ms)
+    }
 }
+

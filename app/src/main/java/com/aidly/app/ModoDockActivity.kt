@@ -37,6 +37,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -165,6 +166,9 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
         if (Privacidad.nubeActiva()) GeminiStt.escuchar(ctx) else EscuchaSistema.escuchar(ctx)
     } catch (e: Exception) { SpikeLog.log("DOCK: no pude escuchar (${e::class.simpleName})"); null }
 
+    val politica = remember { PoliticaOfertas() }
+    var ultimaHabla by remember { mutableLongStateOf(System.currentTimeMillis()) }
+
     // ---- Una conversacion: te escucho -> pienso -> hablo ----
     suspend fun turno() {
         if (ocupado || !permisoMic) return
@@ -174,7 +178,7 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
             withTimeoutOrNull(20_000) { voz.decirYEsperar(Idioma.vozTexto(ctx, R.string.v_dime_te_escucho)) }
             val q = escuchar()
             if (q == null) { paso = PasoD.REPOSO; dicho = ctx.getString(R.string.hablar_error_escuchar); return }
-            compania.interaccion(System.currentTimeMillis())
+            compania.interaccion(System.currentTimeMillis()); ultimaHabla = System.currentTimeMillis()
             paso = PasoD.PENSANDO
             val r = try { Agente.procesar(ctx, q) } catch (e: Exception) { null }
             if (r == null) { paso = PasoD.REPOSO; dicho = ctx.getString(R.string.hablar_error_responder); return }
@@ -217,6 +221,58 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
                 withTimeoutOrNull(15_000) { voz.decirYEsperar(dicho) }
             }
         } finally { paso = PasoD.REPOSO; ocupado = false; compania.terminoDePreguntar(System.currentTimeMillis()) }
+    }
+
+    // ---- "Para ti": con permiso de la persona, ofrece algo de su gusto cuando esta cerca y en reposo ----
+
+    suspend fun ofrecerParaTi() {
+        if (ocupado || !permisoMic) return
+        val perfil = Intereses.cargar(ctx)
+        val tarjeta = FeedTarjetas.rapido(ctx).tarjetas.firstOrNull { !perfil.haVisto(it.titulo) } ?: return
+        ocupado = true
+        val cal = java.util.Calendar.getInstance()
+        politica.ofrecida(System.currentTimeMillis(), cal.get(java.util.Calendar.YEAR) * 1000 + cal.get(java.util.Calendar.DAY_OF_YEAR))
+        try {
+            val nombre = Preferencias.nombre(ctx)
+            val oferta = if (nombre.isNotBlank()) Idioma.vozTexto(ctx, R.string.v_pt_oferta_nombre, nombre) else Idioma.vozTexto(ctx, R.string.v_pt_oferta)
+            SpikeLog.log("DOCK: ofrezco Para ti (${tarjeta.titulo})")
+            paso = PasoD.PREGUNTA; dicho = oferta
+            withTimeoutOrNull(30_000) { voz.decirYEsperar(oferta) }
+            paso = PasoD.ESCUCHANDO
+            val r = escuchar()
+            val n = normalizarTexto(r.orEmpty())
+            val ahora = System.currentTimeMillis()
+            val finDelDia = java.util.Calendar.getInstance().apply { set(java.util.Calendar.HOUR_OF_DAY, 23); set(java.util.Calendar.MINUTE, 59) }.timeInMillis
+            when {
+                n.isBlank() -> SpikeLog.log("DOCK: no respondio a la oferta de Para ti")
+                Regex("\\b(no mas|nada mas|por hoy no|hoy no|ya no|not today|no more|stop)\\b").containsMatchIn(n) -> {
+                    Intereses.cambiar(ctx) { it.conNoMasHasta(finDelDia) }
+                    dicho = Idioma.vozTexto(ctx, R.string.v_pt_vale); paso = PasoD.HABLANDO; withTimeoutOrNull(15_000) { voz.decirYEsperar(dicho) }
+                }
+                Regex("\\b(si|claro|dale|ok|okay|vale|bueno|quiero|por favor|cuentame|adelante|yes|yeah|sure|please|go ahead|tell me)\\b").containsMatchIn(n) -> {
+                    Intereses.cambiar(ctx) { it.conVisto(tarjeta.titulo) }
+                    val texto = if (tarjeta.general) "${tarjeta.titulo}. ${tarjeta.resumen}" else "${tarjeta.titulo}. ${tarjeta.resumen} ${Idioma.vozTexto(ctx, R.string.v_pt_segun, tarjeta.fuente)}"
+                    dicho = texto; paso = PasoD.HABLANDO
+                    withTimeoutOrNull(60_000) { voz.decirYEsperar(texto) }
+                    withTimeoutOrNull(20_000) { voz.decirYEsperar(Idioma.vozTexto(ctx, R.string.v_pt_mas)) }
+                }
+                else -> {   // "no" a secas: se le deja tranquila un buen rato
+                    Intereses.cambiar(ctx) { it.conNoMasHasta(ahora + 2 * 60 * 60 * 1000L) }
+                    dicho = Idioma.vozTexto(ctx, R.string.v_pt_vale); paso = PasoD.HABLANDO; withTimeoutOrNull(15_000) { voz.decirYEsperar(dicho) }
+                }
+            }
+            ultimaHabla = System.currentTimeMillis()
+        } finally { paso = PasoD.REPOSO; ocupado = false }
+    }
+
+    LaunchedEffect(camaraOn) {
+        while (camaraOn) {
+            kotlinx.coroutines.delay(15_000)
+            val cal = java.util.Calendar.getInstance()
+            val dia = cal.get(java.util.Calendar.YEAR) * 1000 + cal.get(java.util.Calendar.DAY_OF_YEAR)
+            val bienestar = compania.estado == CompaniaAtenta.Estado.ESPERANDO_RESPUESTA
+            if (!ocupado && paso == PasoD.REPOSO && politica.puedeOfrecer(System.currentTimeMillis(), dia, cal.get(java.util.Calendar.HOUR_OF_DAY), visible == true, ultimaHabla, bienestar, Intereses.cargar(ctx))) ofrecerParaTi()
+        }
     }
 
     // ---- Camara: solo con la aceptacion de la persona y los permisos ----

@@ -30,6 +30,9 @@ Idea tomada de la tabla de flujos del repo `fun-phone` (reimplementada, sin copi
 
 | F14 | **Base USB del dock** (opcional): la app busca un puerto serie USB, pide el permiso al sistema y solo le habla si el dispositivo responde "AIDLY-DOCK" | Órdenes de ángulo (GOTO/STOP…) a la base; el micrófono y los parlantes USB son audio local. Nada se envía a internet | No sale | Sin base USB conectada no ocurre nada | `DockUsb.kt`, `ProtocoloDock.kt`, `AudioExterno.kt` |
 
+| F15 | **Para ti** (opcional; la persona elige sus gustos en esa pantalla) | Solo con la nube encendida y al pedir novedades: la **lista de temas elegidos** (por ejemplo "música, cocina"), la fecha, el país del idioma del teléfono y los **títulos ya mostrados** (para no repetirlos). No sale el nombre, ni la ubicación, ni lo que la persona dice | Gemini vía Firebase AI Logic, con búsqueda de Google si hay cuota; si no, sin búsqueda | Sin nube: solo las tarjetas que trae la app y las ya guardadas; no sale nada | `FeedTarjetas.kt`, `Intereses.kt`, `ParaTiActivity.kt` |
+| F16 | **Conversar sobre una tarjeta** ("Háblame de esto") | El audio de la pregunta (con la nube, igual que F1) y el texto de la tarjeta que se está viendo. Con Gemini Nano en el teléfono, si existe, no sale | Gemini (primero Nano) | Sin nube: reconocedor del sistema (F9) y solo el modelo local | `AsistenteVoz.responderSobre` |
+
 No sale nunca del teléfono: el texto de los mensajes y correos que Aidly lee en voz alta (viene de las notificaciones), la lista de recordatorios, los favoritos, el número de quien llama, el contenido del calendario (solo se lee o se escribe en el calendario del propio teléfono).
 
 ## 3. Lo que se guarda en el teléfono
@@ -42,6 +45,8 @@ No sale nunca del teléfono: el texto de los mensajes y correos que Aidly lee en
 | `circulo` | Código familiar y qué se comparte | Hasta que se deje de compartir | `Circulo.kt` |
 | `ajustes` | Idioma, movimiento, nombre, bienvenida hecha | — | `Datos.kt`, `Idioma.kt` |
 | `privacidad` | Elección de nube y aceptación de la cámara del modo dock | — | `Privacidad.kt` |
+| `intereses` | Temas que le gustan, reacciones ("me interesa / no me interesa"), títulos ya mostrados y si aceptó que Aidly le ofrezca cosas (cifrado) | Hasta que se cambien o se borre todo | `Intereses.kt` |
+| `feed` | Últimas tarjetas de "Para ti" (cifrado) | 6 h; se reemplazan | `FeedTarjetas.kt` |
 
 - Almacenamiento privado de la app; `allowBackup=false`: **no hay respaldo en la nube de Android** ni transferencia automática (AndroidManifest).
 - **Cifrado en reposo** (`Cifrado.kt`): `bandeja`, `recordatorios` (avisos e historial de medicinas), `favoritos`, y el código, nombre y coordenadas de SOS del `circulo` se guardan con AES-256-GCM y una clave del Android Keystore que no sale del aparato. Protege contra la copia de los archivos de la app; no contra alguien con el teléfono desbloqueado ni contra root ejecutando la propia app. Los datos antiguos sin cifrar se cifran solos al guardarse de nuevo. `ajustes` y `privacidad` (idioma, movimiento, elección de nube) no se cifran porque no son sensibles.

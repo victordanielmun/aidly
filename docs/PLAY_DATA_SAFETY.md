@@ -27,6 +27,7 @@ no actúa en nombre de Aidly; Google (Gemini/Firebase) procesa por encargo de Ai
 | Información personal > Nombre | Cómo quiere que la llamen (se muestra a la familia) | Sí, solo con "Mi familia" | Funcionalidad de la app | Con quien tenga el código | Sí |
 | Salud y estado físico > Información de salud | Estado de los avisos de medicinas (texto y si se tomó) | Sí, solo si se activa "medicinas" en Mi familia | Funcionalidad de la app | Con quien tenga el código | Sí |
 | Actividad en la app | Hora de la última vez que se usó el teléfono | Sí, solo con "Mi familia" | Funcionalidad de la app | Con quien tenga el código | Sí |
+| Actividad en la app > Otras acciones | Temas de interés elegidos y títulos ya mostrados en "Para ti" (sin nombre ni ubicación), solo con la nube encendida y al buscar tarjetas (F15) | Sí, opcional | Funcionalidad de la app | A Google (Gemini); no se vende ni se usa para anuncios | Sí (se pueden cambiar o borrar todo) |
 | ID de dispositivo u otros ID | ID de usuario anónimo de Firebase Auth; token de App Check | Sí | Seguridad y prevención de fraude | No | No (necesario para Mi familia/IA) |
 
 ## 3. Datos a los que la app accede pero NO recopila

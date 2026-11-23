@@ -9,9 +9,6 @@ class Tarjeta(val titulo: String, val resumen: String, val tema: String, val fue
     val general: Boolean get() = fuente == Tarjetas.FUENTE_GENERAL_ES || fuente == Tarjetas.FUENTE_GENERAL_EN
 
     fun aJson(): JSONObject = JSONObject().put("titulo", titulo).put("resumen", resumen).put("tema", tema).put("fuente", fuente).put("fecha", fecha)
-
-    /** Lo que se dice en voz alta. */
-    fun paraVoz(segun: String) = "$titulo. $resumen $segun $fuente."
 }
 
 /**

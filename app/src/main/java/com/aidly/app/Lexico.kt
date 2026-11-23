@@ -26,6 +26,7 @@ class Lexico(
     val tituloBusqueda: Regex,
     val porFavor: Regex,
     val modoDock: Regex,
+    val paraTi: Regex,
 ) {
     companion object {
         private fun r(s: String) = Regex(s)
@@ -103,6 +104,7 @@ class Lexico(
             tituloBusqueda = r("\\b(?:de|del|sobre|llamad[ao]|titulad[ao]|que se llama)\\s+(.+)$"),
             porFavor = r("\\bpor favor\\b"),
             modoDock = r("\\b(modo dock|modo mesa|modo base|el dock)\\b"),
+            paraTi = r("\\b(para ti|cuentame algo|cuentame (una )?(cosa|historia|curiosidad|dato)|dime algo (interesante|bonito|curioso)|algo interesante|que hay de nuevo|alguna novedad|hay novedades|ponme al dia|tienes algo para mi|mis gustos)\\b"),
         )
 
         val EN = Lexico(
@@ -180,6 +182,7 @@ class Lexico(
             tituloBusqueda = r("\\b(?:by|of|called|named|titled|about)\\s+(.+)$"),
             porFavor = r("\\bplease\\b"),
             modoDock = r("\\b(dock mode|table mode|desk mode|the dock)\\b"),
+            paraTi = r("\\b(for you|tell me something|tell me (a )?(thing|story|fun fact|fact)|something interesting|something nice|what s new|whats new|any news|catch me up|got something for me|my interests)\\b"),
         )
 
         fun de(ctx: Context): Lexico = if (Idioma.resolver(ctx) == "en") EN else ES
