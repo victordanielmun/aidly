@@ -34,7 +34,8 @@ object GeminiStt {
             "Contexto: es una persona mayor hablando con su asistente de voz; suelen ser frases cortas " +
             "(por ejemplo: 'Que tengo hoy', 'Leeme los mensajes', 'Recuerdame tomar la pastilla', 'Llama a mi hija', " +
             "'Si', 'No'). Si dudas entre dos palabras, elige la que tenga sentido en ese contexto. " +
-            "Si no hay voz clara, responde exactamente: (silencio)"
+            "Nunca adivines ni inventes palabras a partir de ruido, musica o sonidos poco claros: los ejemplos son solo contexto, no los repitas. " +
+            "Si no oyes palabras claras, responde exactamente: (silencio)"
 
     private val model by lazy {
         Firebase.ai(backend = GenerativeBackend.googleAI()).generativeModel(modelName = CLOUD_MODEL)
@@ -55,7 +56,8 @@ object GeminiStt {
             "without adding or changing words. Reply only with the transcription. " +
             "Context: an older adult speaking to their voice assistant; usually short phrases (for example: $ejemplos). " +
             "If you are unsure between two words, choose the one that makes sense in that context. " +
-            "If there is no clear voice, reply exactly: (silence)"
+            "Never guess or invent words from noise, music or unclear sounds: the examples are only context, do not repeat them. " +
+            "If you cannot clearly hear spoken words, reply exactly: (silence)"
     }
 
     /** Transcribe un WAV ya grabado (16 kHz mono PCM16). Lo usan las pruebas con audios sinteticos. */
@@ -72,7 +74,9 @@ object GeminiStt {
         }
         val texto = r.text?.trim().orEmpty()
         SpikeLog.log("GEMINI STT: nube ${System.currentTimeMillis() - t0} ms, audio $duracionMs ms")
-        return if (texto.isBlank() || texto.contains("(silencio)", ignoreCase = true) || texto.contains("(silence)", ignoreCase = true)) null else texto
+        // El modelo a veces parte palabras ("(sil ence)"): se compara sin espacios.
+        val pegado = texto.replace(" ", "")
+        return if (texto.isBlank() || pegado.contains("(silencio)", ignoreCase = true) || pegado.contains("(silence)", ignoreCase = true)) null else texto
     }
 
     private fun rms(b: ByteArray): Double {
