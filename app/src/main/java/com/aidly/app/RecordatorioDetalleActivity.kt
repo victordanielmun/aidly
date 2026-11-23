@@ -56,20 +56,26 @@ class RecordatorioDetalleActivity : ActividadAidly() {
         val id = intent.getStringExtra(EXTRA_ID).orEmpty()
         val item = Recordatorios.obtener(this, id)
         if (item == null) { finish(); return }
-        setContent { AidlyTema { Pantalla(item) { finish() } } }
+        val nuevo = intent.getBooleanExtra(EXTRA_NUEVO, false)
+        setContent { AidlyTema { Pantalla(item, nuevo) { finish() } } }
     }
 
-    companion object { const val EXTRA_ID = "id" }
+    companion object {
+        const val EXTRA_ID = "id"
+        /** El aviso se acaba de crear en otra pantalla: "Volver" sin guardar lo descarta. */
+        const val EXTRA_NUEVO = "nuevo"
+    }
 }
 
 @Composable
-private fun Pantalla(item: Recordatorios.Item, cerrar: () -> Unit) {
+private fun Pantalla(item: Recordatorios.Item, nuevo: Boolean, cerrar: () -> Unit) {
     val ctx = LocalContext.current
     val inicial = remember { Calendar.getInstance().apply { timeInMillis = item.proxima } }
     var h by remember { mutableIntStateOf(inicial.get(Calendar.HOUR_OF_DAY)) }
     var m by remember { mutableIntStateOf(inicial.get(Calendar.MINUTE)) }
     var cada by remember { mutableStateOf(item.cadaMin) }
     var confirmaBorrar by remember { mutableStateOf(false) }
+    androidx.activity.compose.BackHandler(enabled = nuevo) { Recordatorios.cancelar(ctx, item.id); cerrar() }
     val opciones = remember { buildList { add(0L); add(1440L); if (item.cadaMin != 0L && item.cadaMin != 1440L) add(item.cadaMin) } }
 
     Column(
@@ -77,7 +83,7 @@ private fun Pantalla(item: Recordatorios.Item, cerrar: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Row(
-            Modifier.heightIn(min = 52.dp).clip(RoundedCornerShape(26.dp)).clickable(role = Role.Button) { cerrar() }.padding(end = 14.dp),
+            Modifier.heightIn(min = 52.dp).clip(RoundedCornerShape(26.dp)).clickable(role = Role.Button) { if (nuevo) Recordatorios.cancelar(ctx, item.id); cerrar() }.padding(end = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconoAidly(Iconos.ChevronIzquierda, Tema.Texto, 30.dp)

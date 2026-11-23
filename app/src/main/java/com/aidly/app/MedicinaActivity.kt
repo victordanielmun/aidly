@@ -178,9 +178,25 @@ private fun MedicinaScreen(voz: Voz) {
     }
     LaunchedEffect(quierePreguntar) { if (quierePreguntar > 0) preguntar() }
 
+    // Solo version de depuracion: --es foto "foto.png" analiza ese archivo de files/ de la app en vez de la camara (para probar sin una caja real).
+    val fotoPrueba = remember {
+        if ((ctx.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0)
+            (ctx as? android.app.Activity)?.intent?.getStringExtra("foto") else null
+    }
+    LaunchedEffect(fotoPrueba) {
+        val nombre = fotoPrueba ?: return@LaunchedEffect
+        fase = Fase.LEYENDO
+        try {
+            val bmp = android.graphics.BitmapFactory.decodeFile(java.io.File(ctx.getExternalFilesDir(null), nombre).path) ?: error("sin foto")
+            val r = withContext(Dispatchers.Default) { MedicinaValidador.analizar(bmp) }
+            res = r
+            if (r.confiable) { fase = Fase.RESULTADO; hablar(r) } else reintentar(R.string.med_err_no_leo)
+        } catch (e: Exception) { SpikeLog.log("MEDICINA prueba: ${e::class.simpleName}: ${e.message}"); reintentar(R.string.med_err_problema) }
+    }
+
     // Guia por voz y cuenta atras; la foto se toma sola (tambien hay un boton grande).
     LaunchedEffect(permiso, intento) {
-        if (!permiso) return@LaunchedEffect
+        if (!permiso || fotoPrueba != null) return@LaunchedEffect
         if (intento == 0) voz.decir(Idioma.vozTexto(ctx, R.string.v_intro_medicina))
         delay(if (intento == 0) 5500 else 3500)
         for (i in 5 downTo 1) {
@@ -203,7 +219,7 @@ private fun MedicinaScreen(voz: Voz) {
         )
         Recordatorios.agregar(ctx, item)
         voz.callar()
-        ctx.startActivity(android.content.Intent(ctx, RecordatorioDetalleActivity::class.java).putExtra(RecordatorioDetalleActivity.EXTRA_ID, item.id))
+        ctx.startActivity(android.content.Intent(ctx, RecordatorioDetalleActivity::class.java).putExtra(RecordatorioDetalleActivity.EXTRA_ID, item.id).putExtra(RecordatorioDetalleActivity.EXTRA_NUEVO, true))
     }
     fun aOtraLectura() { voz.callar(); ctx.startActivity(android.content.Intent(ctx, AnalizaActivity::class.java)); (ctx as? android.app.Activity)?.finish() }
     fun cerrar() { voz.callar(); (ctx as? android.app.Activity)?.finish() }
