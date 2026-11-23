@@ -178,25 +178,27 @@ private fun MedicinaScreen(voz: Voz) {
     }
     LaunchedEffect(quierePreguntar) { if (quierePreguntar > 0) preguntar() }
 
-    // Solo version de depuracion: --es foto "foto.png" analiza ese archivo de files/ de la app en vez de la camara (para probar sin una caja real).
+    // La foto puede venir ya tomada: de la camara general ("Tomar una foto") o, solo en la version de depuracion, de un archivo (--es foto "x.png").
+    val pendiente = remember { FotoPendiente.tomar() }
     val fotoPrueba = remember {
         if ((ctx.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0)
             (ctx as? android.app.Activity)?.intent?.getStringExtra("foto") else null
     }
-    LaunchedEffect(fotoPrueba) {
-        val nombre = fotoPrueba ?: return@LaunchedEffect
+    val traeFoto = pendiente != null || fotoPrueba != null
+    LaunchedEffect(pendiente, fotoPrueba) {
+        if (!traeFoto) return@LaunchedEffect
         fase = Fase.LEYENDO
         try {
-            val bmp = android.graphics.BitmapFactory.decodeFile(java.io.File(ctx.getExternalFilesDir(null), nombre).path) ?: error("sin foto")
+            val bmp = pendiente ?: android.graphics.BitmapFactory.decodeFile(java.io.File(ctx.getExternalFilesDir(null), fotoPrueba!!).path) ?: error("sin foto")
             val r = withContext(Dispatchers.Default) { MedicinaValidador.analizar(bmp) }
             res = r
             if (r.confiable) { fase = Fase.RESULTADO; hablar(r) } else reintentar(R.string.med_err_no_leo)
-        } catch (e: Exception) { SpikeLog.log("MEDICINA prueba: ${e::class.simpleName}: ${e.message}"); reintentar(R.string.med_err_problema) }
+        } catch (e: Exception) { SpikeLog.log("MEDICINA foto recibida: ${e::class.simpleName}: ${e.message}"); reintentar(R.string.med_err_problema) }
     }
 
     // Guia por voz y cuenta atras; la foto se toma sola (tambien hay un boton grande).
     LaunchedEffect(permiso, intento) {
-        if (!permiso || fotoPrueba != null) return@LaunchedEffect
+        if (!permiso || traeFoto) return@LaunchedEffect
         if (intento == 0) voz.decir(Idioma.vozTexto(ctx, R.string.v_intro_medicina))
         delay(if (intento == 0) 5500 else 3500)
         for (i in 5 downTo 1) {

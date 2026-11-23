@@ -484,4 +484,6 @@
     <string name="v_pt_vale">All right. I will tell you later.</string>
     <string name="pt_propuestas">Let Aidly offer me things in dock mode</string>
     <string name="pt_propuestas_sub">Only with the camera on and when you are near. At most 3 a day.</string>
+    <string name="home_foto">Take a photo</string>
+    <string name="home_foto_sub">A box, a letter, a sign…</string>
 </resources>

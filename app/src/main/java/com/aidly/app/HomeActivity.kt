@@ -162,7 +162,7 @@ private fun HomeScreen() {
             TarjetaHablar(stringResource(R.string.home_hablar), stringResource(R.string.home_hablar_sub)) { abrir(HablarActivity::class.java) }
 
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                FilaAccion(Iconos.Pastilla, stringResource(R.string.home_medicina), stringResource(R.string.home_medicina_sub), amarilla = true) { abrir(MedicinaActivity::class.java) }
+                FilaAccion(Iconos.Camara, stringResource(R.string.home_foto), stringResource(R.string.home_foto_sub), amarilla = true) { abrir(AnalizaActivity::class.java) }
                 FilaAccion(Iconos.Estrella, stringResource(R.string.home_parati), paraTiLinea.ifBlank { stringResource(R.string.home_parati_sub) }) { abrir(ParaTiActivity::class.java) }
                 FilaAccion(Iconos.Campana, stringResource(R.string.home_recordatorios), proximo) { abrir(RecordatoriosActivity::class.java) }
                 FilaAccion(Iconos.Personas, stringResource(R.string.home_familia), stringResource(R.string.home_familia_sub)) { abrir(FamiliaActivity::class.java) }

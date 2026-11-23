@@ -484,4 +484,6 @@
     <string name="v_pt_vale">Está bien. Luego te cuento.</string>
     <string name="pt_propuestas">Que Aidly me ofrezca cosas en el modo dock</string>
     <string name="pt_propuestas_sub">Solo con la cámara activa y cuando estés cerca. Máximo 3 al día.</string>
+    <string name="home_foto">Tomar una foto</string>
+    <string name="home_foto_sub">Una caja, una carta, un cartel…</string>
 </resources>

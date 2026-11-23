@@ -116,6 +116,27 @@ private fun AnalizaScreen(voz: Voz, cerrar: () -> Unit) {
         intento++
     }
 
+    fun procesar(foto: android.graphics.Bitmap) {
+        scope.launch {
+            try {
+                val r = withContext(Dispatchers.Default) { AnalizaValidador.analizar(foto) }
+                // Si es una medicina, la ficha de medicinas la lee con mas detalle usando esta misma foto.
+                if (r.esMedicina) {
+                    FotoPendiente.poner(foto); voz.callar()
+                    ctx.startActivity(Intent(ctx, MedicinaActivity::class.java)); cerrar()
+                    return@launch
+                }
+                res = r
+                if (r.confiable) { fase = FaseA.RESULTADO; hablar(r) }
+                else reintentar(R.string.ana_err_no_leo)
+            } catch (e: Exception) {
+                SpikeLog.log("ANALIZA: error ${e::class.simpleName}: ${e.message}")
+                reintentar(R.string.ana_err_problema)
+            }
+        }
+
+    }
+
     fun tomarFoto() {
         if (fase != FaseA.APUNTANDO) return
         fase = FaseA.LEYENDO
@@ -131,17 +152,7 @@ private fun AnalizaScreen(voz: Voz, cerrar: () -> Unit) {
                     } finally {
                         image.close()
                     }
-                    scope.launch {
-                        try {
-                            val r = withContext(Dispatchers.Default) { AnalizaValidador.analizar(foto) }
-                            res = r
-                            if (r.confiable) { fase = FaseA.RESULTADO; hablar(r) }
-                            else reintentar(R.string.ana_err_no_leo)
-                        } catch (e: Exception) {
-                            SpikeLog.log("ANALIZA: error ${e::class.simpleName}: ${e.message}")
-                            reintentar(R.string.ana_err_problema)
-                        }
-                    }
+                    procesar(foto)
                 }
 
                 override fun onError(exception: ImageCaptureException) {
@@ -152,8 +163,20 @@ private fun AnalizaScreen(voz: Voz, cerrar: () -> Unit) {
         )
     }
 
+    // Solo version de depuracion: --es foto "x.png" analiza ese archivo de files/ de la app en vez de la camara.
+    val fotoPrueba = remember {
+        if ((ctx.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0)
+            (ctx as? android.app.Activity)?.intent?.getStringExtra("foto") else null
+    }
+    LaunchedEffect(fotoPrueba) {
+        val nombre = fotoPrueba ?: return@LaunchedEffect
+        fase = FaseA.LEYENDO
+        val bmp = android.graphics.BitmapFactory.decodeFile(java.io.File(ctx.getExternalFilesDir(null), nombre).path)
+        if (bmp == null) reintentar(R.string.ana_err_problema) else procesar(bmp)
+    }
+
     LaunchedEffect(permiso, intento) {
-        if (!permiso) return@LaunchedEffect
+        if (!permiso || fotoPrueba != null) return@LaunchedEffect
         if (intento == 0) voz.decir(Idioma.vozTexto(ctx, R.string.v_intro_analiza))
         delay(if (intento == 0) 6500 else 3500)
         for (i in 5 downTo 1) {
@@ -188,7 +211,10 @@ private fun AnalizaScreen(voz: Voz, cerrar: () -> Unit) {
                 )
                 if (fase == FaseA.LEYENDO) CircularProgressIndicator(color = Tema.Amarillo)
                 if (aviso.isNotBlank()) Text(aviso, fontSize = 22.sp, color = Tema.Texto)
-                BotonGrande(stringResource(R.string.cam_tomar_ahora), Tema.Turquesa) { tomarFoto() }
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    BotonGrande(stringResource(R.string.cam_tomar_ahora), Tema.Turquesa, alto = 88.dp) { tomarFoto() }
+                    BotonGrande(stringResource(R.string.volver_mayus), Tema.TextoSuave, alto = 64.dp, tamLetra = 20) { voz.callar(); cerrar() }
+                }
             }
         } else {
             res?.let { r ->
@@ -219,11 +245,6 @@ private fun AnalizaScreen(voz: Voz, cerrar: () -> Unit) {
                     Text(stringResource(R.string.ana_descargo), fontSize = 18.sp, color = Tema.TextoSuave)
                     InsigniaMotor(r.fuente, r.ms)
                     Text(stringResource(R.string.cam_confianza, confianzaTexto(r.confianza)), fontSize = 18.sp, color = Tema.TextoSuave)
-                    if (r.esMedicina) {
-                        BotonGrande(stringResource(R.string.ana_leer_medicina), Tema.Amarillo) {
-                            voz.callar(); ctx.startActivity(Intent(ctx, MedicinaActivity::class.java)); cerrar()
-                        }
-                    }
                     BotonGrande(stringResource(R.string.cam_escuchar_otra), Tema.Turquesa) { hablar(r) }
                     BotonGrande(stringResource(R.string.ana_otro), Tema.Amarillo) {
                         voz.callar(); res = null; aviso = ""; fase = FaseA.APUNTANDO; intento++
