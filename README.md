@@ -21,6 +21,7 @@ and lets your family know you are okay, sharing only what *you* choose.
 | Voice to structured reminders and appointments (schema-constrained JSON) | `PREFER_ON_DEVICE` then `ONLY_IN_CLOUD`; local rules first | [`Interprete.kt`](app/src/main/java/com/aidly/app/Interprete.kt), [`ParserLocal.kt`](app/src/main/java/com/aidly/app/ParserLocal.kt) |
 | **Medicines** (photo of a box or bottle: name, dose, what the box says, spoken questions with a safety gate) and "What does this say?" (letters, receipts, signs, possible scams) | `PREFER_IN_CLOUD` multimodal, structured JSON with a confidence field | [`AnalizaValidador.kt`](app/src/main/java/com/aidly/app/AnalizaValidador.kt), [`MedicinaValidador.kt`](app/src/main/java/com/aidly/app/MedicinaValidador.kt) |
 | Speech to text | Gemini (cloud) | [`GeminiStt.kt`](app/src/main/java/com/aidly/app/GeminiStt.kt) |
+| **For you** (cards on what the person likes, read aloud, with follow-up conversation) | One Gemini call with Google Search grounding for fresh items; when the free search quota is out, a no-search call for general-knowledge cards (labelled as such); built-in cards when offline or with the cloud off. Follow-ups use `PREFER_ON_DEVICE` | [`FeedTarjetas.kt`](app/src/main/java/com/aidly/app/FeedTarjetas.kt), [`ParaTiActivity.kt`](app/src/main/java/com/aidly/app/ParaTiActivity.kt), [`AsistenteVoz.kt`](app/src/main/java/com/aidly/app/AsistenteVoz.kt) |
 | Web questions | Gemini with Google Search grounding | [`Busqueda.kt`](app/src/main/java/com/aidly/app/Busqueda.kt) |
 | On-device model status and background download | `FirebaseAIOnDevice.checkStatus()` and `download()` at app start; shown in Settings > Privacy | [`ModeloLocal.kt`](app/src/main/java/com/aidly/app/ModeloLocal.kt) |
 
@@ -28,7 +29,7 @@ Also used: **Firebase App Check** (debug provider for development and submission
 rules in [`firestore.rules`](firestore.rules)) and **Firebase Hosting** (family web page in [`familia/`](familia/)).
 
 ## Features
-Voice assistant (messages and email by notification, reminders with exact alarms, calendar, web questions, call/open apps) · **Medicines** camera reader (with "add a reminder", e.g. "blood pressure pill at 9:00 AM") and "What does this say?" for letters and receipts ·
+**For you** (the assistant brings things the person likes, with source and a safety filter; optional spoken offers in dock mode) · Voice assistant (messages and email by notification, reminders with exact alarms, calendar, web questions, call/open apps) · **Medicines** camera reader (with "add a reminder", e.g. "blood pressure pill at 9:00 AM") and "What does this say?" for letters and receipts ·
 daily check-in · **dock mode** (USB-C code for the dock included, unit-tested against a simulated port only; big animated face, voice through the dock, optional on-device presence detection with MediaPipe that asks "are you okay?" if it stops seeing you after a conversation; no images are stored or sent) · consent-based family circle with a code · SOS · big-key dialer · optional caller announcement · widgets · Spanish and English UI **and voice** (commands, spoken answers, speech recognition and AI prompts follow the app language).
 
 ## How it is organised
@@ -47,6 +48,7 @@ daily check-in · **dock mode** (USB-C code for the dock included, unit-tested a
 | **Gemini Nano on a real phone** | **Not verified.** Neither the emulator nor the Galaxy A23 has AICore, so both show the "rules / cloud" fallback; a Nano-capable phone is still needed |
 | Camera presence detection (MediaPipe) | Measured on a Galaxy A23 (Android 14, 3.6 GB RAM): about 4 analysed frames per second at 24 ms each, battery temperature unchanged after 40 s; found and fixed a CameraX binding bug that only showed on the real phone. Battery drain over longer runs not measured |
 | Call announcer (Android 10+ call-screening role) | Not testable on the emulator image used |
+| "For you": card parsing, safety filter, topic profile and offer policy | 21 unit tests passing; the cloud generator and the card conversation were run on the emulator (Google Search grounding had no free quota that day, so the fallback to no-search cards was the path exercised); not yet run on the Galaxy A23 |
 | TalkBack walkthrough, USB audio and the dock hardware | Not yet verified; the dock is a design prototype |
 
 ## Test build and family page
