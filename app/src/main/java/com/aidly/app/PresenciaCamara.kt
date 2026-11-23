@@ -6,7 +6,7 @@ import android.graphics.Matrix
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-import androidx.camera.view.LifecycleCameraController
+import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.google.mediapipe.framework.image.BitmapImageBuilder
@@ -25,7 +25,8 @@ class PresenciaCamara(private val ctx: Context) : AutoCloseable {
     class Observacion(val ms: Long, val visible: Boolean, val cara: Boolean, val x: Float)
 
     private val ejecutor = Executors.newSingleThreadExecutor()
-    private var controlador: LifecycleCameraController? = null
+    private var proveedor: ProcessCameraProvider? = null
+    private var analisis: ImageAnalysis? = null
     @Volatile private var ultimo = 0L
     @Volatile private var cerrado = false
 
@@ -61,17 +62,44 @@ class PresenciaCamara(private val ctx: Context) : AutoCloseable {
         return Observacion(ms, false, false, 0f)
     }
 
-    /** Activa la camara frontal y llama a [alObservar] unas 6 veces por segundo (en un hilo propio). */
+    /**
+     * Activa la camara frontal y llama a [alObservar] unas 6 veces por segundo (en un hilo propio). Solo `ImageAnalysis`, sin vista previa:
+     * se enlaza directo con `ProcessCameraProvider` (con `LifecycleCameraController` y sin `PreviewView`, CameraX nunca abria la camara).
+     */
     fun iniciar(owner: LifecycleOwner, alObservar: (Observacion) -> Unit) {
-        val c = LifecycleCameraController(ctx).apply {
-            cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-            setEnabledUseCases(LifecycleCameraController.IMAGE_ANALYSIS)
-            imageAnalysisBackpressureStrategy = ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
-            imageAnalysisOutputImageFormat = ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888
-            setImageAnalysisAnalyzer(ejecutor) { proxy -> procesar(proxy, alObservar) }
+        val futuro = ProcessCameraProvider.getInstance(ctx)
+        val principal = ContextCompat.getMainExecutor(ctx)
+        futuro.addListener({
+            try {
+                if (cerrado) return@addListener
+                val p = futuro.get()
+                val a = ImageAnalysis.Builder()
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+                    .build()
+                a.setAnalyzer(ejecutor) { proxy -> procesar(proxy, alObservar) }
+                p.unbindAll()
+                p.bindToLifecycle(owner, CameraSelector.DEFAULT_FRONT_CAMERA, a)
+                proveedor = p; analisis = a
+                SpikeLog.log("PRESENCIA: camara frontal enlazada")
+            } catch (e: Throwable) {
+                SpikeLog.log("PRESENCIA: no pude enlazar la camara (${e::class.simpleName}: ${e.message})")
+            }
+        }, principal)
+    }
+
+    // Solo depuracion (SpikeLog es silencioso en la version final): cada 5 s, cuadros analizados por segundo y milisegundos por analisis.
+    private var cuadros = 0
+    private var sumaMs = 0L
+    private var desde = 0L
+    private fun medir(ms: Long) {
+        val ahora = System.currentTimeMillis()
+        if (desde == 0L) desde = ahora
+        cuadros++; sumaMs += ms
+        if (ahora - desde >= 5_000) {
+            SpikeLog.log("PRESENCIA: %.1f cuadros/s, %d ms por analisis".format(cuadros * 1000f / (ahora - desde), sumaMs / cuadros))
+            cuadros = 0; sumaMs = 0; desde = ahora
         }
-        controlador = c
-        ContextCompat.getMainExecutor(ctx).execute { c.bindToLifecycle(owner) }
     }
 
     private fun procesar(proxy: ImageProxy, alObservar: (Observacion) -> Unit) {
@@ -83,7 +111,9 @@ class PresenciaCamara(private val ctx: Context) : AutoCloseable {
                 val r = proxy.imageInfo.rotationDegrees
                 if (r == 0) b else Bitmap.createBitmap(b, 0, 0, b.width, b.height, Matrix().apply { postRotate(r.toFloat()) }, true)
             }
+            val t0 = System.nanoTime()
             alObservar(analizar(girado, ahora))
+            medir((System.nanoTime() - t0) / 1_000_000)
         } catch (e: Throwable) {
             SpikeLog.log("PRESENCIA: fallo al analizar (${e::class.simpleName}: ${e.message})")
         } finally {
@@ -92,8 +122,9 @@ class PresenciaCamara(private val ctx: Context) : AutoCloseable {
     }
 
     fun detener() {
-        controlador?.let { c -> ContextCompat.getMainExecutor(ctx).execute { c.unbind() } }
-        controlador = null
+        val p = proveedor; val a = analisis
+        proveedor = null; analisis = null
+        if (p != null && a != null) ContextCompat.getMainExecutor(ctx).execute { try { p.unbind(a) } catch (_: Throwable) {} }
     }
 
     override fun close() {

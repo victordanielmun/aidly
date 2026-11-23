@@ -44,8 +44,8 @@ daily check-in · **dock mode** (USB-C code for the dock included, unit-tested a
 | All screens, Spanish and English, normal and 200 % type, Android 15 emulator | Reviewed with screenshots; accessibility tree checked for unnamed or tiny touch targets |
 | Voice routing | 25 English generated audio files route correctly through the real pipeline on the emulator (`pruebas/correr_audios.ps1 -Idioma en`); the Spanish suite predates the bilingual rewrite and is being re-run (free-tier quota) |
 | Cloud features (Gemini via Firebase AI Logic, App Check, Firestore family circle) | Exercised on the emulator against the real Firebase project; subject to free-tier quotas |
-| **Gemini Nano on a real phone** | **Not yet verified.** The emulator has no AICore, so the app shows the "rules / cloud" fallback there |
-| Camera presence detection (MediaPipe) frame rate, heat and battery | Not yet measured on a physical phone |
+| **Gemini Nano on a real phone** | **Not verified.** Neither the emulator nor the Galaxy A23 has AICore, so both show the "rules / cloud" fallback; a Nano-capable phone is still needed |
+| Camera presence detection (MediaPipe) | Measured on a Galaxy A23 (Android 14, 3.6 GB RAM): about 4 analysed frames per second at 24 ms each, battery temperature unchanged after 40 s; found and fixed a CameraX binding bug that only showed on the real phone. Battery drain over longer runs not measured |
 | Call announcer (Android 10+ call-screening role) | Not testable on the emulator image used |
 | TalkBack walkthrough, USB audio and the dock hardware | Not yet verified; the dock is a design prototype |
 
