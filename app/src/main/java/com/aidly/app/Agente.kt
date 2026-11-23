@@ -38,12 +38,21 @@ object Agente {
 
     private fun t(ctx: Context, id: Int, vararg a: Any) = Idioma.vozTexto(ctx, id, *a)
 
+    /**
+     * El reconocedor a veces parte una palabra ("Recu erdame"). Si al juntar la primera frase sale "recuerdame"/"recordarme"/"remindme",
+     * es un recordatorio: asi nunca cae en la charla, donde no se crea nada.
+     */
+    private fun verboRecordarPartido(n: String): Boolean {
+        val pegado = n.replace(" ", "")
+        return pegado.startsWith("recuerdame") || pegado.startsWith("recordarme") || pegado.startsWith("remindme") || pegado.startsWith("aidlyrecuerdame")
+    }
+
     suspend fun procesar(ctx: Context, frase: String): Respuesta {
         val n = normalizar(frase)
         val L = Lexico.de(ctx)
         val r: Respuesta = when {
             L.cancelarRec.containsMatchIn(n) && L.objRec.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=cancelar recordatorio"); cancelarRecordatorio(ctx, n, L) }
-            L.crearRec.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=crear recordatorio"); crearRecordatorio(ctx, frase) }
+            L.crearRec.containsMatchIn(n) || verboRecordarPartido(n) -> { SpikeLog.log("AGENTE: ruta=crear recordatorio"); crearRecordatorio(ctx, frase) }
             L.objRec.containsMatchIn(n) && L.listarRec.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=listar recordatorios"); listarRecordatorios(ctx) }
             L.sos.containsMatchIn(n) && !L.llamar.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=pedir ayuda"); pedirAyuda(ctx) }
             L.estoyBien.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=estoy bien"); estoyBien(ctx) }
