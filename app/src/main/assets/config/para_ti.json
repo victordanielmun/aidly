@@ -1,0 +1,246 @@
+{
+ "es": [
+  {
+   "tema": "familia",
+   "titulo": "Cinco minutos de llamada",
+   "resumen": "Hablar unos minutos cada día con un familiar alegra a las dos personas. No hace falta un tema especial: basta con contar cómo fue el día."
+  },
+  {
+   "tema": "familia",
+   "titulo": "Un álbum de recuerdos",
+   "resumen": "Mirar fotos antiguas y contar la historia de cada una es una forma bonita de pasar la tarde con los nietos. Así la familia conoce su propia historia."
+  },
+  {
+   "tema": "musica",
+   "titulo": "Beethoven y su Novena Sinfonía",
+   "resumen": "Beethoven siguió componiendo obras maravillosas cuando ya casi no podía oír. Estrenó su Novena Sinfonía en 1824 siendo muy sordo."
+  },
+  {
+   "tema": "musica",
+   "titulo": "El bolero, música de muchos",
+   "resumen": "El bolero nació en Cuba a finales del siglo diecinueve y se hizo famoso en toda América Latina. Muchas generaciones lo han bailado despacito."
+  },
+  {
+   "tema": "deportes",
+   "titulo": "Los primeros Juegos Olímpicos modernos",
+   "resumen": "Los Juegos Olímpicos de la era moderna comenzaron en Atenas en 1896. Participaron deportistas de varios países y se hicieron cada cuatro años."
+  },
+  {
+   "tema": "deportes",
+   "titulo": "Caminar también es deporte",
+   "resumen": "Caminar media hora casi todos los días es un ejercicio suave que ayuda al corazón y al ánimo. Lo mejor es hacerlo a buen paso y con calzado cómodo."
+  },
+  {
+   "tema": "cocina",
+   "titulo": "El pozole, un plato de fiesta",
+   "resumen": "El pozole es un guiso mexicano de maíz grande con carne, que se prepara en celebraciones. Se sirve caliente con lechuga, rábano y limón."
+  },
+  {
+   "tema": "cocina",
+   "titulo": "Una sopa de verduras fácil",
+   "resumen": "Una sopa casera se hace con zanahoria, papa y cebolla cocidas en agua con un poco de sal hasta quedar blandas. Es suave, nutritiva y rinde para varios días."
+  },
+  {
+   "tema": "jardin",
+   "titulo": "Las plantas y el agua",
+   "resumen": "Muchas plantas de interior sufren más por exceso de agua que por falta. Toca la tierra con el dedo: si todavía está húmeda, espera un día más."
+  },
+  {
+   "tema": "jardin",
+   "titulo": "Girasoles que siguen al sol",
+   "resumen": "Los girasoles jóvenes giran durante el día siguiendo al sol. Cuando maduran se quedan mirando hacia el este."
+  },
+  {
+   "tema": "animales",
+   "titulo": "Los gatos duermen mucho",
+   "resumen": "Un gato adulto duerme muchas horas al día, a menudo más de la mitad del día. Por eso parece que siempre está descansando."
+  },
+  {
+   "tema": "animales",
+   "titulo": "La memoria de los elefantes",
+   "resumen": "Los elefantes tienen muy buena memoria. Viven en familias que suele guiar una hembra de más edad."
+  },
+  {
+   "tema": "historia",
+   "titulo": "Las pirámides de Egipto",
+   "resumen": "La Gran Pirámide de Guiza se construyó hace más de cuatro mil años. Durante siglos fue la construcción más alta del mundo."
+  },
+  {
+   "tema": "historia",
+   "titulo": "La imprenta de Gutenberg",
+   "resumen": "Hacia 1450, Johannes Gutenberg ideó en Alemania la imprenta de tipos móviles. Gracias a ella los libros se hicieron mucho más baratos."
+  },
+  {
+   "tema": "viajes",
+   "titulo": "Machu Picchu",
+   "resumen": "Machu Picchu es una ciudad de piedra construida por los incas en las montañas del Perú. Está a más de dos mil metros de altura."
+  },
+  {
+   "tema": "viajes",
+   "titulo": "Las Cataratas del Iguazú",
+   "resumen": "Las cataratas del Iguazú, entre Argentina y Brasil, forman cientos de saltos de agua rodeados de selva. Son uno de los paisajes más bonitos de Sudamérica."
+  },
+  {
+   "tema": "humor",
+   "titulo": "Un chiste de jardineros",
+   "resumen": "¿Qué le dice un jardinero a otro? Seamos felices mientras podamos."
+  },
+  {
+   "tema": "humor",
+   "titulo": "Un chiste de pájaros",
+   "resumen": "¿Por qué los pájaros vuelan hacia el sur en invierno? Porque caminando tardarían demasiado."
+  },
+  {
+   "tema": "tecnologia",
+   "titulo": "Qué es la nube",
+   "resumen": "La nube son computadoras de empresas, en otros lugares, donde se guardan fotos y datos para verlos desde cualquier teléfono. Con tu permiso, Aidly usa la nube solo para algunas cosas."
+  },
+  {
+   "tema": "tecnologia",
+   "titulo": "Una videollamada fácil",
+   "resumen": "Para ver a un familiar en una videollamada basta con tocar su nombre y el icono de la cámara. Con buena luz de frente se te ve mejor."
+  },
+  {
+   "tema": "noticias",
+   "titulo": "Tus claves son tuyas",
+   "resumen": "Un banco nunca te pedirá tus claves por mensaje ni por llamada. Si dudas, cuelga y llama tú al número oficial que aparece en tu tarjeta."
+  },
+  {
+   "tema": "noticias",
+   "titulo": "Agua en los días de calor",
+   "resumen": "En días de calor conviene beber agua aunque no se tenga sed, y evitar el sol del mediodía. Un sombrero ayuda mucho al salir."
+  },
+  {
+   "tema": "salud",
+   "titulo": "Dormir mejor",
+   "resumen": "Acostarse y levantarse a la misma hora ayuda a descansar mejor. Conviene evitar las pantallas muy luminosas una hora antes de dormir."
+  },
+  {
+   "tema": "salud",
+   "titulo": "Un paseo después de comer",
+   "resumen": "Un paseo corto después de comer es un hábito sencillo y agradable. Si te cansas o no te sientes bien, descansa y habla con tu médico."
+  }
+ ],
+ "en": [
+  {
+   "tema": "familia",
+   "titulo": "Five minutes on the phone",
+   "resumen": "Talking for a few minutes every day with a relative cheers up both of you. You do not need a special topic: just tell how your day went."
+  },
+  {
+   "tema": "familia",
+   "titulo": "A memory album",
+   "resumen": "Looking at old photos and telling the story of each one is a lovely way to spend an afternoon with the grandchildren. That way the family learns its own story."
+  },
+  {
+   "tema": "musica",
+   "titulo": "Beethoven and his Ninth Symphony",
+   "resumen": "Beethoven kept composing wonderful music when he could barely hear. He premiered his Ninth Symphony in 1824 while almost completely deaf."
+  },
+  {
+   "tema": "musica",
+   "titulo": "The bolero, music for many",
+   "resumen": "The bolero was born in Cuba at the end of the nineteenth century and became famous all over Latin America. Many generations have danced to it slowly."
+  },
+  {
+   "tema": "deportes",
+   "titulo": "The first modern Olympic Games",
+   "resumen": "The modern Olympic Games began in Athens in 1896. Athletes from several countries took part, and the Games have been held every four years since."
+  },
+  {
+   "tema": "deportes",
+   "titulo": "Walking is a sport too",
+   "resumen": "Walking half an hour on most days is a gentle exercise that helps the heart and the mood. It is best at a steady pace and in comfortable shoes."
+  },
+  {
+   "tema": "cocina",
+   "titulo": "Pozole, a dish for celebrations",
+   "resumen": "Pozole is a Mexican stew of large corn kernels with meat, made for celebrations. It is served hot with lettuce, radish and lime."
+  },
+  {
+   "tema": "cocina",
+   "titulo": "An easy vegetable soup",
+   "resumen": "A homemade soup is made by cooking carrot, potato and onion in lightly salted water until soft. It is gentle, nourishing and lasts for several days."
+  },
+  {
+   "tema": "jardin",
+   "titulo": "Plants and water",
+   "resumen": "Many houseplants suffer more from too much water than from too little. Touch the soil with your finger: if it is still damp, wait one more day."
+  },
+  {
+   "tema": "jardin",
+   "titulo": "Sunflowers that follow the sun",
+   "resumen": "Young sunflowers turn during the day to follow the sun. When they mature, they stay facing east."
+  },
+  {
+   "tema": "animales",
+   "titulo": "Cats sleep a lot",
+   "resumen": "An adult cat sleeps many hours a day, often more than half of it. That is why it always seems to be resting."
+  },
+  {
+   "tema": "animales",
+   "titulo": "The memory of elephants",
+   "resumen": "Elephants have a very good memory. They live in families that are usually led by an older female."
+  },
+  {
+   "tema": "historia",
+   "titulo": "The pyramids of Egypt",
+   "resumen": "The Great Pyramid of Giza was built more than four thousand years ago. For centuries it was the tallest structure in the world."
+  },
+  {
+   "tema": "historia",
+   "titulo": "Gutenberg's printing press",
+   "resumen": "Around 1450, Johannes Gutenberg devised the movable-type printing press in Germany. Thanks to it, books became much cheaper."
+  },
+  {
+   "tema": "viajes",
+   "titulo": "Machu Picchu",
+   "resumen": "Machu Picchu is a stone city built by the Incas in the mountains of Peru. It stands more than two thousand meters above sea level."
+  },
+  {
+   "tema": "viajes",
+   "titulo": "Iguazu Falls",
+   "resumen": "Iguazu Falls, between Argentina and Brazil, form hundreds of waterfalls surrounded by jungle. They are among the most beautiful sights in South America."
+  },
+  {
+   "tema": "humor",
+   "titulo": "A gardeners' joke",
+   "resumen": "What does one gardener say to another? Let us be happy while we can prune."
+  },
+  {
+   "tema": "humor",
+   "titulo": "A joke about birds",
+   "resumen": "Why do birds fly south in winter? Because walking would take too long."
+  },
+  {
+   "tema": "tecnologia",
+   "titulo": "What is the cloud",
+   "resumen": "The cloud is companies' computers, in other places, where photos and data are kept so you can see them from any phone. With your permission, Aidly uses the cloud only for some things."
+  },
+  {
+   "tema": "tecnologia",
+   "titulo": "An easy video call",
+   "resumen": "To see a relative on a video call, just tap their name and the camera icon. With good light in front of you, you will be seen better."
+  },
+  {
+   "tema": "noticias",
+   "titulo": "Your passwords are yours",
+   "resumen": "A bank will never ask for your passwords by message or phone call. If in doubt, hang up and call the official number on your card yourself."
+  },
+  {
+   "tema": "noticias",
+   "titulo": "Water on hot days",
+   "resumen": "On hot days it is wise to drink water even if you are not thirsty, and to avoid the midday sun. A hat helps a lot when going out."
+  },
+  {
+   "tema": "salud",
+   "titulo": "Sleeping better",
+   "resumen": "Going to bed and getting up at the same time helps you rest better. It is wise to avoid very bright screens for an hour before sleep."
+  },
+  {
+   "tema": "salud",
+   "titulo": "A walk after eating",
+   "resumen": "A short walk after eating is a simple and pleasant habit. If you get tired or do not feel well, rest and talk to your doctor."
+  }
+ ]
+}

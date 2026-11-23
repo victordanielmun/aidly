@@ -69,6 +69,21 @@ class MainActivity : ActividadAidly() {
             try { Circulo.sincronizar(this@MainActivity); SpikeLog.log("CIRCULO prueba: sincronizado") }
             catch (e: Exception) { SpikeLog.log("CIRCULO prueba: error ${e::class.simpleName}: ${e.message}") }
         }
+        intent.getStringExtra("feedsonda")?.let { v -> lifecycleScope.launch { FeedTarjetas.sonda(this@MainActivity, v) } }
+        // --es feed "musica,cocina[,limpiar]" fija esos intereses y trae las tarjetas de "Para ti" (registra el resultado en el log).
+        intent.getStringExtra("feed")?.let { csv ->
+            lifecycleScope.launch {
+                try {
+                    FeedTarjetas.modeloPrueba = intent.getStringExtra("feedmodelo")
+                    val ids = csv.split(",").map { it.trim() }.filter { it.isNotEmpty() && it != "limpiar" }
+                    if ("limpiar" in csv) Intereses.cambiar(this@MainActivity) { Perfil() }
+                    Intereses.cambiar(this@MainActivity) { p -> ids.fold(p) { acc, id -> acc.conElegido(id, true) } }
+                    val r = FeedTarjetas.obtener(this@MainActivity, forzar = true)
+                    r.tarjetas.forEach { SpikeLog.log("FEED tarjeta [${it.tema}] ${it.titulo} | ${it.resumen} | ${it.fuente} ${it.fecha}") }
+                    SpikeLog.log("FEED prueba: ${r.tarjetas.size} tarjetas en ${r.ms} ms")
+                } catch (e: Exception) { SpikeLog.log("FEED prueba: error ${e::class.simpleName}: ${e.message?.take(900)}") }
+            }
+        }
         // --es abrir "SosActivity" abre esa pantalla (las demas no estan exportadas y adb no puede abrirlas directo).
         intent.getStringExtra("abrir")?.let { n ->
             try { startActivity(Intent(this, Class.forName("com.aidly.app.$n")).putExtras(intent)) } catch (e: Exception) { SpikeLog.log("abrir $n: ${e.message}") }

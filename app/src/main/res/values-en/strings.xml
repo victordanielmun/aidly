@@ -438,4 +438,16 @@
     <string name="med_recordar_texto">Take %1$s</string>
     <string name="v_dock_hola">Hello. I am here. Tap my face or tell me what you need.</string>
     <string name="v_dock_hola_nombre">Hello, %1$s. I am here. Tap my face or tell me what you need.</string>
+    <string name="int_familia">Family</string>
+    <string name="int_musica">Music</string>
+    <string name="int_deportes">Sports</string>
+    <string name="int_cocina">Cooking</string>
+    <string name="int_jardin">Garden and plants</string>
+    <string name="int_animales">Animals and nature</string>
+    <string name="int_historia">History</string>
+    <string name="int_viajes">Travel</string>
+    <string name="int_humor">Humor</string>
+    <string name="int_tecnologia">Simple technology</string>
+    <string name="int_noticias">Good news</string>
+    <string name="int_salud">Healthy living</string>
 </resources>

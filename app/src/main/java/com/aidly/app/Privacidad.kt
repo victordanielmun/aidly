@@ -72,7 +72,7 @@ object Privacidad {
     /** Las funciones que mandan datos a la nube llaman a esto primero. */
     fun exigirNube() { if (!nube) throw NubeApagada() }
 
-    private val ALMACENES = listOf("bandeja", "recordatorios", "favoritos", "circulo", "ajustes", PREFS)
+    private val ALMACENES = listOf("bandeja", "recordatorios", "favoritos", "circulo", "ajustes", Intereses.ALMACEN, FeedTarjetas.ALMACEN, PREFS)
 
     /** Borra todo lo guardado: avisos, favoritos, mensajes, ajustes y el circulo (tambien en la nube, si hay internet). */
     suspend fun borrarTodo(ctx: Context) {

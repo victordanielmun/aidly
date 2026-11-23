@@ -438,4 +438,16 @@
     <string name="med_recordar_texto">Tomar %1$s</string>
     <string name="v_dock_hola">Hola. Aquí estoy. Toca mi cara o dime qué necesitas.</string>
     <string name="v_dock_hola_nombre">Hola, %1$s. Aquí estoy. Toca mi cara o dime qué necesitas.</string>
+    <string name="int_familia">Mi familia</string>
+    <string name="int_musica">Música</string>
+    <string name="int_deportes">Deportes</string>
+    <string name="int_cocina">Cocina</string>
+    <string name="int_jardin">Jardín y plantas</string>
+    <string name="int_animales">Animales y naturaleza</string>
+    <string name="int_historia">Historia</string>
+    <string name="int_viajes">Viajes</string>
+    <string name="int_humor">Humor</string>
+    <string name="int_tecnologia">Tecnología sencilla</string>
+    <string name="int_noticias">Noticias buenas</string>
+    <string name="int_salud">Vida sana</string>
 </resources>
