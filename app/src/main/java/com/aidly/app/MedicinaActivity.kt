@@ -13,18 +13,19 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -191,9 +192,25 @@ private fun MedicinaScreen(voz: Voz) {
         tomarFoto()
     }
 
-    Box(Modifier.fillMaxSize()) {
+    // Recordatorio diario de esta medicina a las 9:00 como punto de partida; la persona elige la hora real en la pantalla siguiente.
+    fun anadirRecordatorio(r: MedicinaValidador.Resultado) {
+        val ahora = java.time.LocalDateTime.now()
+        var hora = ahora.withHour(9).withMinute(0).withSecond(0).withNano(0)
+        if (!hora.isAfter(ahora)) hora = hora.plusDays(1)
+        val item = Recordatorios.Item(
+            java.util.UUID.randomUUID().toString(), ctx.getString(R.string.med_recordar_texto, r.nombre), Recordatorios.Tipo.MEDICINA,
+            hora.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli(), 1440L,
+        )
+        Recordatorios.agregar(ctx, item)
+        voz.callar()
+        ctx.startActivity(android.content.Intent(ctx, RecordatorioDetalleActivity::class.java).putExtra(RecordatorioDetalleActivity.EXTRA_ID, item.id))
+    }
+    fun aOtraLectura() { voz.callar(); ctx.startActivity(android.content.Intent(ctx, AnalizaActivity::class.java)); (ctx as? android.app.Activity)?.finish() }
+    fun cerrar() { voz.callar(); (ctx as? android.app.Activity)?.finish() }
+
+    Box(Modifier.fillMaxSize().background(Tema.Fondo)) {
         if (!permiso) {
-            Text(stringResource(R.string.med_permiso_camara), Modifier.padding(24.dp), fontSize = 22.sp)
+            Text(stringResource(R.string.med_permiso_camara), Modifier.padding(24.dp), fontSize = 24.sp, color = Tema.Texto)
         } else if (fase != Fase.RESULTADO) {
             AndroidView(
                 factory = { PreviewView(it).apply { this.controller = controller } },
@@ -210,15 +227,16 @@ private fun MedicinaScreen(voz: Voz) {
                         cuenta > 0 -> stringResource(R.string.cam_foto_en, cuenta)
                         else -> stringResource(R.string.med_apunta)
                     },
-                    fontSize = 34.sp, fontWeight = FontWeight.Bold,
+                    Modifier.clip(RoundedCornerShape(Tema.RadioFila)).background(Tema.Fondo.copy(alpha = 0.78f)).padding(horizontal = 16.dp, vertical = 10.dp),
+                    fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Tema.Amarillo, textAlign = TextAlign.Center,
                 )
-                if (fase == Fase.LEYENDO) CircularProgressIndicator()
-                if (aviso.isNotBlank()) Text(aviso, fontSize = 22.sp)
-                Button(
-                    onClick = { tomarFoto() },
-                    enabled = fase == Fase.APUNTANDO,
-                    modifier = Modifier.fillMaxWidth().height(96.dp),
-                ) { Text(stringResource(R.string.cam_tomar_ahora), fontSize = 26.sp) }
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    if (fase == Fase.LEYENDO) CircularProgressIndicator(color = Tema.Amarillo)
+                    if (aviso.isNotBlank()) Text(aviso, Modifier.clip(RoundedCornerShape(Tema.RadioFila)).background(Tema.Fondo.copy(alpha = 0.78f)).padding(12.dp), fontSize = 22.sp, color = Tema.Texto)
+                    BotonGrande(stringResource(R.string.cam_tomar_ahora), Tema.Turquesa, alto = 88.dp) { tomarFoto() }
+                    BotonGrande(stringResource(R.string.med_otra_cosa), Tema.Tarjeta, Tema.Texto, alto = 64.dp, tamLetra = 20) { aOtraLectura() }
+                    BotonGrande(stringResource(R.string.volver_mayus), Tema.TextoSuave, alto = 64.dp, tamLetra = 20) { cerrar() }
+                }
             }
         } else {
             res?.let { r ->
@@ -226,7 +244,10 @@ private fun MedicinaScreen(voz: Voz) {
                     Modifier.fillMaxSize().padding(20.dp).verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(14.dp),
                 ) {
-                    Text(r.nombre, fontSize = 38.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        r.nombre, Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Tema.Amarillo).padding(16.dp),
+                        fontSize = 34.sp, fontWeight = FontWeight.Bold, color = Tema.Oscuro,
+                    )
                     listOf(
                         stringResource(R.string.med_principio) to r.principio,
                         stringResource(R.string.med_concentracion) to r.concentracion,
@@ -234,30 +255,34 @@ private fun MedicinaScreen(voz: Voz) {
                         stringResource(R.string.med_dice_caja) to r.indicaciones,
                         stringResource(R.string.med_advertencias) to r.advertencias,
                     ).filter { it.second.isNotBlank() }.forEach { (k, v) ->
-                        Text("$k: $v", fontSize = 24.sp)
+                        Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(Tema.RadioFila)).background(Tema.Tarjeta).padding(14.dp)) {
+                            Text(k, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa)
+                            Text(v, fontSize = 24.sp, color = Tema.Texto)
+                        }
                     }
-                    Text(stringResource(R.string.med_confirma), fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.med_confirma), fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Tema.Coral)
                     InsigniaMotor(r.fuente, r.ms)
-                    Text(stringResource(R.string.cam_confianza, confianzaTexto(r.confianza)), fontSize = 16.sp, color = Tema.TextoSuave)
-                    Text(stringResource(R.string.med_duda), fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                    Button(
-                        onClick = {
-                            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) quierePreguntar++
-                            else pedirMic.launch(Manifest.permission.RECORD_AUDIO)
-                        },
-                        enabled = !ocupadoMed,
-                        modifier = Modifier.fillMaxWidth().height(80.dp),
-                    ) { Text(stringResource(if (ocupadoMed) R.string.med_te_escucho else R.string.med_preguntar), fontSize = 24.sp) }
-                    if (preguntaMed.isNotBlank()) Text(stringResource(R.string.hablar_tu, preguntaMed), fontSize = 20.sp)
-                    if (respuestaMed.isNotBlank()) Text(respuestaMed, fontSize = 24.sp, fontWeight = FontWeight.Medium)
-                    Button(
-                        onClick = { hablar(r) },
-                        modifier = Modifier.fillMaxWidth().height(80.dp),
-                    ) { Text(stringResource(R.string.cam_escuchar_otra), fontSize = 24.sp) }
-                    Button(
-                        onClick = { voz.callar(); res = null; aviso = ""; fase = Fase.APUNTANDO; intento++ },
-                        modifier = Modifier.fillMaxWidth().height(80.dp),
-                    ) { Text(stringResource(R.string.med_otra_caja), fontSize = 24.sp) }
+                    Text(stringResource(R.string.cam_confianza, confianzaTexto(r.confianza)), fontSize = 18.sp, color = Tema.TextoSuave)
+
+                    BotonGrande(stringResource(R.string.med_recordar), Tema.Amarillo) { anadirRecordatorio(r) }
+                    Text(stringResource(R.string.med_recordar_nota), fontSize = 18.sp, color = Tema.TextoSuave)
+
+                    Text(stringResource(R.string.med_duda), fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Tema.Texto)
+                    BotonGrande(stringResource(if (ocupadoMed) R.string.med_te_escucho else R.string.med_preguntar), Tema.Turquesa) {
+                        if (ocupadoMed) return@BotonGrande
+                        if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) quierePreguntar++
+                        else pedirMic.launch(Manifest.permission.RECORD_AUDIO)
+                    }
+                    if (preguntaMed.isNotBlank()) Text(stringResource(R.string.hablar_tu, preguntaMed), fontSize = 20.sp, color = Tema.TextoSuave)
+                    if (respuestaMed.isNotBlank()) {
+                        Text(
+                            respuestaMed, Modifier.fillMaxWidth().clip(RoundedCornerShape(Tema.RadioFila)).background(Tema.Tarjeta).padding(14.dp),
+                            fontSize = 24.sp, fontWeight = FontWeight.Medium, color = Tema.Texto,
+                        )
+                    }
+                    BotonGrande(stringResource(R.string.cam_escuchar_otra), Tema.Tarjeta, Tema.Texto, alto = 72.dp) { hablar(r) }
+                    BotonGrande(stringResource(R.string.med_otra_caja), Tema.Tarjeta, Tema.Texto, alto = 72.dp) { voz.callar(); res = null; aviso = ""; fase = Fase.APUNTANDO; intento++ }
+                    BotonGrande(stringResource(R.string.volver_mayus), Tema.TextoSuave, alto = 72.dp) { cerrar() }
                 }
             }
         }

@@ -103,7 +103,7 @@ private fun Pantalla(cerrar: () -> Unit) {
                     BotonContacto(stringResource(R.string.familia_whatsapp), Iconos.Mensaje, Tema.Amarillo, Modifier.weight(1f)) { abrirWhatsApp(ctx, f.numero) }
                 }
                 TextButton(onClick = { Favoritos.quitar(ctx, f.numero); favoritos = Favoritos.lista(ctx) }) {
-                    Text(stringResource(R.string.familia_quitar), fontSize = 16.sp, color = Tema.TextoSuave)
+                    Text(stringResource(R.string.familia_quitar), fontSize = 18.sp, color = Tema.TextoSuave)
                 }
             }
         }

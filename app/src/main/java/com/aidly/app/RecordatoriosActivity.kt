@@ -297,7 +297,7 @@ private fun Tira(dias: List<Long>, seleccionado: Long, hoy: Long, conteos: Map<L
                         .semantics { selected = sel; contentDescription = completo + ", " + n },
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
                 ) {
-                    Text(etiqueta, fontSize = 15.sp, color = if (sel) Tema.Oscuro else Tema.Texto, maxLines = 1)
+                    Text(etiqueta, fontSize = 17.sp, color = if (sel) Tema.Oscuro else Tema.Texto, maxLines = 1)
                     Text(SimpleDateFormat("d", loc).format(Date(d)), fontSize = 24.sp, fontWeight = FontWeight.Bold, color = if (sel) Tema.Oscuro else Tema.Texto)
                     Box(Modifier.size(8.dp).clip(CircleShape).background(if (n > 0) (if (sel) Tema.Oscuro else Tema.Turquesa) else Color.Transparent))
                 }
@@ -319,17 +319,17 @@ private fun FilaOcurrencia(o: Ocurrencia, esSiguiente: Boolean, hora: String, on
         Row(Modifier.weight(1f).clickable(role = Role.Button, onClick = onAbrir), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(hora, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Tema.Texto, modifier = Modifier.widthIn(min = 64.dp))
             Column(Modifier.weight(1f)) {
-                if (esSiguiente) Text(stringResource(R.string.cal_siguiente), fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa)
+                if (esSiguiente) Text(stringResource(R.string.cal_siguiente), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa)
                 Text(
                     o.texto.replaceFirstChar { it.uppercase() }, fontSize = 21.sp, fontWeight = FontWeight.Bold, color = Tema.Texto,
                     textDecoration = if (o.hecho) TextDecoration.LineThrough else TextDecoration.None,
                 )
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     IconoAidly(icono, Tema.Turquesa, 18.dp)
-                    Text(tipoTxt, fontSize = 16.sp, color = Tema.TextoSuave)
+                    Text(tipoTxt, fontSize = 18.sp, color = Tema.TextoSuave)
                     when (o.estado) {
-                        Recordatorios.Estado.OMITIDO -> Text("· " + stringResource(R.string.cal_omitido), fontSize = 16.sp, color = Tema.Coral)
-                        Recordatorios.Estado.POSPUESTO -> Text("· " + stringResource(R.string.cal_pospuesto), fontSize = 16.sp, color = Tema.TextoSuave)
+                        Recordatorios.Estado.OMITIDO -> Text("· " + stringResource(R.string.cal_omitido), fontSize = 18.sp, color = Tema.Coral)
+                        Recordatorios.Estado.POSPUESTO -> Text("· " + stringResource(R.string.cal_pospuesto), fontSize = 18.sp, color = Tema.TextoSuave)
                         else -> {}
                     }
                 }

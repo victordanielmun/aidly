@@ -173,6 +173,6 @@ private fun Tecla(texto: String, modifier: Modifier, pista: String?, onLargo: ((
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
     ) {
         Text(texto, fontSize = 38.sp, fontWeight = FontWeight.Bold, color = Tema.Texto)
-        if (pista != null) Text(pista, fontSize = 14.sp, color = Tema.TextoSuave, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp))
+        if (pista != null) Text(pista, fontSize = 16.sp, color = Tema.TextoSuave, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp))
     }
 }

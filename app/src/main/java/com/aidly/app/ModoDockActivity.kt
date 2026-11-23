@@ -141,6 +141,26 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
 
     LaunchedEffect(Unit) { if (!permisoMic) pedirMic.launch(Manifest.permission.RECORD_AUDIO) }
 
+    // Al entrar al modo dock, Aidly saluda (una vez). Con el telefono en la mesa el microfono queda lejos: sube el volumen hasta un minimo del 70 %
+    // (nunca lo baja) y lo devuelve a como estaba al salir, si la persona no lo cambio mientras tanto.
+    LaunchedEffect(Unit) {
+        val n = Preferencias.nombre(ctx)
+        val t = if (n.isNotBlank()) Idioma.vozTexto(ctx, R.string.v_dock_hola_nombre, n) else Idioma.vozTexto(ctx, R.string.v_dock_hola)
+        dicho = t
+        withTimeoutOrNull(20_000) { voz.decirYEsperar(t) }
+        if (dicho == t) dicho = ""
+    }
+    DisposableEffect(Unit) {
+        val am = ctx.getSystemService(android.media.AudioManager::class.java)
+        val antes = am.getStreamVolume(android.media.AudioManager.STREAM_MUSIC)
+        val minimo = (am.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC) * 0.7f).toInt()
+        val subido = antes < minimo
+        if (subido) am.setStreamVolume(android.media.AudioManager.STREAM_MUSIC, minimo, 0)
+        onDispose {
+            if (subido && am.getStreamVolume(android.media.AudioManager.STREAM_MUSIC) == minimo) am.setStreamVolume(android.media.AudioManager.STREAM_MUSIC, antes, 0)
+        }
+    }
+
     suspend fun escuchar(): String? = try {
         if (Privacidad.nubeActiva()) GeminiStt.escuchar(ctx) else EscuchaSistema.escuchar(ctx)
     } catch (e: Exception) { SpikeLog.log("DOCK: no pude escuchar (${e::class.simpleName})"); null }
@@ -292,7 +312,7 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
             // La camara solo se enciende si la persona lo acepta aqui, ella misma.
             Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(Tema.RadioFila)).background(Tema.Tarjeta).padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(stringResource(R.string.dock_acepta_t), fontSize = 21.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa)
-                Text(stringResource(R.string.dock_acepta), fontSize = 17.sp, color = Tema.Texto)
+                Text(stringResource(R.string.dock_acepta), fontSize = 18.sp, color = Tema.Texto)
                 BotonGrande(stringResource(R.string.dock_acepta_si), Tema.Turquesa, alto = 64.dp, tamLetra = 20) {
                     Privacidad.fijarCamaraAceptada(ctx, true); aceptada = true
                     if (!permisoCam) pedirCam.launch(Manifest.permission.CAMERA)
@@ -306,13 +326,13 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
             Column(Modifier.weight(1f)) {
                 Text(
                     if (usbEstado == 2) stringResource(R.string.dock_usb_conectada, angulo.toInt()) else stringResource(R.string.dock_simulado, angulo.toInt()),
-                    fontSize = 17.sp, color = Tema.TextoSuave,
+                    fontSize = 18.sp, color = Tema.TextoSuave,
                 )
                 Text(
                     when (usbEstado) { 2 -> audioUsb?.let { stringResource(R.string.dock_audio_usb, it) } ?: stringResource(R.string.dock_audio_tel); 1 -> stringResource(R.string.dock_usb_buscando); else -> stringResource(R.string.dock_simulado_nota) },
-                    fontSize = 15.sp, color = Tema.TextoSuave,
+                    fontSize = 18.sp, color = Tema.TextoSuave,
                 )
-                if (usbEstado == 0) Text(stringResource(R.string.dock_usb_buscar), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa,
+                if (usbEstado == 0) Text(stringResource(R.string.dock_usb_buscar), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa,
                     modifier = Modifier.heightIn(min = 48.dp).clickable(role = Role.Button) { reintentoUsb++ }.padding(vertical = 12.dp))
             }
         }
@@ -342,7 +362,7 @@ private fun EstadoCamara(on: Boolean, visible: Boolean?) {
         Spacer(Modifier.width(8.dp))
         Text(
             stringResource(if (!on) R.string.dock_camara_off else if (visible == true) R.string.dock_camara_te_veo else R.string.dock_camara_on),
-            fontSize = 16.sp, fontWeight = FontWeight.Bold, color = color,
+            fontSize = 18.sp, fontWeight = FontWeight.Bold, color = color,
         )
     }
 }

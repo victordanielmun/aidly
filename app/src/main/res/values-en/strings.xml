@@ -22,8 +22,8 @@
     <string name="home_familia_sub">Call or message</string>
     <string name="home_papel">What does this say?</string>
     <string name="home_papel_sub">Point at a bottle, letter or sign</string>
-    <string name="home_medicina">Read medicine</string>
-    <string name="home_medicina_sub">Photo of the box</string>
+    <string name="home_medicina">Medicines</string>
+    <string name="home_medicina_sub">Point at the box or bottle</string>
     <string name="home_mensajes">Read me my messages</string>
     <string name="home_apagado">Off</string>
     <string name="home_encendido">On</string>
@@ -109,7 +109,7 @@
     <string name="rec_est_ayuda">I alerted your family. If it\'s an emergency, call %1$s.</string>
     <string name="rec_est_paso">This alert has passed.</string>
     <string name="recs_titulo">My reminders</string>
-    <string name="recs_vacio">You have no reminders. Tell Aidly: “remind me to take my pill at 8 tonight”.</string>
+    <string name="recs_vacio">You have no reminders. Tell Aidly: “remind me to take my blood pressure pill at 9 in the morning”.</string>
     <string name="recs_borrar">DELETE</string>
     <string name="recs_ultimos">Latest alerts</string>
     <string name="recs_hecho">✔ Done</string>
@@ -432,4 +432,10 @@
     <string name="det_borrar_seguro">Tap again to delete</string>
     <string name="v_sigo_pensando">I\'m still thinking, one moment.</string>
     <string name="hablar_lento">I\'m still thinking, one moment. Thanks for waiting.</string>
+    <string name="med_otra_cosa">Is it a letter or a receipt?</string>
+    <string name="med_recordar">ADD A REMINDER</string>
+    <string name="med_recordar_nota">You choose the time: I don\'t know when you take it.</string>
+    <string name="med_recordar_texto">Take %1$s</string>
+    <string name="v_dock_hola">Hello. I am here. Tap my face or tell me what you need.</string>
+    <string name="v_dock_hola_nombre">Hello, %1$s. I am here. Tap my face or tell me what you need.</string>
 </resources>

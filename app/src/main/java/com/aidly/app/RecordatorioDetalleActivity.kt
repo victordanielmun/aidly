@@ -100,7 +100,7 @@ private fun Pantalla(item: Recordatorios.Item, cerrar: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             Column(Modifier.weight(1f)) {
-                Text(stringResource(R.string.det_que), fontSize = 17.sp, color = Tema.TextoSuave)
+                Text(stringResource(R.string.det_que), fontSize = 18.sp, color = Tema.TextoSuave)
                 Text(item.texto.replaceFirstChar { it.uppercase() }, fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Tema.Texto)
             }
             Box(
@@ -110,9 +110,9 @@ private fun Pantalla(item: Recordatorios.Item, cerrar: () -> Unit) {
                 contentAlignment = Alignment.Center,
             ) { IconoAidly(Iconos.Microfono, Tema.Oscuro, 30.dp) }
         }
-        Text(stringResource(R.string.det_cambiar_nota), fontSize = 15.sp, color = Tema.TextoSuave)
+        Text(stringResource(R.string.det_cambiar_nota), fontSize = 18.sp, color = Tema.TextoSuave)
 
-        Text(stringResource(R.string.det_cada), fontSize = 17.sp, color = Tema.TextoSuave)
+        Text(stringResource(R.string.det_cada), fontSize = 18.sp, color = Tema.TextoSuave)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             opciones.forEach { op ->
                 val sel = cada == op

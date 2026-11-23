@@ -218,7 +218,7 @@ private fun AnalizaScreen(voz: Voz, cerrar: () -> Unit) {
                     }
                     Text(stringResource(R.string.ana_descargo), fontSize = 18.sp, color = Tema.TextoSuave)
                     InsigniaMotor(r.fuente, r.ms)
-                    Text(stringResource(R.string.cam_confianza, confianzaTexto(r.confianza)), fontSize = 16.sp, color = Tema.TextoSuave)
+                    Text(stringResource(R.string.cam_confianza, confianzaTexto(r.confianza)), fontSize = 18.sp, color = Tema.TextoSuave)
                     if (r.esMedicina) {
                         BotonGrande(stringResource(R.string.ana_leer_medicina), Tema.Amarillo) {
                             voz.callar(); ctx.startActivity(Intent(ctx, MedicinaActivity::class.java)); cerrar()

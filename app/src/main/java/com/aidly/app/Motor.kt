@@ -51,8 +51,8 @@ fun InsigniaMotor(fuente: String, ms: Long = 0, modifier: Modifier = Modifier) {
     ) {
         IconoAidly(m.icono, m.color, 22.dp)
         Row(Modifier.width(8.dp)) {}
-        Text(stringResource(m.etiqueta), fontSize = 17.sp, fontWeight = FontWeight.Bold, color = m.color)
-        if (ms > 0) Text("  ·  " + String.format(Locale.US, "%.1f s", ms / 1000.0), fontSize = 15.sp, color = Tema.TextoSuave)
+        Text(stringResource(m.etiqueta), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = m.color)
+        if (ms > 0) Text("  ·  " + String.format(Locale.US, "%.1f s", ms / 1000.0), fontSize = 18.sp, color = Tema.TextoSuave)
     }
 }
 

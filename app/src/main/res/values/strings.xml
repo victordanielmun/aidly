@@ -22,8 +22,8 @@
     <string name="home_familia_sub">Llamar o escribir</string>
     <string name="home_papel">¿Qué dice aquí?</string>
     <string name="home_papel_sub">Apunta a un frasco, carta o cartel</string>
-    <string name="home_medicina">Leer medicina</string>
-    <string name="home_medicina_sub">Foto de la caja</string>
+    <string name="home_medicina">Medicamentos</string>
+    <string name="home_medicina_sub">Apunta a la caja o al frasco</string>
     <string name="home_mensajes">Leerme los mensajes</string>
     <string name="home_apagado">Apagado</string>
     <string name="home_encendido">Encendido</string>
@@ -109,7 +109,7 @@
     <string name="rec_est_ayuda">Avisé a tu familia. Si es una emergencia, llama al %1$s.</string>
     <string name="rec_est_paso">Este aviso ya pasó.</string>
     <string name="recs_titulo">Mis recordatorios</string>
-    <string name="recs_vacio">No tienes recordatorios. Dile a Aidly: “recuérdame tomar mi pastilla a las 8 de la noche”.</string>
+    <string name="recs_vacio">No tienes recordatorios. Dile a Aidly: “recuérdame tomar la pastilla de la presión a las 9 de la mañana”.</string>
     <string name="recs_borrar">BORRAR</string>
     <string name="recs_ultimos">Últimos avisos</string>
     <string name="recs_hecho">✔ Hecho</string>
@@ -432,4 +432,10 @@
     <string name="det_borrar_seguro">Toca otra vez para borrar</string>
     <string name="v_sigo_pensando">Sigo pensando, un momento.</string>
     <string name="hablar_lento">Sigo pensando, un momento. Gracias por esperar.</string>
+    <string name="med_otra_cosa">¿Es una carta o un recibo?</string>
+    <string name="med_recordar">AÑADIR RECORDATORIO</string>
+    <string name="med_recordar_nota">Tú eliges la hora: yo no sé cuándo te toca.</string>
+    <string name="med_recordar_texto">Tomar %1$s</string>
+    <string name="v_dock_hola">Hola. Aquí estoy. Toca mi cara o dime qué necesitas.</string>
+    <string name="v_dock_hola_nombre">Hola, %1$s. Aquí estoy. Toca mi cara o dime qué necesitas.</string>
 </resources>

@@ -154,7 +154,7 @@ private fun Pantalla(cerrar: () -> Unit) {
         }
 
         TextButton(onClick = { ctx.startActivity(Intent(ctx, MainActivity::class.java)) }) {
-            Text(stringResource(R.string.ajustes_pruebas), fontSize = 14.sp, color = Tema.TextoSuave)
+            Text(stringResource(R.string.ajustes_pruebas), fontSize = 16.sp, color = Tema.TextoSuave)
         }
     }
 }

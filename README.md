@@ -1,7 +1,7 @@
 # Aidly: a proactive voice companion for older adults
 
 Android app built for **#BuildHybridAI 2026** with **Firebase AI Logic** (hybrid on-device / cloud inference).
-Aidly reads your messages aloud, tells you what any label, bottle or letter says, reminds you of medicines and appointments,
+Aidly reads your messages aloud, tells you what a medicine box or any label, bottle or letter says, reminds you of medicines and appointments,
 and lets your family know you are okay, sharing only what *you* choose.
 
 > Built from scratch during the submission period (started 17 Nov 2026). The optional hardware dock in [`dock/`](dock/) is a
@@ -19,7 +19,7 @@ and lets your family know you are okay, sharing only what *you* choose.
 |---|---|---|
 | Short conversation | `PREFER_ON_DEVICE` (Nano, cloud fallback); `ONLY_ON_DEVICE` when the cloud is off | [`AsistenteVoz.kt`](app/src/main/java/com/aidly/app/AsistenteVoz.kt) |
 | Voice to structured reminders and appointments (schema-constrained JSON) | `PREFER_ON_DEVICE` then `ONLY_IN_CLOUD`; local rules first | [`Interprete.kt`](app/src/main/java/com/aidly/app/Interprete.kt), [`ParserLocal.kt`](app/src/main/java/com/aidly/app/ParserLocal.kt) |
-| "What does this say?" (photo of a label, bottle, letter, message) | `PREFER_IN_CLOUD` multimodal, structured JSON with a confidence field | [`AnalizaValidador.kt`](app/src/main/java/com/aidly/app/AnalizaValidador.kt), [`MedicinaValidador.kt`](app/src/main/java/com/aidly/app/MedicinaValidador.kt) |
+| **Medicines** (photo of a box or bottle: name, dose, what the box says, spoken questions with a safety gate) and "What does this say?" (letters, receipts, signs, possible scams) | `PREFER_IN_CLOUD` multimodal, structured JSON with a confidence field | [`AnalizaValidador.kt`](app/src/main/java/com/aidly/app/AnalizaValidador.kt), [`MedicinaValidador.kt`](app/src/main/java/com/aidly/app/MedicinaValidador.kt) |
 | Speech to text | Gemini (cloud) | [`GeminiStt.kt`](app/src/main/java/com/aidly/app/GeminiStt.kt) |
 | Web questions | Gemini with Google Search grounding | [`Busqueda.kt`](app/src/main/java/com/aidly/app/Busqueda.kt) |
 | On-device model status and background download | `FirebaseAIOnDevice.checkStatus()` and `download()` at app start; shown in Settings > Privacy | [`ModeloLocal.kt`](app/src/main/java/com/aidly/app/ModeloLocal.kt) |
@@ -28,7 +28,7 @@ Also used: **Firebase App Check** (debug provider for development and submission
 rules in [`firestore.rules`](firestore.rules)) and **Firebase Hosting** (family web page in [`familia/`](familia/)).
 
 ## Features
-Voice assistant (messages and email by notification, reminders with exact alarms, calendar, web questions, call/open apps) · "What does this say?" camera reader ·
+Voice assistant (messages and email by notification, reminders with exact alarms, calendar, web questions, call/open apps) · **Medicines** camera reader (with "add a reminder", e.g. "blood pressure pill at 9:00 AM") and "What does this say?" for letters and receipts ·
 daily check-in · **dock mode** (USB-C code for the dock included, unit-tested against a simulated port only; big animated face, voice through the dock, optional on-device presence detection with MediaPipe that asks "are you okay?" if it stops seeing you after a conversation; no images are stored or sent) · consent-based family circle with a code · SOS · big-key dialer · optional caller announcement · widgets · Spanish and English UI **and voice** (commands, spoken answers, speech recognition and AI prompts follow the app language).
 
 ## How it is organised

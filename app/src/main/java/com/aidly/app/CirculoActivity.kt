@@ -160,11 +160,11 @@ private fun Pantalla(cerrar: () -> Unit) {
             }
             Text(
                 stringResource(R.string.circ_nota),
-                fontSize = 17.sp, color = Tema.TextoSuave,
+                fontSize = 18.sp, color = Tema.TextoSuave,
             )
             if (Circulo.ultimaSync(ctx) > 0) {
                 val min = (System.currentTimeMillis() - Circulo.ultimaSync(ctx)) / 60_000
-                Text(stringResource(R.string.circ_ultimo_envio, if (min < 1) stringResource(R.string.circ_menos_min) else stringResource(R.string.circ_min, min.toInt())), fontSize = 15.sp, color = Tema.TextoSuave)
+                Text(stringResource(R.string.circ_ultimo_envio, if (min < 1) stringResource(R.string.circ_menos_min) else stringResource(R.string.circ_min, min.toInt())), fontSize = 18.sp, color = Tema.TextoSuave)
             }
             if (trabajando) CircularProgressIndicator(color = Tema.Amarillo)
             BotonGrande(

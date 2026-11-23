@@ -108,7 +108,7 @@ fun FilaAccion(icono: ImageVector, titulo: String, subtitulo: String, amarilla: 
         Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f)) {
             Text(titulo, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = tinta)
-            Text(subtitulo, fontSize = 17.sp, color = suave)
+            Text(subtitulo, fontSize = 18.sp, color = suave)
         }
         if (chevron) IconoAidly(Iconos.ChevronDerecha, if (amarilla) Tema.Oscuro else Tema.TextoSuave, 26.dp)
     }
@@ -126,7 +126,7 @@ fun InterruptorFila(icono: ImageVector?, titulo: String, estado: String, activo:
         if (icono != null) { IconoAidly(icono, Tema.Turquesa, 30.dp); Spacer(Modifier.width(14.dp)) }
         Column(Modifier.weight(1f)) {
             Text(titulo, fontSize = 19.sp, fontWeight = FontWeight.Bold, color = Tema.Texto)
-            if (estado.isNotBlank()) Text(estado, fontSize = 16.sp, color = Tema.TextoSuave)
+            if (estado.isNotBlank()) Text(estado, fontSize = 18.sp, color = Tema.TextoSuave)
         }
         Spacer(Modifier.width(12.dp))
         val borde = if (activo) Tema.Turquesa else Tema.TextoSuave

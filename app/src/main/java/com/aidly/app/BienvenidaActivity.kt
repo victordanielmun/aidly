@@ -141,7 +141,7 @@ private fun Pantalla(voz: Voz, terminar: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Text(stringResource(R.string.bienv_paso, indice + 1, pasos.size), fontSize = 16.sp, color = Tema.TextoSuave)
+            Text(stringResource(R.string.bienv_paso, indice + 1, pasos.size), fontSize = 18.sp, color = Tema.TextoSuave)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 pasos.forEachIndexed { i, _ ->
                     Box(Modifier.size(12.dp).clip(CircleShape).background(if (i <= indice) Tema.Turquesa else Tema.Tarjeta))

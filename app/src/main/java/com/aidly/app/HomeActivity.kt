@@ -64,6 +64,12 @@ class HomeActivity : ActividadAidly() {
 
 private fun saludo(ctx: android.content.Context): String = Idioma.saludo(ctx, LocalDateTime.now().hour)
 
+/** La hora con el formato del idioma ("22:04" / "10:04 PM"), para mostrarla grande. */
+private fun horaAhora(ctx: android.content.Context): String {
+    val patron = Idioma.config(ctx).getJSONObject("formato").getString("hora_pantalla")
+    return java.time.LocalTime.now().format(DateTimeFormatter.ofPattern(patron, Idioma.locale(ctx)))
+}
+
 private fun fechaHoy(ctx: android.content.Context): String {
     val patron = Idioma.config(ctx).getJSONObject("formato").getString("fecha_larga")
     return LocalDate.now().format(DateTimeFormatter.ofPattern(patron, Idioma.locale(ctx))).replaceFirstChar { it.uppercase() }
@@ -94,6 +100,14 @@ private fun HomeScreen() {
     var accesoContactos by remember { mutableStateOf(true) }
     var proximo by remember { mutableStateOf("") }
     var saludoTexto by remember { mutableStateOf(saludo(ctx)) }
+    var horaTexto by remember { mutableStateOf(horaAhora(ctx)) }
+    // La hora se actualiza sola, al cambiar el minuto.
+    LaunchedEffect(Unit) {
+        while (true) {
+            horaTexto = horaAhora(ctx); saludoTexto = saludo(ctx)
+            kotlinx.coroutines.delay(60_000L - System.currentTimeMillis() % 60_000L + 50L)
+        }
+    }
     var aviso by remember { mutableStateOf("") }
 
     val pedirNotif = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {}
@@ -138,18 +152,19 @@ private fun HomeScreen() {
             CabeceraAidly(avisoPermisos = faltanPermisos) { abrir(AjustesActivity::class.java) }
 
             Column {
-                Text(saludoTexto, fontSize = 38.sp, fontWeight = FontWeight.Bold, color = Tema.Texto)
-                Text(fechaHoy(ctx), fontSize = 20.sp, color = Tema.TextoSuave)
+                Text(saludoTexto, fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Tema.Texto)
+                Text(horaTexto, fontSize = 56.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa, lineHeight = 60.sp)
+                Text(fechaHoy(ctx), fontSize = 22.sp, color = Tema.TextoSuave)
             }
 
             TarjetaHablar(stringResource(R.string.home_hablar), stringResource(R.string.home_hablar_sub)) { abrir(HablarActivity::class.java) }
 
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                FilaAccion(Iconos.Pastilla, stringResource(R.string.home_medicina), stringResource(R.string.home_medicina_sub), amarilla = true) { abrir(MedicinaActivity::class.java) }
                 FilaAccion(Iconos.Campana, stringResource(R.string.home_recordatorios), proximo) { abrir(RecordatoriosActivity::class.java) }
                 FilaAccion(Iconos.Personas, stringResource(R.string.home_familia), stringResource(R.string.home_familia_sub)) { abrir(FamiliaActivity::class.java) }
-                FilaAccion(Iconos.Celular, stringResource(R.string.home_dock), stringResource(R.string.home_dock_sub)) { abrir(ModoDockActivity::class.java) }
                 FilaAccion(Iconos.Telefono, stringResource(R.string.home_marcar), stringResource(R.string.home_marcar_sub)) { abrir(MarcarActivity::class.java) }
-                FilaAccion(Iconos.Documento, stringResource(R.string.home_papel), stringResource(R.string.home_papel_sub), amarilla = true) { abrir(AnalizaActivity::class.java) }
+                FilaAccion(Iconos.Celular, stringResource(R.string.home_dock), stringResource(R.string.home_dock_sub)) { abrir(ModoDockActivity::class.java) }
             }
 
             InterruptorFila(
