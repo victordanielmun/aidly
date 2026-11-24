@@ -67,6 +67,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -200,14 +201,23 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
     }
 
     // ---- Escucha sin boton: con alguien delante, atiende a «Aidly» (y a la continuacion de la charla); ver EscuchaLibre ----
+    // Aidly no se oye a si mismo: no se escucha mientras habla ni 1 s despues, y lo grabado cuando hablo se descarta.
+    var vozCambio by remember { mutableLongStateOf(0L) }
+    LaunchedEffect(Unit) { voz.hablando.collect { vozCambio = System.currentTimeMillis() } }
     LaunchedEffect(ocupado, permisoMic, libreActiva) {
         if (ocupado || !permisoMic || !libreActiva) return@LaunchedEffect
         while (true) {
             val ms = System.currentTimeMillis()
-            if (!libre.puedeEscuchar(ms, if (camaraOn) visible else null)) { delay(500); continue }
+            if (voz.hablando.value || ms - vozCambio < 1_000 || !libre.puedeEscuchar(ms, if (camaraOn) visible else null)) { delay(300); continue }
             libre.empezoIntento(ms)
-            val t = try { EscuchaSistema.escuchar(ctx) } catch (e: kotlin.coroutines.cancellation.CancellationException) { throw e } catch (e: Exception) { null }
-            when (val e = libre.clasificar(System.currentTimeMillis(), t)) {
+            // Con la nube se graba (sin pitidos) y solo se transcribe si alguien hablo; sin nube, el reconocedor del sistema.
+            var t = escuchar()
+            kotlinx.coroutines.currentCoroutineContext().ensureActive()
+            if (vozCambio >= ms || voz.hablando.value) t = null     // se grabo mientras Aidly hablaba: era el, no la persona
+            val fin = System.currentTimeMillis()
+            if (t == null && fin - ms < 800) libre.fallo(fin)      // fallo inmediato: no insistir
+            if (t != null) SpikeLog.log("DOCK: escucha libre oyo '${t.take(60)}'")
+            when (val e = libre.clasificar(fin, t)) {
                 is EscuchaLibre.Entrada.Llamada -> { scope.launch { turno(e.resto.ifBlank { null }) }; return@LaunchedEffect }
                 is EscuchaLibre.Entrada.Continuacion -> { scope.launch { turno(e.texto) }; return@LaunchedEffect }
                 EscuchaLibre.Entrada.Nada -> {}

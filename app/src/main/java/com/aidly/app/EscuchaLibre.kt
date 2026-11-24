@@ -6,11 +6,11 @@ package com.aidly.app
  *  - ...o si es la continuacion de una conversacion: tras hablar Aidly queda una ventana de [Config.ventanaMs] en la que no hace falta repetir el nombre
  *    (hasta [Config.maxTurnosVentana] turnos seguidos).
  *  - Para gastar poco y molestar poco: [Config.entreIntentosMs] entre intentos, descanso de [Config.descansoMs] tras [Config.vaciosParaDescansar]
- *    intentos seguidos sin nada util, y como mucho [Config.maxPorHora] intentos por hora. Nunca escucha si la camara ve que no hay nadie.
+ *    veces seguidas oyendo hablar sin decir «Aidly», y como mucho [Config.maxPorHora] intentos por hora. Nunca escucha si la camara ve que no hay nadie.
  */
 class EscuchaLibre(private val cfg: Config = Config()) {
     class Config(
-        val entreIntentosMs: Long = 1_500, val vaciosParaDescansar: Int = 4, val descansoMs: Long = 30_000,
+        val entreIntentosMs: Long = 300, val vaciosParaDescansar: Int = 4, val descansoMs: Long = 30_000,
         val ventanaMs: Long = 10_000, val maxTurnosVentana: Int = 6, val maxPorHora: Int = 300,
     )
 
@@ -53,13 +53,21 @@ class EscuchaLibre(private val cfg: Config = Config()) {
         return when {
             llamada != null -> { vacios = 0; turnosVentana = 0; Entrada.Llamada(t.substring(llamada.range.last + 1).trim().trim('.', ',', '!', '?', ':', ';').trim()) }
             t.isNotEmpty() && enVentana(ms) -> { vacios = 0; turnosVentana++; Entrada.Continuacion(t) }
+            t.isEmpty() -> {
+                // En silencio no se descansa (es lo normal en una sala tranquila y asi no se pierde un «Aidly»); solo termina la conversacion.
+                if (ms < ventanaHasta) cerrarVentana()
+                Entrada.Nada
+            }
             else -> {
-                if (t.isEmpty() && ms < ventanaHasta) cerrarVentana()   // en silencio, la conversacion termino
+                // Se oyo hablar pero sin decir «Aidly» (la tele, una charla): tras varias veces seguidas se descansa un rato para no gastar nube ni bateria.
                 if (++vacios >= cfg.vaciosParaDescansar) { vacios = 0; descansaHasta = ms + cfg.descansoMs }
                 Entrada.Nada
             }
         }
     }
+
+    /** El intento fallo al instante (p. ej. no hay reconocedor o no tiene el idioma): descanso para no repetirlo sin parar. */
+    fun fallo(ms: Long) { descansaHasta = ms + cfg.descansoMs }
 
     companion object {
         /** «Aidly» como lo suele transcribir un reconocedor de voz, con saludo opcional delante. */

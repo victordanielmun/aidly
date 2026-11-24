@@ -44,7 +44,8 @@ object GeminiStt {
     /** Devuelve el texto, o null si no hubo voz. Lanza excepcion si falla el microfono o la nube. */
     suspend fun escuchar(ctx: android.content.Context): String? {
         Privacidad.exigirNube()
-        val pcm = withContext(Dispatchers.IO) { grabarFrase(ctx) } ?: return null
+        // Si la corrutina se cancela (p. ej. la persona toca HABLAR mientras se escuchaba sin boton), la grabacion se corta en ese cuadro.
+        val pcm = withContext(Dispatchers.IO) { val job = coroutineContext[kotlinx.coroutines.Job]; grabarFrase(ctx) { job?.isActive == false } } ?: return null
         return transcribirWav(ctx, SttCompare.wav(pcm), pcm.size / 32)
     }
 
@@ -91,7 +92,7 @@ object GeminiStt {
     }
 
     /** Graba con deteccion simple de voz por energia. Devuelve null si nadie hablo. */
-    private fun grabarFrase(ctx: android.content.Context): ByteArray? {
+    private fun grabarFrase(ctx: android.content.Context, abortar: () -> Boolean = { false }): ByteArray? {
         val min = AudioRecord.getMinBufferSize(RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT)
         @Suppress("MissingPermission")
         val rec = AudioRecord(
@@ -113,6 +114,7 @@ object GeminiStt {
             var quiet = 0
             var i = 0
             while (true) {
+                if (abortar()) return null
                 val buf = ByteArray(FRAME * 2)
                 var off = 0
                 while (off < buf.size) {

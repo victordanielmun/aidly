@@ -47,9 +47,23 @@ class EscuchaLibreTest {
     @Test fun descansaTrasVariosIntentosVacios() {
         val l = EscuchaLibre(EscuchaLibre.Config(vaciosParaDescansar = 3, descansoMs = 30_000, entreIntentosMs = 1_000))
         var t = 0L
-        repeat(3) { t += 2_000; assertTrue(l.puedeEscuchar(t, true)); l.empezoIntento(t); l.clasificar(t, null) }
+        repeat(3) { t += 2_000; assertTrue(l.puedeEscuchar(t, true)); l.empezoIntento(t); l.clasificar(t, "el partido va uno a uno") }
         assertFalse(l.puedeEscuchar(t + 5_000, true))
         assertTrue(l.puedeEscuchar(t + 31_000, true))
+    }
+
+    @Test fun elSilencioNoHaceDescansarYPuedeOirUnaLlamadaDespues() {
+        val l = EscuchaLibre(EscuchaLibre.Config(vaciosParaDescansar = 3, entreIntentosMs = 0))
+        repeat(20) { l.empezoIntento(it * 7_000L); l.clasificar(it * 7_000L, null) }
+        assertTrue(l.puedeEscuchar(150_000, true))
+        assertEquals("hola", resto(l.clasificar(150_000, "Aidly hola")))
+    }
+
+    @Test fun unFalloInmediatoHaceDescansar() {
+        val l = EscuchaLibre(EscuchaLibre.Config(descansoMs = 30_000, entreIntentosMs = 0))
+        l.fallo(1_000)
+        assertFalse(l.puedeEscuchar(10_000, true))
+        assertTrue(l.puedeEscuchar(32_000, true))
     }
 
     @Test fun nuncaEscuchaSiLaCamaraVeQueNoHayNadie() {
