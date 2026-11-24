@@ -9,6 +9,7 @@
 html[data-lang=en] .es{display:none}html[data-lang=es] .en{display:none}
 :focus-visible{outline:3px solid var(--foco);outline-offset:2px;border-radius:8px}
 #barra{position:fixed;left:0;right:0;top:0;height:60px;display:flex;align-items:center;gap:8px;padding:0 16px;background:rgba(29,37,35,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--borde);z-index:5}
+.volver{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;min-height:40px;border:1.5px solid var(--tenue);border-radius:999px;color:var(--texto);text-decoration:none;font-weight:700;font-size:15px;white-space:nowrap;transition:background .25s var(--ease),border-color .25s var(--ease)}.volver:hover{background:var(--hover);border-color:var(--acento)}
 #barra .marca{display:flex;align-items:center;gap:9px;font-weight:700;font-size:20px;color:var(--texto);text-decoration:none;margin-right:4px}
 #barra .marca img{width:32px;height:32px;border-radius:9px}
 #barra b{margin:0 8px 0 2px;white-space:nowrap;font-weight:400;color:var(--suave);font-size:15px}
@@ -47,7 +48,7 @@ a{color:var(--acento);font-weight:700}.lk a{display:inline-block;margin:0 10px 4
 @media (max-width:760px){#panel{width:calc(100% - 24px);max-height:42%;top:auto;bottom:12px;left:12px;border-radius:20px}#aviso{display:none}.tab{padding:8px 10px;font-size:14px}#barra{gap:4px;padding:0 10px;overflow-x:auto}#barra .marca span{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
 </style></head><body>
-<div id="barra"><a class="marca" href="../" aria-label="Aidly"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23151b19'/%3E%3Crect x='3' y='28' width='6' height='18' rx='3' fill='%23ffd800'/%3E%3Crect x='55' y='28' width='6' height='18' rx='3' fill='%23ffd800'/%3E%3Crect x='10' y='10' width='44' height='46' rx='14' fill='%231d2523' stroke='%235bd6bb' stroke-width='5'/%3E%3Ccircle cx='24' cy='30' r='4' fill='%23ffd800'/%3E%3Ccircle cx='40' cy='30' r='4' fill='%23ffd800'/%3E%3Cpath d='M23 42q9 8 18 0' stroke='%23ffd800' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" alt=""><span>Aidly</span></a><b>Dock · Rev. C v2</b>
+<div id="barra"><a class="volver" href="../"><span aria-hidden="true">&larr;</span> <span class="en">Back</span><span class="es">Volver</span></a><a class="marca" href="../" aria-label="Aidly"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23151b19'/%3E%3Crect x='3' y='28' width='6' height='18' rx='3' fill='%23ffd800'/%3E%3Crect x='55' y='28' width='6' height='18' rx='3' fill='%23ffd800'/%3E%3Crect x='10' y='10' width='44' height='46' rx='14' fill='%231d2523' stroke='%235bd6bb' stroke-width='5'/%3E%3Ccircle cx='24' cy='30' r='4' fill='%23ffd800'/%3E%3Ccircle cx='40' cy='30' r='4' fill='%23ffd800'/%3E%3Cpath d='M23 42q9 8 18 0' stroke='%23ffd800' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" alt=""><span>Aidly</span></a><b>Dock · Rev. C v2</b>
  <button class="tab on" data-t="t3d"><span class="en">3D model</span><span class="es">Modelo 3D</span></button><button class="tab" data-t="telec"><span class="en">Electronics</span><span class="es">Electrónica</span></button><button class="tab" data-t="tlay"><span class="en">Layout plan</span><span class="es">Plano de distribución</span></button><button class="tab" data-t="tcomp"><span class="en">Components & downloads</span><span class="es">Componentes y descargas</span></button>
  <span class="fill"></span><div class="idioma" id="idioma" role="group" aria-label="Idioma / Language"><button type="button" data-l="en" aria-pressed="true">EN</button><button type="button" data-l="es" aria-pressed="false">ES</button></div></div>
 
@@ -1189,7 +1190,7 @@ for (const [k,c] of Object.entries(CAPAS)){ const l = document.createElement('la
   l.querySelector('input').addEventListener('change', e => { grupos[k].visible = e.target.checked; }); lista.appendChild(l); checks[k] = l; }
 for (const [id,fn] of [['opac',aplicarOpacidad],['expl',aplicarExplosion],['giro',aplicarGiro],['corte',aplicarCorte]]) $(id).addEventListener('input', fn);
 $('cero').onclick = () => { $('giro').value = 0; aplicarGiro(); };
-let jugando = false, t0 = 0;
+let jugando = true, t0 = performance.now(); // arranca girando; el boton Detener lo para
 function textoPlay(){ $('play').textContent = tr(jugando ? TXT.stop : TXT.play); }
 $('play').onclick = () => { jugando = !jugando; t0 = performance.now(); textoPlay(); };
 const VISTAS = {iso:[310,-440,280], frente:[65,-600,110], lado:[620,59,110], arriba:[65,60,640]};
