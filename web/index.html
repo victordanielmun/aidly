@@ -9,7 +9,7 @@
 <meta property="og:description" content="Reads, reminds, suggests and checks in. Only shares with family what the person switches on.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://aidly-d108b.web.app/assets/img/portada.webp">
-<meta name="theme-color" content="#493d21">
+<meta name="theme-color" content="#2b2413">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='6' y='4' width='6' height='20' rx='3' fill='%23ffd800' transform='translate(0 12)'/%3E%3Crect x='52' y='16' width='6' height='20' rx='3' fill='%23ffd800'/%3E%3Crect x='10' y='8' width='44' height='48' rx='14' fill='%23493d21' stroke='%235bd6bb' stroke-width='5'/%3E%3Ccircle cx='24' cy='28' r='4' fill='%23ffd800'/%3E%3Ccircle cx='40' cy='28' r='4' fill='%23ffd800'/%3E%3Cpath d='M23 41q9 8 18 0' stroke='%23ffd800' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <script>
 /* Los enlaces de la familia llegaban a la raiz con el codigo tras "#": se mandan a /familia/ para no romperlos. */
@@ -27,10 +27,10 @@
 @font-face{font-family:"Atkinson";src:url(assets/fonts/atkinson_regular.ttf) format("truetype");font-weight:400;font-display:swap}
 @font-face{font-family:"Atkinson";src:url(assets/fonts/atkinson_bold.ttf) format("truetype");font-weight:700;font-display:swap}
 :root{
-  --base:#493d21; --raised:#54482b; --overlay:#5f5334; --hover:#6a5d3b; --deep:#392f19;
+  --base:#2b2413; --raised:#383019; --overlay:#443a1f; --hover:#4e4426; --deep:#201b0d;
   --teal:#5bd6bb; --yellow:#ffd800; --orange:#ff8545;
   --text:#f7f0d8; --text2:#d9cfae; --text3:#bdb28d;
-  --line:rgba(247,240,216,.16); --focus:#84caff;
+  --line:rgba(247,240,216,.18); --focus:#84caff;
   --ease:cubic-bezier(.22,.8,.24,1);
 }
 *{box-sizing:border-box}
@@ -57,7 +57,7 @@ p{margin:0}
 main,header,footer{position:relative;z-index:1}
 
 /* barra superior */
-.nav{position:sticky;top:0;z-index:20;background:rgba(73,61,33,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nav{position:sticky;top:0;z-index:20;background:rgba(43,36,19,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .nav .wrap{display:flex;align-items:center;gap:20px;min-height:68px}
 .marca{display:flex;align-items:center;gap:10px;font-weight:700;font-size:22px;color:var(--text);text-decoration:none}
 .marca img{width:36px;height:36px;border-radius:10px}
@@ -103,7 +103,7 @@ h2 em{font-style:normal;color:var(--yellow)}
 .escena{position:relative;height:clamp(420px,46vw,580px)}
 .escena .fondo{position:absolute;inset:0 0 0 22%;border-radius:36px;overflow:hidden;border:2px solid var(--line);background:var(--deep)}
 .escena .fondo img{width:100%;height:100%;object-fit:cover;object-position:70% 50%}
-.escena .movil{position:absolute;left:0;bottom:-20px;height:92%;aspect-ratio:420/936;border-radius:26px;border:6px solid #1f1a0d;background:#1f1a0d;box-shadow:0 24px 50px rgba(0,0,0,.45);animation:balanceo 7s var(--ease) infinite alternate;overflow:hidden}
+.escena .movil{position:absolute;left:0;bottom:-20px;height:92%;aspect-ratio:420/936;border-radius:26px;border:6px solid #0f0c05;outline:1.5px solid var(--line);background:#0f0c05;box-shadow:0 24px 50px rgba(0,0,0,.45);animation:balanceo 7s var(--ease) infinite alternate;overflow:hidden}
 .escena .movil img{width:100%;height:100%;object-fit:cover;border-radius:20px}
 @keyframes balanceo{to{transform:translateY(-10px) rotate(-1.5deg)}}
 .bajar{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;border:1.5px solid var(--text3);margin:44px auto 0;color:var(--text);transition:background .25s var(--ease)}
@@ -112,7 +112,7 @@ h2 em{font-style:normal;color:var(--yellow)}
 /* que es */
 .dos{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:center}
 .visual{position:relative;border-radius:30px;overflow:hidden;border:2px solid var(--line);background:var(--deep)}
-.visual img{width:100%;aspect-ratio:3/2;object-fit:cover}
+.visual img{width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
 .sello{position:absolute;right:14px;top:14px;background:var(--yellow);color:#2a2410;font-weight:700;padding:8px 16px;border-radius:12px;transform:rotate(4deg);font-size:15px}
 .nota-ia{font-size:13px;color:var(--text3);margin-top:10px}
 .pilares{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:44px}
@@ -126,9 +126,9 @@ h2 em{font-style:normal;color:var(--yellow)}
 .pilar p{color:var(--text2);font-size:17px}
 
 /* funciones con capturas */
-.carril{display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;padding:8px 20px 28px;margin:44px calc(50% - 50vw) 0;padding-inline:max(20px,calc(50vw - 580px));scrollbar-color:var(--teal) var(--raised)}
-.ficha{flex:0 0 min(272px,74vw);scroll-snap-align:start}
-.ficha .tel{border:6px solid #1f1a0d;border-radius:30px;background:#1f1a0d;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.35);transition:transform .35s var(--ease)}
+.carril{display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;padding:8px 20px 28px;margin:44px calc(50% - 50vw) 0;padding-inline:max(20px,calc(50vw - 580px));scroll-padding-inline:max(20px,calc(50vw - 580px));scrollbar-color:var(--teal) var(--raised)}
+.ficha{flex:0 0 min(250px,70vw);scroll-snap-align:start}
+.ficha .tel{border:6px solid #0f0c05;outline:1.5px solid var(--line);border-radius:30px;background:#0f0c05;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.35);transition:transform .35s var(--ease)}
 .ficha:hover .tel{transform:translateY(-6px)}
 .ficha h3{font-size:21px;margin:18px 0 6px}
 .ficha p{font-size:16px;color:var(--text2)}
@@ -138,8 +138,8 @@ h2 em{font-style:normal;color:var(--yellow)}
 
 /* dock */
 .dock{background:var(--deep)}
-.dock .visual{background:#eceae3}
-.dock .visual img{aspect-ratio:3/2;object-fit:cover}
+.dock .visual{background:#2b2413}
+.dock .visual img{aspect-ratio:1005/646;object-fit:cover}
 .etiq-proto{position:absolute;left:14px;bottom:14px;background:#2a2410;color:var(--yellow);font-weight:700;font-size:14px;padding:8px 14px;border-radius:12px;border:1.5px solid var(--yellow)}
 .lista{list-style:none;margin:26px 0 30px;padding:0;display:grid;gap:12px}
 .lista li{display:flex;gap:12px;align-items:flex-start;color:var(--text)}
@@ -261,7 +261,7 @@ footer a{color:var(--text2)}
     </div>
     <div class="escena">
       <div class="fondo"><img src="assets/img/portada.webp" width="1152" height="768" alt="" ></div>
-      <div class="movil"><img src="assets/img/app-home.webp" width="420" height="936" alt="Aidly home screen: a big button that says Talk to Aidly, then medicines, reminders, my family and a Ask for help button." data-alt-es="Pantalla de inicio de Aidly: un botón grande Hablar con Aidly, luego medicinas, recordatorios, mi familia y el botón Pedir ayuda."></div>
+      <div class="movil"><img src="assets/img/app-home-tall.webp" width="420" height="936" alt="Aidly home screen: a big button that says Talk to Aidly, then medicines, reminders, my family and a Ask for help button." data-alt-es="Pantalla de inicio de Aidly: un botón grande Hablar con Aidly, luego medicinas, recordatorios, mi familia y el botón Pedir ayuda."></div>
     </div>
   </div>
   <a class="bajar" href="#about" aria-label="Scroll down / Bajar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14m0 0l-6-6m6 6l6-6"/></svg></a>
@@ -297,14 +297,14 @@ footer a{color:var(--text2)}
     <p class="lead rv"><span lang="en">Captures from a Samsung Galaxy A23 and from the Android emulator, with the app in English. Every screen works in Spanish as well.</span><span lang="es">Capturas de un Samsung Galaxy A23 y del emulador de Android, con la app en inglés. Todas las pantallas funcionan también en español.</span></p>
   </div>
   <div class="carril" tabindex="0" role="region" aria-label="App screenshots / Capturas de la app">
-    <article class="ficha"><div class="tel"><img src="assets/img/app-hablar.webp" width="420" height="936" alt="The animated face listening: “I'm listening. Take your time.”" data-alt-es="La cara animada escuchando: «Te escucho. Con calma.»" loading="lazy"></div><h3><span lang="en">Talk to Aidly</span><span lang="es">Habla con Aidly</span></h3><p><span lang="en">An animated face shows if it is listening, thinking or speaking. Nothing to type.</span><span lang="es">Una cara animada muestra si escucha, piensa o habla. No hay nada que escribir.</span></p></article>
-    <article class="ficha"><div class="tel"><img src="assets/img/app-medicina.webp" width="420" height="933" alt="Camera screen: “Point at the box” with a Take photo now button." data-alt-es="Pantalla de cámara: «Apunta a la caja» con un botón Tomar foto." loading="lazy"></div><h3><span lang="en">Medicines and papers</span><span lang="es">Medicinas y papeles</span></h3><p><span lang="en">Photo of a box or letter: name, ingredient, warnings, scam signs. It never answers dose questions.</span><span lang="es">Foto de una caja o carta: nombre, principio activo, avisos y señales de estafa. Nunca responde sobre dosis.</span></p></article>
-    <article class="ficha"><div class="tel"><img src="assets/img/app-recordatorios.webp" width="420" height="936" alt="Week calendar with the day’s reminders and the buttons Read my day and Add with my voice." data-alt-es="Calendario semanal con los recordatorios del día y los botones Leer mi día y Añadir con mi voz." loading="lazy"></div><h3><span lang="en">Reminders that ring</span><span lang="es">Recordatorios que suenan</span></h3><p><span lang="en">Exact alarms with a big talking screen. Each one records if it was done, missed or postponed.</span><span lang="es">Alarmas exactas con pantalla grande que habla. Cada una guarda si se hizo, se perdió o se pospuso.</span></p></article>
-    <article class="ficha"><div class="tel"><img src="assets/img/app-parati.webp" width="420" height="933" alt="For you screen: a card with a fact about cats, with Read it to me and Talk about this buttons." data-alt-es="Pantalla Para ti: una tarjeta con un dato sobre gatos y los botones Léemelo y Hablemos de esto." loading="lazy"></div><h3><span lang="en">For you</span><span lang="es">Para ti</span></h3><p><span lang="en">Cards from credited sources, ranked by what the person likes, read aloud, with the link to the full article.</span><span lang="es">Tarjetas de fuentes citadas, ordenadas por lo que le gusta a la persona, leídas en voz alta y con el enlace al artículo.</span></p></article>
-    <article class="ficha"><div class="tel"><img src="assets/img/app-dock.webp" width="420" height="936" alt="Dock mode: big face, and the notice that asks if Aidly may use the camera." data-alt-es="Modo dock: cara grande y el aviso que pregunta si Aidly puede usar la cámara." loading="lazy"></div><h3><span lang="en">Dock mode</span><span lang="es">Modo dock</span></h3><p><span lang="en">The phone on a table. With consent, the camera only checks if someone is there. On the phone, nothing saved or sent.</span><span lang="es">El teléfono sobre una mesa. Con permiso, la cámara solo comprueba si hay alguien. En el teléfono, sin guardar ni enviar nada.</span></p></article>
-    <article class="ficha"><div class="tel"><img src="assets/img/app-familia.webp" width="420" height="936" alt="My family screen: a button to create a family code." data-alt-es="Pantalla Mi familia: un botón para crear el código familiar." loading="lazy"></div><h3><span lang="en">Family circle</span><span lang="es">Círculo familiar</span></h3><p><span lang="en">A random code and a web page. Everything is off by default, and “stop sharing” deletes it from the cloud.</span><span lang="es">Un código aleatorio y una página web. Todo viene apagado y «dejar de compartir» lo borra de la nube.</span></p></article>
-    <article class="ficha"><div class="tel"><img src="assets/img/app-sos.webp" width="420" height="936" alt="Do you need help? Yellow button to call the emergency number, and a Go back button." data-alt-es="¿Necesitas ayuda? Botón amarillo para llamar al número de emergencia y botón Volver." loading="lazy"></div><h3><span lang="en">Ask for help</span><span lang="es">Pedir ayuda</span></h3><p><span lang="en">Alerts the family with the location and opens the dialer with the emergency number of the country.</span><span lang="es">Avisa a la familia con la ubicación y abre el marcador con el número de emergencia del país.</span></p></article>
-    <article class="ficha"><div class="tel"><img src="assets/img/app-privacidad.webp" width="420" height="936" alt="Your privacy screen: what stays on the phone and what goes to Google." data-alt-es="Pantalla de privacidad: qué se queda en el teléfono y qué va a Google." loading="lazy"></div><h3><span lang="en">Privacy you can switch off</span><span lang="es">Privacidad que puedes apagar</span></h3><p><span lang="en">A clear screen says what stays on the phone and what goes to Google. “Only on my phone” turns the cloud off.</span><span lang="es">Una pantalla clara dice qué se queda en el teléfono y qué va a Google. «Solo en mi teléfono» apaga la nube.</span></p></article>
+    <article class="ficha"><div class="tel"><img src="assets/img/app-hablar.webp" width="420" height="660" alt="The animated face listening: “I'm listening. Take your time.”" data-alt-es="La cara animada escuchando: «Te escucho. Con calma.»" loading="lazy"></div><h3><span lang="en">Talk to Aidly</span><span lang="es">Habla con Aidly</span></h3><p><span lang="en">An animated face shows if it is listening, thinking or speaking. Nothing to type.</span><span lang="es">Una cara animada muestra si escucha, piensa o habla. No hay nada que escribir.</span></p></article>
+    <article class="ficha"><div class="tel"><img src="assets/img/app-medicina.webp" width="420" height="660" alt="Camera screen: “Point at the box” with a Take photo now button." data-alt-es="Pantalla de cámara: «Apunta a la caja» con un botón Tomar foto." loading="lazy"></div><h3><span lang="en">Medicines and papers</span><span lang="es">Medicinas y papeles</span></h3><p><span lang="en">Photo of a box or letter: name, ingredient, warnings, scam signs. It never answers dose questions.</span><span lang="es">Foto de una caja o carta: nombre, principio activo, avisos y señales de estafa. Nunca responde sobre dosis.</span></p></article>
+    <article class="ficha"><div class="tel"><img src="assets/img/app-recordatorios.webp" width="420" height="660" alt="Week calendar with the day’s reminders and the buttons Read my day and Add with my voice." data-alt-es="Calendario semanal con los recordatorios del día y los botones Leer mi día y Añadir con mi voz." loading="lazy"></div><h3><span lang="en">Reminders that ring</span><span lang="es">Recordatorios que suenan</span></h3><p><span lang="en">Exact alarms with a big talking screen. Each one records if it was done, missed or postponed.</span><span lang="es">Alarmas exactas con pantalla grande que habla. Cada una guarda si se hizo, se perdió o se pospuso.</span></p></article>
+    <article class="ficha"><div class="tel"><img src="assets/img/app-parati.webp" width="420" height="660" alt="For you screen: a card with a fact about cats, with Read it to me and Talk about this buttons." data-alt-es="Pantalla Para ti: una tarjeta con un dato sobre gatos y los botones Léemelo y Hablemos de esto." loading="lazy"></div><h3><span lang="en">For you</span><span lang="es">Para ti</span></h3><p><span lang="en">Cards from credited sources, ranked by what the person likes, read aloud, with the link to the full article.</span><span lang="es">Tarjetas de fuentes citadas, ordenadas por lo que le gusta a la persona, leídas en voz alta y con el enlace al artículo.</span></p></article>
+    <article class="ficha"><div class="tel"><img src="assets/img/app-dock.webp" width="420" height="660" alt="Dock mode: big face, and the notice that asks if Aidly may use the camera." data-alt-es="Modo dock: cara grande y el aviso que pregunta si Aidly puede usar la cámara." loading="lazy"></div><h3><span lang="en">Dock mode</span><span lang="es">Modo dock</span></h3><p><span lang="en">The phone on a table. With consent, the camera only checks if someone is there. On the phone, nothing saved or sent.</span><span lang="es">El teléfono sobre una mesa. Con permiso, la cámara solo comprueba si hay alguien. En el teléfono, sin guardar ni enviar nada.</span></p></article>
+    <article class="ficha"><div class="tel"><img src="assets/img/app-familia.webp" width="420" height="660" alt="My family screen: a button to create a family code." data-alt-es="Pantalla Mi familia: un botón para crear el código familiar." loading="lazy"></div><h3><span lang="en">Family circle</span><span lang="es">Círculo familiar</span></h3><p><span lang="en">A random code and a web page. Everything is off by default, and “stop sharing” deletes it from the cloud.</span><span lang="es">Un código aleatorio y una página web. Todo viene apagado y «dejar de compartir» lo borra de la nube.</span></p></article>
+    <article class="ficha"><div class="tel"><img src="assets/img/app-sos.webp" width="420" height="660" alt="Do you need help? Yellow button to call the emergency number, and a Go back button." data-alt-es="¿Necesitas ayuda? Botón amarillo para llamar al número de emergencia y botón Volver." loading="lazy"></div><h3><span lang="en">Ask for help</span><span lang="es">Pedir ayuda</span></h3><p><span lang="en">Alerts the family with the location and opens the dialer with the emergency number of the country.</span><span lang="es">Avisa a la familia con la ubicación y abre el marcador con el número de emergencia del país.</span></p></article>
+    <article class="ficha"><div class="tel"><img src="assets/img/app-privacidad.webp" width="420" height="660" alt="Your privacy screen: what stays on the phone and what goes to Google." data-alt-es="Pantalla de privacidad: qué se queda en el teléfono y qué va a Google." loading="lazy"></div><h3><span lang="en">Privacy you can switch off</span><span lang="es">Privacidad que puedes apagar</span></h3><p><span lang="en">A clear screen says what stays on the phone and what goes to Google. “Only on my phone” turns the cloud off.</span><span lang="es">Una pantalla clara dice qué se queda en el teléfono y qué va a Google. «Solo en mi teléfono» apaga la nube.</span></p></article>
   </div>
   <div class="wrap"><p class="pista"><span lang="en">Scroll sideways to see more →</span><span lang="es">Desliza hacia el lado para ver más →</span></p></div>
 </section>
@@ -314,8 +314,8 @@ footer a{color:var(--text2)}
   <div class="wrap">
     <div class="dos">
       <figure class="rv" style="margin:0">
-        <div class="visual"><img src="assets/img/dock-concepto.webp" width="1000" height="667" alt="Concept render of Aidly Dock: a rounded base with two speakers and a rotating cradle holding a phone with Aidly's face." data-alt-es="Imagen conceptual del Aidly Dock: una base redondeada con dos altavoces y un soporte giratorio con un teléfono que muestra la cara de Aidly." loading="lazy"><span class="etiq-proto"><span lang="en">Design prototype, not built</span><span lang="es">Prototipo de diseño, no construido</span></span></div>
-        <figcaption class="nota-ia"><span lang="en">Concept image generated with AI. It is not a photo of a real device.</span><span lang="es">Imagen conceptual generada con IA. No es la foto de un aparato real.</span></figcaption>
+        <div class="visual"><img src="assets/img/dock-3d.webp" width="1005" height="646" alt="Renders of the Aidly Dock Rev. C 3D model: assembled, with the phone upright in the cradle above the base, and exploded, showing the rotating platform, bearing, cover plate, electronics and speakers." data-alt-es="Renders del modelo 3D del Aidly Dock Rev. C: armado, con el teléfono de pie en el soporte sobre la base, y desarmado, mostrando la plataforma giratoria, el rodamiento, la tapa, la electrónica y los altavoces." loading="lazy"><span class="etiq-proto"><span lang="en">Design prototype, not built</span><span lang="es">Prototipo de diseño, no construido</span></span></div>
+        <figcaption class="nota-ia"><span lang="en">Rendered from the project's own 3D model (Rev. C): assembled on the left, exploded on the right. The phone is a reference box.</span><span lang="es">Renderizado del propio modelo 3D del proyecto (Rev. C): armado a la izquierda, desarmado a la derecha. El teléfono es una caja de referencia.</span></figcaption>
       </figure>
       <div class="rv">
         <p class="etiqueta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16h16l-2 4H6zM8 16V7l8-3v12"/></svg>Aidly Dock</p>
@@ -410,7 +410,7 @@ footer a{color:var(--text2)}
 
 <footer>
   <div class="wrap">
-    <div><b style="color:var(--text)">Aidly</b> · <span lang="en">Built for #BuildHybridAI 2026. Apache-2.0 licence.</span><span lang="es">Hecha para #BuildHybridAI 2026. Licencia Apache-2.0.</span><br><span lang="en">Illustrations and the dock image were generated with AI. Aidly is not a medical device and does not detect falls.</span><span lang="es">Las ilustraciones y la imagen del dock se generaron con IA. Aidly no es un dispositivo médico y no detecta caídas.</span></div>
+    <div><b style="color:var(--text)">Aidly</b> · <span lang="en">Built for #BuildHybridAI 2026. Apache-2.0 licence.</span><span lang="es">Hecha para #BuildHybridAI 2026. Licencia Apache-2.0.</span><br><span lang="en">The illustrations were generated with AI; the dock images are renders of the project's own 3D model. Aidly is not a medical device and does not detect falls.</span><span lang="es">Las ilustraciones se generaron con IA; las imágenes del dock son renders del propio modelo 3D del proyecto. Aidly no es un dispositivo médico y no detecta caídas.</span></div>
     <nav aria-label="Footer"><a href="https://github.com/victordanielmun/aidly" rel="noopener">GitHub</a><a href="https://devpost.com/software/aidly-zp4ms1" rel="noopener">Devpost</a><a href="dock/">Dock 3D</a><a href="familia/"><span lang="en">Family</span><span lang="es">Familia</span></a></nav>
   </div>
 </footer>
