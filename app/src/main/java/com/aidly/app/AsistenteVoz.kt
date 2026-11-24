@@ -49,13 +49,18 @@ object AsistenteVoz {
             },
         )
 
+    /** Fecha y hora de ahora, para que el modelo no diga que no sabe que dia es. */
+    private fun ahora(en: Boolean): String =
+        if (en) java.text.SimpleDateFormat("EEEE, MMMM d, yyyy, h:mm a", java.util.Locale.US).format(java.util.Date())
+        else java.text.SimpleDateFormat("EEEE d 'de' MMMM 'de' yyyy, HH:mm", java.util.Locale("es", "MX")).format(java.util.Date())
+
     suspend fun responder(ctx: android.content.Context, pregunta: String): Respuesta {
         val en = Idioma.resolver(ctx) == "en"
         val t0 = System.currentTimeMillis()
         // Nube apagada: solo Gemini Nano en el telefono (lanza excepcion si no hay).
         val model = if (Privacidad.nubeActiva()) modelHibrido else modelLocal
         val r = withTimeout(30_000) {
-            model.generateContent(if (en) "$SISTEMA_EN\n\nThe person says: $pregunta\n\nYour answer:" else "$SISTEMA\n\nLa persona dice: $pregunta\n\nTu respuesta:")
+            model.generateContent(if (en) "$SISTEMA_EN\n\nNow it is ${ahora(true)}.\n\nThe person says: $pregunta\n\nYour answer:" else "$SISTEMA\n\nAhora es ${ahora(false)}.\n\nLa persona dice: $pregunta\n\nTu respuesta:")
         }
         val ms = System.currentTimeMillis() - t0
         val texto = r.text?.trim().orEmpty().ifBlank { if (en) "I did not know what to answer. Could you ask me in another way?" else "No supe que responderte. Puedes preguntarme de otra forma?" }
