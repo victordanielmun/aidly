@@ -300,7 +300,15 @@ object Agente {
         }
     }
 
+    private val CONFIANZA = Regex("\\b(contacto|persona) de confianza\\b|\\btrusted (contact|person)\\b")
+
     private fun llamar(ctx: Context, n: String, L: Lexico): Respuesta {
+        if (CONFIANZA.containsMatchIn(n)) {
+            Preferencias.contactoConfianza(ctx)?.let { c ->
+                return Respuesta(t(ctx, R.string.v_llamar_confianza, c.nombre), "local", 0) { marcador(ctx, c.numero) }
+            }
+            return Respuesta(t(ctx, R.string.v_sin_confianza), "local", 0)
+        }
         if (L.emergencia.containsMatchIn(n)) {
             return Respuesta(t(ctx, R.string.v_llamar_emergencia, Emergencia.habla(ctx)), "local", 0) { marcador(ctx, Emergencia.numero(ctx)) }
         }
