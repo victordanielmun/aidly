@@ -75,7 +75,7 @@ class Lexico(
             ),
             verAgenda = r("\\b(que (tengo|hay)( agendado| pendiente| programado| para)?|mi agenda|mis citas|que citas tengo|tengo (alguna )?cita)\\b"),
             cuandoAgenda = r("\\b(hoy|manana|semana|agenda|citas|cita|agendado|pendiente|programado)\\b"),
-            horaFecha = r("\\b(que hora es|que dia es|que fecha es|a cuanto estamos|que dia es hoy)\\b"),
+            horaFecha = r("\\b(que hora es|que dia es|que fecha es|a cuanto estamos|que dia es hoy|dime la hora|me dices la hora|dime la fecha|que dia estamos|en que dia estamos)\\b"),
             preguntaHora = r("\\bhora\\b"),
             buscarWeb = r(
                 "\\b(internet|google|noticias|clima|pronostico|llover|lluvia|temperatura|dolar|euro|precio|cuanto cuesta|cuanto vale|" +
@@ -158,7 +158,7 @@ class Lexico(
             cuandoAgenda = r("\\b(today|tomorrow|week|schedule|agenda|appointments|appointment|calendar|planned|scheduled)\\b"),
             horaFecha = r(
                 "\\b(what time is it|what is the time|what s the time|whats the time|what day is it|what is the date|what s the date|whats the date|" +
-                    "what is today|what s today|whats today|what day is today)\\b",
+                    "what is today|what s today|whats today|what day is today|what date is it|what date is today|what is today s date|what is the date today|todays date|what day is it today|tell me the time|tell me the date)\\b",
             ),
             preguntaHora = r("\\btime\\b"),
             buscarWeb = r(
