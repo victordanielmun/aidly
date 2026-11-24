@@ -26,7 +26,7 @@ and lets your family know you are okay, sharing only what *you* choose.
 | On-device model status and background download | `FirebaseAIOnDevice.checkStatus()` and `download()` at app start; shown in Settings > Privacy | [`ModeloLocal.kt`](app/src/main/java/com/aidly/app/ModeloLocal.kt) |
 
 Also used: **Firebase App Check** (debug provider for development and submission), **Anonymous Auth + Cloud Firestore** (consent-based family circle,
-rules in [`firestore.rules`](firestore.rules)) and **Firebase Hosting** (family web page in [`familia/`](familia/)).
+rules in [`firestore.rules`](firestore.rules)) and **Firebase Hosting** (family web page in [`web/familia/`](web/familia/), landing page in [`web/`](web/)).
 
 ## Features
 **For you** (the assistant brings things the person likes, with source and a safety filter; optional spoken offers in dock mode) · optional **floating button and voice control of other apps** (accessibility service, off by default) · Voice assistant (messages and email by notification, reminders with exact alarms, calendar, web questions, call/open apps) · one-button **Take a photo** reader that recognises medicines (with "add a reminder", e.g. "blood pressure pill at 9:00 AM") and reads letters, receipts and signs ·
@@ -52,9 +52,11 @@ daily check-in · **dock mode** (USB-C code for the dock included, unit-tested a
 | Dock autonomy (camera on its own, hands-free "Aidly", object context) | Policies are unit-tested (`EscuchaLibreTest`, `ContextoActividadTest`); the screens ran on the emulator (which has no front camera). **Not yet run on a real phone**: object detection accuracy, hands-free listening in a room with a TV, battery |
 | TalkBack walkthrough, USB audio and the dock hardware | Not yet verified; the dock is a design prototype |
 
-## Test build and family page
+## Website, test build and family page
+Project website (screens, dock 3D viewer, links): https://aidly-d108b.web.app · Devpost: https://devpost.com/software/aidly-zp4ms1
+
 A debug APK for judges will be linked from the Devpost submission. It uses the debug App Check provider.
-The family page is served from Firebase Hosting at https://aidly-d108b.web.app (enter the code shown in the app under "My family").
+The family page is served from Firebase Hosting at https://aidly-d108b.web.app/familia/ (enter the code shown in the app under "My family"; links of the form `https://aidly-d108b.web.app/#CODE` still work and are forwarded).
 
 ## Limits and configuration: Google Search and the LLM key
 Aidly never contains an LLM API key. Every Gemini call goes through **Firebase AI Logic** and uses the Gemini Developer API key that
@@ -108,7 +110,7 @@ Requirements: Android Studio or JDK 17 and the Android SDK, minSdk 26, an Androi
       *"App attestation failed"* means the token is not registered (or the app data was cleared and a **new** token was created: repeat from step 2).
    Until it is registered, everything that does not need Gemini keeps working (reminders, calendar, dialer, family circle, dock mode, built-in "For you" cards) and the AI features fall back to rules.
    A release build would use Play Integrity instead (see `docs/PRIVACY_DATA_FLOW.md`, F10).
-5. **Family page** (optional): copy `familia/config.example.js` to `familia/config.js` with your web app config, then `firebase deploy --only hosting,firestore:rules`.
+5. **Family page** (optional): copy `web/familia/config.example.js` to `web/familia/config.js` with your web app config, then `firebase deploy --only hosting,firestore:rules`.
 6. **Optional accessibility help:** *Settings > Help with other apps* explains the floating button and voice control of other apps; it is only turned on by the person in the system's Accessibility settings.
 
 Checks: `python pruebas/validar_textos.py`, `python pruebas/validar_idiomas.py`, `python pruebas/verificar_release.py`.

@@ -84,7 +84,7 @@ IGNORAR = {"build", ".gradle", ".git", "node_modules"}
 _gi = RAIZ / ".gitignore"
 IGNORADOS_GIT = {l.strip() for l in _gi.read_text(encoding="utf-8").splitlines() if l.strip() and not l.startswith("#")} if _gi.exists() else set()
 # Solo lo que se publicaria o se sube al repo (no las carpetas de entrenamiento ni las cache de modelos).
-CARPETAS = ("app", "familia", "docs", "pruebas", "firebase")
+CARPETAS = ("app", "web", "docs", "pruebas", "firebase")
 ARCHIVOS = ("firestore.rules", "firebase.json", "PLAN.md", "build.gradle.kts", "settings.gradle.kts")
 candidatos = [RAIZ / a for a in ARCHIVOS] + [r for c in CARPETAS if (RAIZ / c).exists() for r in (RAIZ / c).rglob("*")]
 for ruta in candidatos:
@@ -112,7 +112,7 @@ for ruta in candidatos:
                     fallo(f"{rel} lleva una clave de API y NO esta en .gitignore: las reglas prohiben claves de produccion en el repositorio (regla 'Testing'); sacalo del repo y deja un ejemplo")
                 else:
                     aviso(f"{rel} lleva una clave de API pero esta en .gitignore (correcto: no subirlo; la APK de prueba se entrega aparte)")
-            elif rel == "familia/index.html" and nombre == "clave de API de Google":
+            elif rel == "web/familia/index.html" and nombre == "clave de API de Google":
                 fallo(f"{rel} lleva la configuracion web de Firebase con clave: en el repositorio publico debe ir un marcador (la pagina ya publicada en Hosting conserva la real)")
             else:
                 fallo(f"{nombre} en {rel}")

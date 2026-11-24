@@ -14,7 +14,7 @@ firebase-debug.log
 # Claves y configuracion de Firebase (las reglas del concurso prohiben subir claves de produccion)
 app/google-services.json
 firebase/
-familia/config.js
+web/familia/config.js
 
 # Material interno que no forma parte del producto
 entrenamiento/
