@@ -89,7 +89,7 @@ object MedicinaValidador {
             model.generateContent(
                 content {
                     image(bmp)
-                    text(if (Idioma.ultimo == "en") PROMPT + " If the person uses English: write ALL the text values (names read aloud, summaries, data, advice) in simple English. Keep the JSON keys and the fixed values (alto/medio/bajo/no_aplica, alta/media/baja, tipo) exactly as specified." else PROMPT)
+                    text(if (Idioma.ultimo == "en") PROMPT + " The app language is ENGLISH: write ALL the text values (names read aloud, summaries, data, advice) in simple English, even if the text in the photo is in another language (keep product names and numbers as printed). Keep the JSON keys and the fixed values (alto/medio/bajo/no_aplica, alta/media/baja, tipo) exactly as specified." else PROMPT)
                 },
             )
         }
