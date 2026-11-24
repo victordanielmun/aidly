@@ -89,15 +89,26 @@ It subscribes to no accessibility events and stores or sends nothing it sees. Fu
 [`docs/PRIVACY.md`](docs/PRIVACY.md) (ES/EN), [`docs/PRIVACY_DATA_FLOW.md`](docs/PRIVACY_DATA_FLOW.md) (every data flow and its source file) and
 [`docs/PLAY_DATA_SAFETY.md`](docs/PLAY_DATA_SAFETY.md). No ads, analytics or crash reporting. Sensitive local data is encrypted with the Android Keystore.
 
-## Build and run
+## Build and run: first steps
 Requirements: Android Studio or JDK 17 and the Android SDK, minSdk 26, an Android phone (a Gemini Nano / AICore capable phone is needed to see the on-device path).
 
-1. Create a Firebase project and enable **Firebase AI Logic** (Gemini Developer API), **Authentication (Anonymous)**, **Firestore** and **App Check**.
-2. Add an Android app with package `com.aidly.app`, download `google-services.json` and place it at `app/google-services.json`
+1. **Firebase project.** Create one and enable **Firebase AI Logic** (Gemini Developer API), **Authentication (Anonymous)**, **Firestore** and **App Check**.
+2. **`google-services.json`.** Add an Android app with package `com.aidly.app`, download the file and place it at `app/google-services.json`
    (see `app/google-services.json.example`; the real file is git-ignored).
-3. `./gradlew assembleDebug` (`gradlew.bat` on Windows) and install `app/build/outputs/apk/debug/app-debug.apk`.
-4. On first launch, read the debug App Check token from logcat (`DebugAppCheckProvider`) and register it in *Firebase console > App Check > Apps > Manage debug tokens*.
-5. Family page: copy `familia/config.example.js` to `familia/config.js` with your web app config, deploy with `firebase deploy --only hosting,firestore:rules`.
+3. **Build and install.** `./gradlew assembleDebug` (`gradlew.bat` on Windows), then install `app/build/outputs/apk/debug/app-debug.apk`.
+4. **Register the App Check debug token (once per install).** Firebase AI Logic only answers apps that App Check trusts, and a debug build proves itself with a *debug token*
+   that the phone generates the first time it talks to Firebase:
+   1. Open Aidly, accept the cloud on the first screen, and ask anything by voice or in *For you* (this creates the token).
+   2. Read the token: `adb logcat -d -s DebugAppCheckProvider` shows *"Enter this debug secret into the allow list… : `<uuid>`"*.
+      If that line has scrolled away, read the saved one (debug builds only):
+      `adb shell "run-as com.aidly.app sh -c 'cat shared_prefs/com.google.firebase.appcheck.debug*'"` and take the UUID.
+   3. In the *Firebase console > App Check > Apps >* your Android app *> ⋮ > Manage debug tokens > Add debug token*, paste the UUID and save.
+   4. Check it: ask Aidly *"What is blood pressure?"*. An answer with the **"In Google's cloud"** badge means it worked. An error such as *"App Check token is invalid"* or
+      *"App attestation failed"* means the token is not registered (or the app data was cleared and a **new** token was created: repeat from step 2).
+   Until it is registered, everything that does not need Gemini keeps working (reminders, calendar, dialer, family circle, dock mode, built-in "For you" cards) and the AI features fall back to rules.
+   A release build would use Play Integrity instead (see `docs/PRIVACY_DATA_FLOW.md`, F10).
+5. **Family page** (optional): copy `familia/config.example.js` to `familia/config.js` with your web app config, then `firebase deploy --only hosting,firestore:rules`.
+6. **Optional accessibility help:** *Settings > Help with other apps* explains the floating button and voice control of other apps; it is only turned on by the person in the system's Accessibility settings.
 
 Checks: `python pruebas/validar_textos.py`, `python pruebas/validar_idiomas.py`, `python pruebas/verificar_release.py`.
 
