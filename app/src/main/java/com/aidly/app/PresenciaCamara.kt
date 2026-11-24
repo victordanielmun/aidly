@@ -13,6 +13,7 @@ import com.google.mediapipe.framework.image.BitmapImageBuilder
 import com.google.mediapipe.tasks.core.BaseOptions
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.facedetector.FaceDetector
+import com.google.mediapipe.tasks.vision.objectdetector.ObjectDetector
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
 import java.util.concurrent.Executors
 
@@ -22,7 +23,8 @@ import java.util.concurrent.Executors
  * donde esta (de -1 a 1 en horizontal, positivo = hacia la derecha de quien mira la pantalla).
  */
 class PresenciaCamara(private val ctx: Context) : AutoCloseable {
-    class Observacion(val ms: Long, val visible: Boolean, val cara: Boolean, val x: Float)
+    /** [objetos]: etiquetas de los objetos vistos (solo en las mediciones que se hicieron, si no null); nunca se guarda ni sale una imagen. */
+    class Observacion(val ms: Long, val visible: Boolean, val cara: Boolean, val x: Float, val objetos: Set<String>? = null)
 
     private val ejecutor = Executors.newSingleThreadExecutor()
     private var proveedor: ProcessCameraProvider? = null
@@ -36,6 +38,17 @@ class PresenciaCamara(private val ctx: Context) : AutoCloseable {
             .setBaseOptions(BaseOptions.builder().setModelAssetPath("mediapipe/blaze_face_short_range.tflite").build())
             .setRunningMode(RunningMode.IMAGE).setMinDetectionConfidence(0.5f).build(),
     )
+    // Detector de objetos (EfficientDet-Lite0, Apache-2.0): solo las etiquetas de [Contexto.TODAS], y solo cada 2 s y con alguien presente.
+    private val objetosDet: ObjectDetector? = try {
+        ObjectDetector.createFromOptions(
+            ctx,
+            ObjectDetector.ObjectDetectorOptions.builder()
+                .setBaseOptions(BaseOptions.builder().setModelAssetPath("mediapipe/efficientdet_lite0.tflite").build())
+                .setRunningMode(RunningMode.IMAGE).setMaxResults(6).setScoreThreshold(0.4f).setCategoryAllowlist(Contexto.TODAS).build(),
+        )
+    } catch (e: Throwable) { SpikeLog.log("PRESENCIA: sin detector de objetos (${e::class.simpleName}: ${e.message})"); null }
+    @Volatile private var ultimoObjetos = 0L
+
     private val poses: PoseLandmarker = PoseLandmarker.createFromOptions(
         ctx,
         PoseLandmarker.PoseLandmarkerOptions.builder()
@@ -52,14 +65,22 @@ class PresenciaCamara(private val ctx: Context) : AutoCloseable {
             val b = dets[0].boundingBox()
             // La camara frontal no esta espejada en el analisis: se invierte para que + sea la derecha de quien mira la pantalla.
             val cx = (b.left + b.right) / 2f / bmp.width
-            return Observacion(ms, true, true, -(cx - 0.5f) * 2f)
+            return Observacion(ms, true, true, -(cx - 0.5f) * 2f, objetos(img, ms))
         }
         val lm = poses.detect(img).landmarks()
         if (lm.isNotEmpty() && lm[0].isNotEmpty()) {
             val cx = lm[0].map { it.x() }.average().toFloat()
-            return Observacion(ms, true, false, -(cx - 0.5f) * 2f)
+            return Observacion(ms, true, false, -(cx - 0.5f) * 2f, objetos(img, ms))
         }
         return Observacion(ms, false, false, 0f)
+    }
+
+    /** Objetos del cuadro (como mucho cada 2 s para ahorrar bateria); null si no toca medir o no hay detector. */
+    private fun objetos(img: com.google.mediapipe.framework.image.MPImage, ms: Long): Set<String>? {
+        val d = objetosDet ?: return null
+        if (ms - ultimoObjetos < 2_000) return null
+        ultimoObjetos = ms
+        return try { d.detect(img).detections().mapNotNull { it.categories().firstOrNull()?.categoryName() }.toSet() } catch (e: Throwable) { null }
     }
 
     /**
@@ -131,6 +152,6 @@ class PresenciaCamara(private val ctx: Context) : AutoCloseable {
         cerrado = true
         detener()
         ejecutor.shutdown()
-        try { caras.close(); poses.close() } catch (_: Throwable) {}
+        try { caras.close(); poses.close(); objetosDet?.close() } catch (_: Throwable) {}
     }
 }

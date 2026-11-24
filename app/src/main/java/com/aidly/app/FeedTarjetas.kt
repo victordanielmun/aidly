@@ -132,6 +132,13 @@ object FeedTarjetas {
         return Resultado(Curadas.elegir(todas, perfil), true, 0, "curadas")
     }
 
+    /** Tarjetas de la app (sin red) de un solo tema: para ofrecer algo relacionado con lo que la persona parece estar haciendo. */
+    fun curadasDeTema(ctx: Context, tema: String): List<Tarjeta> {
+        val idioma = Idioma.resolver(ctx)
+        val todas = try { ctx.assets.open("config/para_ti.json").bufferedReader(Charsets.UTF_8).use { Curadas.deJson(it.readText(), idioma) } } catch (e: Exception) { emptyList() }
+        return todas.filter { it.tema == tema }
+    }
+
     // ---------- obtener ----------
     private const val VIGENCIA_GENERAL_MS = 30L * 60 * 1000   // si fueron de respaldo, se vuelve a intentar con busqueda pronto
 

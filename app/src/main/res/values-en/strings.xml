@@ -571,4 +571,18 @@
     <string name="bienv_fam_contactos_sub">The contacts I call most</string>
     <string name="bienv_fam_comparte">What I share with my family</string>
     <string name="bienv_fam_comparte_sub">You choose each thing</string>
+    <string name="dock_libre_on">Listening hands-free: say “Aidly”</string>
+    <string name="dock_libre_off">Hands-free listening paused</string>
+    <string name="dock_libre_pausar">PAUSE HANDS-FREE</string>
+    <string name="dock_libre_activar">LISTEN HANDS-FREE</string>
+    <string name="v_ctx_oferta_cocina">If you are cooking, I have a recipe idea. Would you like to hear it?</string>
+    <string name="v_ctx_oferta_leyendo">If you are reading, I have something interesting for you. Would you like to hear it?</string>
+    <string name="v_ctx_oferta_ordenador">If you are using the computer or phone, I have a simple technology tip. Would you like to hear it?</string>
+    <string name="v_ctx_oferta_plantas">If you are with your plants, I have a gardening tip. Would you like to hear it?</string>
+    <string name="ctx_cocina">kitchen</string>
+    <string name="ctx_leyendo">reading</string>
+    <string name="ctx_ordenador">computer or phone</string>
+    <string name="ctx_plantas">plants</string>
+    <string name="ctx_tele">TV</string>
+    <string name="dock_contexto">Likely context: %1$s</string>
 </resources>

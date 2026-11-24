@@ -571,4 +571,18 @@
     <string name="bienv_fam_contactos_sub">Los contactos a quienes llamo más</string>
     <string name="bienv_fam_comparte">Qué comparto con mi familia</string>
     <string name="bienv_fam_comparte_sub">Tú eliges cada cosa</string>
+    <string name="dock_libre_on">Te escucho sin botón: di «Aidly»</string>
+    <string name="dock_libre_off">Escucha sin botón en pausa</string>
+    <string name="dock_libre_pausar">PAUSAR ESCUCHA SIN BOTÓN</string>
+    <string name="dock_libre_activar">ESCUCHAR SIN BOTÓN</string>
+    <string name="v_ctx_oferta_cocina">Si estás cocinando, tengo una idea de receta. ¿Quieres escucharla?</string>
+    <string name="v_ctx_oferta_leyendo">Si estás leyendo, tengo algo curioso para ti. ¿Quieres oírlo?</string>
+    <string name="v_ctx_oferta_ordenador">Si estás con el computador o el celular, tengo un consejo sencillo de tecnología. ¿Quieres escucharlo?</string>
+    <string name="v_ctx_oferta_plantas">Si estás con tus plantas, tengo un consejo de jardinería. ¿Quieres escucharlo?</string>
+    <string name="ctx_cocina">cocina</string>
+    <string name="ctx_leyendo">lectura</string>
+    <string name="ctx_ordenador">computador o celular</string>
+    <string name="ctx_plantas">plantas</string>
+    <string name="ctx_tele">televisión</string>
+    <string name="dock_contexto">Contexto probable: %1$s</string>
 </resources>

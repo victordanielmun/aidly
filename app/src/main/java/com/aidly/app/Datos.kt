@@ -25,6 +25,10 @@ object Preferencias {
     fun nombre(ctx: Context) = prefs(ctx).getString("nombre", "").orEmpty()
     fun fijarNombre(ctx: Context, v: String) = prefs(ctx).edit().putString("nombre", v.trim()).apply()
 
+    /** Escucha sin boton en el modo dock (palabra «Aidly»); se puede pausar desde la pantalla del dock. */
+    fun escuchaLibre(ctx: Context) = prefs(ctx).getBoolean("escuchaLibre", true)
+    fun fijarEscuchaLibre(ctx: Context, v: Boolean) = prefs(ctx).edit().putBoolean("escuchaLibre", v).apply()
+
     /** Avatar elegido (id de [Avatar]); "clasico" si no eligio. */
     fun avatar(ctx: Context): String = prefs(ctx).getString("avatar", "clasico").orEmpty()
     fun fijarAvatar(ctx: Context, id: String) = prefs(ctx).edit().putString("avatar", Avatar.deId(id).id).apply()

@@ -129,7 +129,8 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
     var permisoMic by remember { mutableStateOf(ContextCompat.checkSelfPermission(ctx, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) }
     var permisoCam by remember { mutableStateOf(ContextCompat.checkSelfPermission(ctx, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) }
     var aceptada by remember { mutableStateOf(Privacidad.camaraAceptada(ctx) || sim != null) }
-    var camaraOn by remember { mutableStateOf(sim != null) }
+    // Si la persona ya acepto la camara, se enciende sola al entrar al modo dock (con el permiso de Android); si no, ve la tarjeta de aceptar.
+    var camaraOn by remember { mutableStateOf(sim != null || Privacidad.camaraAceptada(ctx)) }
     var visible by remember { mutableStateOf<Boolean?>(null) }
     var paso by remember { mutableStateOf(PasoD.REPOSO) }
     var dicho by remember { mutableStateOf("") }
@@ -141,6 +142,12 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
     val canal = remember { Channel<PresenciaCamara.Observacion>(Channel.CONFLATED) }
 
     LaunchedEffect(Unit) { if (!permisoMic) pedirMic.launch(Manifest.permission.RECORD_AUDIO) }
+    LaunchedEffect(aceptada) { if (aceptada && !permisoCam && sim == null) pedirCam.launch(Manifest.permission.CAMERA) }
+    val libre = remember { EscuchaLibre() }
+    val contextoEst = remember { ContextoEstable() }
+    var contexto by remember { mutableStateOf<Contexto?>(null) }          // lo que parece estar haciendo (probable, nunca seguro)
+    var contextoOfrecido by remember { mutableStateOf<Contexto?>(null) }
+    var libreActiva by remember { mutableStateOf(Preferencias.escuchaLibre(ctx)) }
 
     // Al entrar al modo dock, Aidly saluda (una vez). Con el telefono en la mesa el microfono queda lejos: sube el volumen hasta un minimo del 70 %
     // (nunca lo baja) y lo devuelve a como estaba al salir, si la persona no lo cambio mientras tanto.
@@ -170,13 +177,15 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
     var ultimaHabla by remember { mutableLongStateOf(System.currentTimeMillis()) }
 
     // ---- Una conversacion: te escucho -> pienso -> hablo ----
-    suspend fun turno() {
+    suspend fun turno(oido: String? = null) {
         if (ocupado || !permisoMic) return
         ocupado = true
         try {
             paso = PasoD.ESCUCHANDO; dicho = ""
-            withTimeoutOrNull(20_000) { voz.decirYEsperar(Idioma.vozTexto(ctx, R.string.v_dime_te_escucho)) }
-            val q = escuchar()
+            val q = oido ?: run {
+                withTimeoutOrNull(20_000) { voz.decirYEsperar(Idioma.vozTexto(ctx, R.string.v_dime_te_escucho)) }
+                escuchar()
+            }
             if (q == null) { paso = PasoD.REPOSO; dicho = ctx.getString(R.string.hablar_error_escuchar); return }
             compania.interaccion(System.currentTimeMillis()); ultimaHabla = System.currentTimeMillis()
             paso = PasoD.PENSANDO
@@ -186,7 +195,24 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
             withTimeoutOrNull(60_000) { voz.decirYEsperar(r.texto) }
             compania.interaccion(System.currentTimeMillis())
             r.despues?.invoke()
+            libre.abrirVentana(System.currentTimeMillis())   // puede seguir hablando un rato sin repetir «Aidly»
         } finally { paso = PasoD.REPOSO; ocupado = false }
+    }
+
+    // ---- Escucha sin boton: con alguien delante, atiende a «Aidly» (y a la continuacion de la charla); ver EscuchaLibre ----
+    LaunchedEffect(ocupado, permisoMic, libreActiva) {
+        if (ocupado || !permisoMic || !libreActiva) return@LaunchedEffect
+        while (true) {
+            val ms = System.currentTimeMillis()
+            if (!libre.puedeEscuchar(ms, if (camaraOn) visible else null)) { delay(500); continue }
+            libre.empezoIntento(ms)
+            val t = try { EscuchaSistema.escuchar(ctx) } catch (e: kotlin.coroutines.cancellation.CancellationException) { throw e } catch (e: Exception) { null }
+            when (val e = libre.clasificar(System.currentTimeMillis(), t)) {
+                is EscuchaLibre.Entrada.Llamada -> { scope.launch { turno(e.resto.ifBlank { null }) }; return@LaunchedEffect }
+                is EscuchaLibre.Entrada.Continuacion -> { scope.launch { turno(e.texto) }; return@LaunchedEffect }
+                EscuchaLibre.Entrada.Nada -> {}
+            }
+        }
     }
 
     // ---- "¿Estas bien?" cuando deja de verse despues de conversar ----
@@ -225,16 +251,26 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
 
     // ---- "Para ti": con permiso de la persona, ofrece algo de su gusto cuando esta cerca y en reposo ----
 
-    suspend fun ofrecerParaTi() {
+    suspend fun ofrecerParaTi(deContexto: Contexto? = null) {
         if (ocupado || !permisoMic) return
         val perfil = Intereses.cargar(ctx)
-        val tarjeta = FeedTarjetas.rapido(ctx).tarjetas.firstOrNull { !perfil.haVisto(it.titulo) } ?: return
+        val tarjeta = (if (deContexto?.tema != null) FeedTarjetas.curadasDeTema(ctx, deContexto.tema) else FeedTarjetas.rapido(ctx).tarjetas)
+            .firstOrNull { !perfil.haVisto(it.titulo) } ?: return
         ocupado = true
         val cal = java.util.Calendar.getInstance()
         politica.ofrecida(System.currentTimeMillis(), cal.get(java.util.Calendar.YEAR) * 1000 + cal.get(java.util.Calendar.DAY_OF_YEAR))
         try {
             val nombre = Preferencias.nombre(ctx)
-            val oferta = if (nombre.isNotBlank()) Idioma.vozTexto(ctx, R.string.v_pt_oferta_nombre, nombre) else Idioma.vozTexto(ctx, R.string.v_pt_oferta)
+            val oferta = when {
+                deContexto != null -> Idioma.vozTexto(ctx, when (deContexto) {
+                    Contexto.COCINA -> R.string.v_ctx_oferta_cocina
+                    Contexto.LEYENDO -> R.string.v_ctx_oferta_leyendo
+                    Contexto.ORDENADOR -> R.string.v_ctx_oferta_ordenador
+                    else -> R.string.v_ctx_oferta_plantas
+                })
+                nombre.isNotBlank() -> Idioma.vozTexto(ctx, R.string.v_pt_oferta_nombre, nombre)
+                else -> Idioma.vozTexto(ctx, R.string.v_pt_oferta)
+            }
             SpikeLog.log("DOCK: ofrezco Para ti (${tarjeta.titulo})")
             paso = PasoD.PREGUNTA; dicho = oferta
             withTimeoutOrNull(30_000) { voz.decirYEsperar(oferta) }
@@ -271,7 +307,12 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
             val cal = java.util.Calendar.getInstance()
             val dia = cal.get(java.util.Calendar.YEAR) * 1000 + cal.get(java.util.Calendar.DAY_OF_YEAR)
             val bienestar = compania.estado == CompaniaAtenta.Estado.ESPERANDO_RESPUESTA
-            if (!ocupado && paso == PasoD.REPOSO && politica.puedeOfrecer(System.currentTimeMillis(), dia, cal.get(java.util.Calendar.HOUR_OF_DAY), visible == true, ultimaHabla, bienestar, Intereses.cargar(ctx))) ofrecerParaTi()
+            if (!ocupado && paso == PasoD.REPOSO && politica.puedeOfrecer(System.currentTimeMillis(), dia, cal.get(java.util.Calendar.HOUR_OF_DAY), visible == true, ultimaHabla, bienestar, Intereses.cargar(ctx))) {
+                // Si parece estar en algo que tiene su tema (cocina, lectura...), se ofrece algo de eso; si no, algo de sus gustos.
+                val c = contexto?.takeIf { it.tema != null && it != contextoOfrecido }
+                if (c != null) contextoOfrecido = c
+                ofrecerParaTi(c)
+            }
         }
     }
 
@@ -313,6 +354,8 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
     LaunchedEffect(Unit) {
         for (o in canal) {
             visible = o.visible
+            if (!o.visible) { contextoEst.reiniciar(); contexto = null; contextoOfrecido = null }
+            else if (o.objetos != null) contexto = contextoEst.observar(o.objetos)
             if (o.visible) Circulo.bienestarOk(ctx)       // si volvio despues de un "sin confirmar", la familia ve que ya esta
             dock.seguir(if (o.visible) o.x else null, o.ms)
             when (val a = compania.observar(o.ms, o.visible)) {
@@ -366,6 +409,22 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
             modifier = Modifier.fillMaxWidth().heightIn(min = 60.dp).semantics { liveRegion = LiveRegionMode.Polite },
         )
 
+        if (permisoMic) Text(
+            stringResource(if (libreActiva) R.string.dock_libre_on else R.string.dock_libre_off),
+            fontSize = 18.sp, color = if (libreActiva) Tema.Turquesa else Tema.TextoSuave, textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        contexto?.let { c ->
+            Text(
+                stringResource(R.string.dock_contexto, stringResource(when (c) {
+                    Contexto.COCINA -> R.string.ctx_cocina; Contexto.LEYENDO -> R.string.ctx_leyendo; Contexto.ORDENADOR -> R.string.ctx_ordenador
+                    Contexto.PLANTAS -> R.string.ctx_plantas; Contexto.TELE -> R.string.ctx_tele
+                })),
+                fontSize = 18.sp, color = Tema.TextoSuave, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(),
+            )
+        }
+
         if (!aceptada) {
             // La camara solo se enciende si la persona lo acepta aqui, ella misma.
             Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(Tema.RadioFila)).background(Tema.Tarjeta).padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -392,6 +451,14 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
                 )
                 if (usbEstado == 0) Text(stringResource(R.string.dock_usb_buscar), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa,
                     modifier = Modifier.heightIn(min = 48.dp).clickable(role = Role.Button) { reintentoUsb++ }.padding(vertical = 12.dp))
+            }
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Box(Modifier.weight(1f)) {
+                BotonGrande(
+                    stringResource(if (libreActiva) R.string.dock_libre_pausar else R.string.dock_libre_activar),
+                    if (libreActiva) Tema.Amarillo else Tema.Tarjeta, if (libreActiva) Tema.Oscuro else Tema.Texto, alto = 60.dp, tamLetra = 18,
+                ) { libreActiva = !libreActiva; Preferencias.fijarEscuchaLibre(ctx, libreActiva); if (!libreActiva) libre.cerrarVentana() }
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
