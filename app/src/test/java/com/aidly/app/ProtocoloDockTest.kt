@@ -145,4 +145,29 @@ class ProtocoloDockTest {
         assertEquals("STATUS", p.escrito.last())
         assertEquals(5f, d.angulo.value, 0.01f)
     }
+
+    // --- Simulador: no gira sin parar con el telefono quieto ---
+    @Test fun elSimuladorSePuraAlLlegarAlRumboDeLaPersona() {
+        val d = DockSimulado(camaraGiraConDock = false)
+        var ms = 1000L
+        repeat(400) { d.seguir(0.8f, ms); ms += 100 }           // la persona siempre aparece a la derecha; el telefono no se mueve
+        assertEquals(48f, d.angulo.value, 8f)                   // 0,8 x 60 grados, y se queda ahi
+        repeat(100) { d.seguir(0.8f, ms); ms += 100 }
+        assertEquals(48f, d.angulo.value, 8f)
+    }
+
+    @Test fun elSimuladorSigueAUnaPersonaQueSeMueve() {
+        val d = DockSimulado(camaraGiraConDock = false)
+        var ms = 1000L
+        repeat(300) { d.seguir(0.8f, ms); ms += 100 }
+        repeat(300) { d.seguir(-0.8f, ms); ms += 100 }          // pasa al otro lado
+        assertTrue(d.angulo.value < 20f)
+    }
+
+    @Test fun conCamaraRealElControlNoCambia() {
+        val d = DockSimulado()
+        d.seguir(0.5f, 1000); d.seguir(0.5f, 1500)
+        assertEquals(12.5f, d.angulo.value, 0.6f)               // 25 grados por segundo durante 0,5 s
+    }
 }
+

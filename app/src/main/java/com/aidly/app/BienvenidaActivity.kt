@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -149,7 +150,7 @@ private fun Pantalla(voz: Voz, terminar: () -> Unit) {
             }
             AidlyCara(
                 if (ultimo) Emocion.CONTENTO else Emocion.REPOSO,
-                Modifier.fillMaxWidth(0.42f), remember { !Preferencias.reducirMovimiento(ctx) },
+                Modifier.fillMaxWidth(0.42f), remember { !Preferencias.reducirMovimiento(ctx) }, voz.hablando.collectAsState().value,
             )
             Text(paso.titulo, fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Tema.Texto, textAlign = TextAlign.Center)
             Text(paso.texto, fontSize = 22.sp, color = Tema.TextoSuave, textAlign = TextAlign.Center)

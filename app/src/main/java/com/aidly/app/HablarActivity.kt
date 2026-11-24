@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -136,7 +137,10 @@ private fun HablarScreen(voz: Voz, cerrar: () -> Unit) {
         r.despues?.invoke()   // p. ej. abrir Spotify/YouTube, una vez que Aidly termino de hablar
     }
 
-    val emocion = paso.emocion()
+    val emocionPaso = paso.emocion()
+    val habla by voz.hablando.collectAsState()
+    // Si suena la voz (un aviso, "dime, te escucho", un error), la cara habla; los demas estados se conservan.
+    val emocion = if (habla && (emocionPaso == Emocion.REPOSO || emocionPaso == Emocion.ESCUCHANDO || emocionPaso == Emocion.PENSANDO)) Emocion.HABLANDO else emocionPaso
     val ayuda = when (paso) {
         Paso.REPOSO -> stringResource(if (permiso) R.string.hablar_reposo else R.string.hablar_sin_mic)
         Paso.ESCUCHANDO -> stringResource(R.string.hablar_escuchando_ayuda)
@@ -151,7 +155,7 @@ private fun HablarScreen(voz: Voz, cerrar: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Box(Modifier.fillMaxWidth()) { EncabezadoSoloVolver { voz.callar(); cerrar() } }
-            AidlyCara(emocion, Modifier.widthIn(max = 300.dp).fillMaxWidth(), animar)
+            AidlyCara(emocion, Modifier.widthIn(max = 300.dp).fillMaxWidth(), animar, habla)
             Text(
                 stringResource(emocion.etiqueta), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa, textAlign = TextAlign.Center,
             )

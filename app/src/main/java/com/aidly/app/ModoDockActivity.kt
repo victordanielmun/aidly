@@ -119,7 +119,7 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
     val scope = rememberCoroutineScope()
     val animar = remember { !Preferencias.reducirMovimiento(ctx) }
     val compania = remember { CompaniaAtenta(cfg) }
-    var dock by remember { mutableStateOf<Dock>(DockSimulado()) }
+    var dock by remember { mutableStateOf<Dock>(DockSimulado(camaraGiraConDock = false)) }
     val dockActual by rememberUpdatedState(dock)
     val angulo by remember(dock) { dock.angulo }.collectAsState()
     var usbEstado by remember { mutableIntStateOf(0) }          // 0 sin base USB, 1 buscando, 2 conectada
@@ -339,6 +339,8 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
     LaunchedEffect(usbEstado, camaraOn) { audioUsb = AudioExterno.nombre(ctx) }
 
     // La cara ocupa un tercio de la altura (entre 120 y 320 dp) y todo se desplaza si no cabe (letra grande o pantalla baja).
+    val habla by voz.hablando.collectAsState()
+    val emocionVista = paso.emocion().let { if (habla && (it == Emocion.REPOSO || it == Emocion.ESCUCHANDO || it == Emocion.PENSANDO)) Emocion.HABLANDO else it }
     val caraAlto = (androidx.compose.ui.platform.LocalConfiguration.current.screenHeightDp * 0.32f).coerceIn(120f, 320f).dp
     Column(
         Modifier.fillMaxSize().background(Tema.Fondo).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 12.dp),
@@ -356,7 +358,7 @@ private fun Pantalla(voz: Voz, cfg: CompaniaAtenta.Config, sim: String?, cerrar:
         }
 
         Box(Modifier.fillMaxWidth().height(caraAlto), contentAlignment = Alignment.Center) {
-            AidlyCara(paso.emocion(), Modifier.fillMaxHeight().aspectRatio(240f / 200f, matchHeightConstraintsFirst = true).widthIn(max = 420.dp).clickable(role = Role.Button) { if (!ocupado) ronda++ }.semantics { contentDescription = ctx.getString(R.string.dock_tocar_hablar) }, animar)
+            AidlyCara(emocionVista, Modifier.fillMaxHeight().aspectRatio(240f / 200f, matchHeightConstraintsFirst = true).widthIn(max = 420.dp).clickable(role = Role.Button) { if (!ocupado) ronda++ }.semantics { contentDescription = ctx.getString(R.string.dock_tocar_hablar) }, animar, habla)
         }
         Text(
             dicho.ifBlank { aviso.ifBlank { stringResource(R.string.dock_reposo) } },

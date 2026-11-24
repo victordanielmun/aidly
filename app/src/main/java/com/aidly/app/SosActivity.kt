@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,7 +69,7 @@ private fun Pantalla(voz: Voz, cerrar: () -> Unit) {
     ) {
         AidlyCara(
             if (fase == FaseSos.PREGUNTA) Emocion.PREOCUPADO else Emocion.CONTENTO,
-            Modifier.fillMaxWidth(0.6f), remember { !Preferencias.reducirMovimiento(ctx) },
+            Modifier.fillMaxWidth(0.6f), remember { !Preferencias.reducirMovimiento(ctx) }, voz.hablando.collectAsState().value,
         )
         when (fase) {
             FaseSos.PREGUNTA -> {

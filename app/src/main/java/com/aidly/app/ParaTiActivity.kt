@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -80,6 +82,8 @@ private fun Pantalla(voz: Voz, cerrar: () -> Unit) {
     var respuesta by remember { mutableStateOf("") }
     var quiereHablar by remember { mutableIntStateOf(0) }
 
+    val habla by voz.hablando.collectAsState()
+    val animar = remember { !Preferencias.reducirMovimiento(ctx) }
     fun cambiar(f: (Perfil) -> Perfil) { perfil = Intereses.cambiar(ctx, f) }
     val pedirMic = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { ok -> if (ok) quiereHablar++ }
 
@@ -146,6 +150,9 @@ private fun Pantalla(voz: Voz, cerrar: () -> Unit) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             EncabezadoPantalla(stringResource(if (editando) R.string.pt_gustos_t else R.string.pt_titulo)) { voz.callar(); cerrar() }
 
+            if (!editando) Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                AidlyCara(if (habla) Emocion.HABLANDO else if (hablando) Emocion.ESCUCHANDO else Emocion.REPOSO, Modifier.fillMaxWidth(0.3f), animar, habla)
+            }
             if (editando) {
                 Text(stringResource(R.string.pt_gustos_sub), fontSize = 20.sp, color = Tema.TextoSuave)
                 Intereses.TEMAS.forEach { tema ->

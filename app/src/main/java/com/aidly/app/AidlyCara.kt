@@ -44,7 +44,7 @@ enum class Emocion(@androidx.annotation.StringRes val etiqueta: Int, @androidx.a
  * Las animaciones se leen solo al dibujar, asi que no provocan recomposicion; se detienen al salir de pantalla.
  */
 @Composable
-fun AidlyCara(emocion: Emocion, modifier: Modifier = Modifier, animar: Boolean = true) {
+fun AidlyCara(emocion: Emocion, modifier: Modifier = Modifier, animar: Boolean = true, hablando: Boolean = false) {
     val descripcionCara = stringResource(R.string.cara_desc, stringResource(emocion.descripcion))
     val t = rememberInfiniteTransition(label = "cara")
     val parpadeoT by t.animateFloat(0f, 1f, infiniteRepeatable(tween(4600, easing = LinearEasing)), label = "parpadeo")
@@ -76,7 +76,9 @@ fun AidlyCara(emocion: Emocion, modifier: Modifier = Modifier, animar: Boolean =
             } else 0f
             val miradaYv = if (miradaX > 0f) miradaX * .2f else 0f
             val rebote = if (animar && emocion == Emocion.CONTENTO) -6f * reboteT else 0f
-            val boca = if (animar) hablarY else .6f
+            // Si la voz esta sonando, la boca se mueve en cualquier estado (tambien con "reducir movimiento": es informacion, no adorno).
+            val habla = hablando || emocion == Emocion.HABLANDO
+            val boca = if (animar || hablando) hablarY else .6f
 
             // --- aro que pulsa al escuchar ---
             if (emocion == Emocion.ESCUCHANDO) {
@@ -130,7 +132,9 @@ fun AidlyCara(emocion: Emocion, modifier: Modifier = Modifier, animar: Boolean =
                 }
 
                 // boca
-                when (emocion) {
+                if (habla) scale(1f, boca, pivot = Offset(120f, 150f)) {
+                    drawOval(Tema.Amarillo, Offset(98f, 133f), Size(44f, 34f))
+                } else when (emocion) {
                     Emocion.REPOSO, Emocion.ESCUCHANDO -> {
                         val p = Path().apply { moveTo(90f, 140f); quadraticTo(120f, 170f, 150f, 140f) }
                         drawPath(p, Tema.Amarillo, style = Stroke(10f, cap = StrokeCap.Round))
