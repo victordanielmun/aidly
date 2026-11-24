@@ -24,6 +24,21 @@ object Preferencias {
     /** Como quiere la persona que la llame (se usa como nombre por defecto del circulo familiar). */
     fun nombre(ctx: Context) = prefs(ctx).getString("nombre", "").orEmpty()
     fun fijarNombre(ctx: Context, v: String) = prefs(ctx).edit().putString("nombre", v.trim()).apply()
+
+    /** Numero de emergencias que la persona (o su familia) puso a mano; vacio = se usa el del pais. Se guarda cifrado. */
+    fun numeroEmergencia(ctx: Context): String = Cifrado.abrir(prefs(ctx).getString("numEmergencia", null)).orEmpty()
+    fun fijarNumeroEmergencia(ctx: Context, v: String) =
+        prefs(ctx).edit().putString("numEmergencia", if (v.isBlank()) null else Cifrado.cerrar(v)).apply()
+
+    /** Contacto de confianza (a quien llamar primero en una emergencia): nombre y telefono, cifrados; null si no hay. */
+    fun contactoConfianza(ctx: Context): Favoritos.Favorito? = try {
+        val j = org.json.JSONObject(Cifrado.abrir(prefs(ctx).getString("confianza", null)) ?: return null)
+        Favoritos.Favorito(j.getString("nombre"), j.getString("numero"))
+    } catch (e: Exception) { null }
+    fun fijarContactoConfianza(ctx: Context, nombre: String, numero: String) {
+        val n = Emergencia.limpiarNumero(numero)
+        prefs(ctx).edit().putString("confianza", if (n == null) null else Cifrado.cerrar(org.json.JSONObject().put("nombre", nombre.trim().take(40)).put("numero", n).toString())).apply()
+    }
 }
 
 /** Contactos favoritos de "Mi familia" (hasta 4). Se eligen con el selector del sistema: no piden permiso de contactos. */

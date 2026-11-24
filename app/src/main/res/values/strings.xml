@@ -536,4 +536,21 @@
     <string name="notif_servicio_canal">Aidly te acompaña</string>
     <string name="notif_servicio_titulo">Aidly te está acompañando</string>
     <string name="v_no_supe_medicina">No supe responderte eso. Pregúntaselo a tu médico o a tu farmacéutico.</string>
+    <string name="sos_llamar_confianza">LLAMAR A %1$s</string>
+    <string name="em_titulo">Mi emergencia</string>
+    <string name="em_intro">Si algo grave pasa, Aidly te ayuda a llamar. Puedes dejar el número de emergencias de tu país o poner otro, y elegir a quién llamar primero.</string>
+    <string name="em_numero">Número de emergencias</string>
+    <string name="em_numero_pais">Vacío = el de tu país (%1$s)</string>
+    <string name="em_confianza">Contacto de confianza</string>
+    <string name="em_confianza_sub">Es la persona a quien llamas primero si necesitas ayuda.</string>
+    <string name="em_nombre">Nombre</string>
+    <string name="em_telefono">Teléfono</string>
+    <string name="em_elegir">Elegir de mis contactos</string>
+    <string name="em_elegir_sub">No hace falta dar permiso de contactos</string>
+    <string name="em_err_numero">Ese número no parece válido. Revisa que tenga solo números.</string>
+    <string name="em_guardado">Guardado</string>
+    <string name="em_guardar">GUARDAR</string>
+    <string name="em_quitar">Quitar estos datos</string>
+    <string name="ajustes_emergencia">Mi emergencia</string>
+    <string name="ajustes_emergencia_sub">Número de emergencias y contacto de confianza</string>
 </resources>

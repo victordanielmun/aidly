@@ -57,8 +57,9 @@ private fun Pantalla(voz: Voz, cerrar: () -> Unit) {
 
     LaunchedEffect(Unit) { voz.decir(Idioma.vozTexto(ctx, R.string.v_sos_intro)) }
 
-    fun marcador() {
-        try { ctx.startActivity(Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", Emergencia.numero(ctx), null)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
+    val confianza = remember { Preferencias.contactoConfianza(ctx) }
+    fun marcador(numero: String = Emergencia.numero(ctx)) {
+        try { ctx.startActivity(Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", numero, null)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
         catch (e: Exception) { SpikeLog.log("SOS: no pude abrir el marcador: ${e.message}") }
     }
 
@@ -87,12 +88,14 @@ private fun Pantalla(voz: Voz, cerrar: () -> Unit) {
                         voz.decir(Idioma.vozTexto(ctx, R.string.v_sos_avise, Emergencia.habla(ctx)))
                     }
                 }
+                confianza?.let { c -> BotonGrande(stringResource(R.string.sos_llamar_confianza, c.nombre), Tema.Turquesa) { voz.callar(); marcador(c.numero) } }
                 BotonGrande(stringResource(R.string.sos_llamar, Emergencia.numero(ctx)), Tema.Amarillo) { voz.callar(); marcador() }
                 BotonGrande(stringResource(R.string.sos_no_volver), Tema.TextoSuave, alto = 72.dp) { voz.callar(); cerrar() }
             }
             FaseSos.AVISADO -> {
                 Text(stringResource(R.string.sos_avisado), fontSize = 34.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa, textAlign = TextAlign.Center)
                 Text(stringResource(R.string.sos_avisado_sub, Emergencia.numero(ctx)), fontSize = 22.sp, color = Tema.Texto, textAlign = TextAlign.Center)
+                confianza?.let { c -> BotonGrande(stringResource(R.string.sos_llamar_confianza, c.nombre), Tema.Turquesa) { marcador(c.numero) } }
                 BotonGrande(stringResource(R.string.sos_llamar, Emergencia.numero(ctx)), Tema.Amarillo) { marcador() }
                 BotonGrande(stringResource(R.string.sos_ya_bien), Tema.Turquesa) {
                     voz.callar(); Circulo.limpiarSos(ctx); voz.decir(Idioma.vozTexto(ctx, R.string.v_que_bueno_alegra)) { cerrar() }

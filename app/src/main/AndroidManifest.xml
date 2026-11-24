@@ -125,6 +125,11 @@
             android:theme="@style/Theme.Aidly" />
 
         <activity
+            android:name=".EmergenciaActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aidly" />
+
+        <activity
             android:name=".AjustesActivity"
             android:exported="false"
             android:theme="@style/Theme.Aidly" />

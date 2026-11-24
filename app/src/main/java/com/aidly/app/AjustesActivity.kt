@@ -134,6 +134,10 @@ private fun Pantalla(cerrar: () -> Unit) {
             }
         }
 
+        FilaAccion(Iconos.Alerta, stringResource(R.string.ajustes_emergencia), stringResource(R.string.ajustes_emergencia_sub)) {
+            ctx.startActivity(Intent(ctx, EmergenciaActivity::class.java))
+        }
+
         FilaAccion(Iconos.Estrella, stringResource(R.string.ajustes_a11y), stringResource(R.string.ajustes_a11y_sub)) {
             ctx.startActivity(Intent(ctx, AyudaOtrasAppsActivity::class.java))
         }

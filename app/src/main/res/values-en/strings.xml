@@ -536,4 +536,21 @@
     <string name="notif_servicio_canal">Aidly keeps you company</string>
     <string name="notif_servicio_titulo">Aidly is keeping you company</string>
     <string name="v_no_supe_medicina">I could not answer that. Ask your doctor or pharmacist.</string>
+    <string name="sos_llamar_confianza">CALL %1$s</string>
+    <string name="em_titulo">My emergency</string>
+    <string name="em_intro">If something serious happens, Aidly helps you call. You can keep your country\'s emergency number or enter another one, and choose who to call first.</string>
+    <string name="em_numero">Emergency number</string>
+    <string name="em_numero_pais">Empty = your country\'s (%1$s)</string>
+    <string name="em_confianza">Trusted contact</string>
+    <string name="em_confianza_sub">The person you call first if you need help.</string>
+    <string name="em_nombre">Name</string>
+    <string name="em_telefono">Phone</string>
+    <string name="em_elegir">Pick from my contacts</string>
+    <string name="em_elegir_sub">No contacts permission needed</string>
+    <string name="em_err_numero">That number does not look valid. Check that it has only digits.</string>
+    <string name="em_guardado">Saved</string>
+    <string name="em_guardar">SAVE</string>
+    <string name="em_quitar">Remove this information</string>
+    <string name="ajustes_emergencia">My emergency</string>
+    <string name="ajustes_emergencia_sub">Emergency number and trusted contact</string>
 </resources>
