@@ -22,7 +22,7 @@ Solo cuando usas la función, y solo con la nube encendida:
 Google procesa esos datos para responderte. Aidly no los guarda en sus propios servidores.
 
 ### Para ti (opcional)
-Si eliges tus gustos en «Para ti», Aidly te muestra cosas que te pueden interesar y puede ofrecértelas por voz en el modo dock, solo si lo aceptas. Tus gustos se guardan cifrados en tu teléfono. Con la nube encendida, Aidly manda a Google la lista de temas elegidos y los títulos que ya viste (nunca tu nombre ni tu ubicación) para buscar tarjetas nuevas; con la nube apagada solo ves las que trae la app. Los resúmenes de la web están hechos por IA y siempre dicen su fuente.
+Si eliges tus gustos en «Para ti», Aidly te muestra cosas que te pueden interesar y puede ofrecértelas por voz en el modo dock, solo si lo aceptas. Tus gustos se guardan cifrados en tu teléfono. Con la nube encendida, Aidly manda a Google la lista de temas elegidos y los títulos que ya viste (nunca tu nombre ni tu ubicación) para buscar tarjetas nuevas; con la nube apagada solo ves las que trae la app. Las tarjetas de la web (Wikipedia y titulares de la BBC) llevan el texto de su fuente y siempre la nombran; las que resume la IA lo dicen. Esos sitios ven la dirección IP de tu teléfono, como cualquier página, y solo se consultan con la nube encendida. Para el clima se manda a Open-Meteo el nombre de la ciudad por la que preguntas.
 
 ### Cámara del modo dock (opcional)
 Si activas el modo dock y aceptas, la cámara frontal del teléfono sirve para saber si estás frente a Aidly y para que la base gire hacia ti. Las imágenes se procesan **en tu teléfono**: no se muestran, no se guardan y no se envían. Si después de conversar dejo de verte, te preguntaré en voz alta si estás bien. No detecta caídas ni emergencias. Puedes pausarla cuando quieras.
@@ -65,7 +65,7 @@ Only when you use the feature, and only with the cloud turned on:
 Google processes this data to answer you. Aidly does not store it on its own servers.
 
 ### For you (optional)
-If you choose your interests in "For you", Aidly shows things you may enjoy and, only if you agree, can offer them aloud in dock mode. Your interests are stored encrypted on your phone. With the cloud on, Aidly sends Google the list of chosen topics and the titles you have already seen (never your name or location) to look for new cards; with the cloud off you only see the ones that ship with the app. Web summaries are made by AI and always name their source.
+If you choose your interests in "For you", Aidly shows things you may enjoy and, only if you agree, can offer them aloud in dock mode. Your interests are stored encrypted on your phone. With the cloud on, Aidly sends Google the list of chosen topics and the titles you have already seen (never your name or location) to look for new cards; with the cloud off you only see the ones that ship with the app. Web cards (Wikipedia and BBC headlines) carry their source's text and always name it; those summarised by AI say so. Those sites see your phone's IP address, like any web page, and are only contacted with the cloud on. For weather, the name of the city you ask about is sent to Open-Meteo.
 
 ### Dock-mode camera (optional)
 If you turn on dock mode and accept, the phone's front camera is used to know whether you are in front of Aidly and so the base can turn toward you. Images are processed **on your phone**: they are not shown, saved or sent. If I stop seeing you after we talk, I will ask aloud whether you are okay. It does not detect falls or emergencies. You can pause it any time.

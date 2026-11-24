@@ -140,4 +140,71 @@ class ParaTiTest {
         assertEquals("Uno", Curadas.deJson(j, "es")[0].titulo); assertEquals("One", Curadas.deJson(j, "en")[0].titulo)
         assertTrue(Curadas.deJson(j, "es")[0].general); assertTrue(Curadas.deJson("no", "es").isEmpty())
     }
+
+    // ---------- Fuentes web (partes puras) ----------
+    private val hoy = java.time.LocalDate.of(2026, 11, 23)
+
+    @Test fun efemeridesDeWikipediaSeConvierteEnTarjetasSeguras() {
+        val j = """{"events":[
+            {"text":"Se inaugura en la ciudad el primer teatro de la opera del pais, con una gran funcion.","year":1884},
+            {"text":"Muere el famoso poeta tras una larga enfermedad en su casa de campo.","year":1901},
+            {"text":"Comienza la guerra entre dos paises vecinos por el control de la frontera.","year":1950},
+            {"text":"Corto","year":2000}]}"""
+        val r = Tarjeta::class.java; val t = FuentesWeb.efemerides(j, "es", hoy)
+        assertEquals(1, t.size)
+        assertEquals("El 23 de noviembre de 1884", t[0].titulo); assertEquals("Wikipedia", t[0].fuente); assertEquals("historia", t[0].tema); assertFalse(t[0].ia)
+        assertEquals("On November 23, 1884", FuentesWeb.efemerides(j, "en", hoy)[0].titulo)
+        assertTrue(FuentesWeb.efemerides("no es json", "es", hoy).isEmpty())
+    }
+
+    private val rss = """<?xml version="1.0"?><rss><channel><title>BBC</title>
+        <item><title>Descubren una nueva especie de mariposa en la selva</title><description>&lt;p&gt;Un equipo la encontro&lt;/p&gt; en una region remota.</description><pubDate>Mon, 23 Nov 2026 10:30:00 GMT</pubDate></item>
+        <item><title>Hallan sin vida a un estudiante desaparecido</title><description>Detalles</description><pubDate>Mon, 23 Nov 2026 09:00:00 GMT</pubDate></item>
+        <item><title>Corto</title><description>x</description></item>
+        </channel></rss>"""
+
+    @Test fun titularesRssSeLeenYSeFiltran() {
+        val t = FuentesWeb.titulares(rss, "BBC Mundo")
+        assertEquals(1, t.size)
+        assertEquals("Descubren una nueva especie de mariposa en la selva", t[0].titulo)
+        assertEquals("Un equipo la encontro en una region remota.", t[0].resumen)
+        assertEquals("BBC Mundo", t[0].fuente); assertEquals("2026-11-23", t[0].fecha); assertEquals("noticias", t[0].tema)
+    }
+
+    @Test fun rssConDoctypeOMalFormadoSeRechaza() {
+        assertTrue(FuentesWeb.titulares("<?xml version=\"1.0\"?><!DOCTYPE x [<!ENTITY a \"b\">]><rss/>", "X").isEmpty())
+        assertTrue(FuentesWeb.titulares("<rss><item>", "X").isEmpty())
+    }
+
+    @Test fun ciudadDeLaFrase() {
+        assertEquals("Bogotá", FuentesWeb.ciudadDe("¿Cómo está el clima hoy en Bogotá?"))
+        assertEquals("Madrid", FuentesWeb.ciudadDe("What is the weather like in Madrid today?"))
+        assertEquals("Medellín", FuentesWeb.ciudadDe("Dime el clima de Medellín"))
+        assertEquals(null, FuentesWeb.ciudadDe("¿Cómo está el clima hoy?"))
+        assertEquals(null, FuentesWeb.ciudadDe("Dime el clima en la mañana"))
+    }
+
+    @Test fun reconoceLasPreguntasDeClima() {
+        assertTrue(FuentesWeb.esClima("como esta el clima hoy en bogota")); assertTrue(FuentesWeb.esClima("will it rain tomorrow"))
+        assertFalse(FuentesWeb.esClima("cuanto cuesta el dolar"))
+    }
+
+    @Test fun textoDelClimaEnLosDosIdiomas() {
+        val j = """{"current":{"temperature_2m":14.4,"weather_code":3},"daily":{"temperature_2m_max":[19.2],"temperature_2m_min":[9.1]}}"""
+        assertEquals("Ahora en Bogotá hay 14 grados y está nublado. Hoy la máxima será de 19 y la mínima de 9.", FuentesWeb.textoClima(j, "Bogotá", "es"))
+        assertEquals("Right now in Bogotá it is 14 degrees and cloudy. Today the high will be 19 and the low 9.", FuentesWeb.textoClima(j, "Bogotá", "en"))
+        assertEquals(null, FuentesWeb.textoClima("{}", "X", "es"))
+    }
+
+    @Test fun lasTarjetasDeLaIaLlevanElAviso() {
+        assertTrue(Tarjetas.parsear("""[{"titulo":"Un titulo","resumen":"r","tema":"musica","fuente":"Diario"}]""")[0].ia)
+    }
+
+    @Test fun leeLosNumerosQueDejaElModelo() {
+        assertEquals(listOf(0, 3), Tarjetas.indicesDe("[1, 4]", 5))
+        assertEquals(listOf(1), Tarjetas.indicesDe("Dejo estos: [2, 2, 9]", 5))
+        assertEquals(emptyList<Int>(), Tarjetas.indicesDe("[]", 5))
+        assertEquals(emptyList<Int>(), Tarjetas.indicesDe("ninguno", 5))
+    }
 }
+

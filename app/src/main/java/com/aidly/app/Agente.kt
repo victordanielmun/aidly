@@ -106,6 +106,11 @@ object Agente {
             } ?: if (L.buscarWeb.containsMatchIn(n)) {
                 SpikeLog.log("AGENTE: ruta=busqueda web")
                 if (!Privacidad.nubeActiva()) return Respuesta(t(ctx, R.string.v_busqueda_sin_nube), "local", 0)
+                // El clima viene de Open-Meteo (gratis, sin gastar el cupo de busqueda de Gemini); si no hay ciudad o falla, sigue la busqueda normal.
+                if (FuentesWeb.esClima(n)) {
+                    val c = try { FuentesWeb.clima(ctx, frase) } catch (e: Exception) { null }
+                    if (c != null) { SpikeLog.log("AGENTE: clima por Open-Meteo"); return Respuesta(c, "web", 0) }
+                }
                 try {
                     val b = Busqueda.responder(ctx, frase)
                     Respuesta(b.texto, "web", b.ms)

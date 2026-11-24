@@ -172,7 +172,7 @@ private fun Pantalla(voz: Voz, cerrar: () -> Unit) {
                     Text(actual.resumen, fontSize = 26.sp, color = Tema.Texto)
                     if (!actual.general) {
                         Text(stringResource(R.string.pt_segun, actual.fuente) + if (actual.fecha.isNotBlank()) " · ${actual.fecha}" else "", fontSize = 18.sp, color = Tema.TextoSuave)
-                        Text(stringResource(R.string.pt_ia), fontSize = 18.sp, color = Tema.TextoSuave)
+                        if (actual.ia) Text(stringResource(R.string.pt_ia), fontSize = 18.sp, color = Tema.TextoSuave)
                     }
                 }
                 BotonGrande(stringResource(R.string.pt_leemela), Tema.Turquesa) { leer(actual) }

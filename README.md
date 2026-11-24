@@ -55,6 +55,31 @@ daily check-in · **dock mode** (USB-C code for the dock included, unit-tested a
 A debug APK for judges will be linked from the Devpost submission. It uses the debug App Check provider.
 The family page is served from Firebase Hosting at https://aidly-d108b.web.app (enter the code shown in the app under "My family").
 
+## Limits and configuration: Google Search and the LLM key
+Aidly never contains an LLM API key. Every Gemini call goes through **Firebase AI Logic** and uses the Gemini Developer API key that
+Firebase creates and restricts inside *your* Firebase project (`app/google-services.json`, which is not in the repository). That means
+**all usage counts against that project's quota**, including the judges' and testers' usage.
+
+- **Gemini "Grounding with Google Search" has its own, small quota.** On the free tier of the submission project (`aidly-d108b`) it
+  returned `QuotaExceededException` between 20 and 23 Nov 2026 with three different models, while ordinary chat, photo reading and
+  speech-to-text kept working. Check your own limits at <https://ai.dev/rate-limit>.
+- **What Aidly does when the search quota is out** (so nothing breaks):
+  - *Weather questions* use Open-Meteo directly (free, no key).
+  - *"For you" cards* come from public sources (Wikipedia "on this day" and BBC headlines), judged for suitability by Gemini
+    (without search); then no-search general-knowledge cards from Gemini (labelled as such); then cards that ship inside the app.
+  - *Other web questions* open Google with the question.
+  - After a quota error the app pauses search attempts for 3 hours instead of retrying on every request.
+- **To get full Google Search answers, either:**
+  1. keep within the quota (ask fewer web questions; the cache and the pause help), or
+  2. use **your own key/quota**: create your own Firebase project, enable Firebase AI Logic, put your `google-services.json` in
+     `app/` (see *Build and run*) and, if you need more than the free allowance, enable billing on that project. The key is managed by
+     Firebase in your project; nothing needs to be pasted into the source.
+  3. To use a different LLM provider you would have to replace the two search-dependent files, [`Busqueda.kt`](app/src/main/java/com/aidly/app/Busqueda.kt)
+     and [`FeedTarjetas.kt`](app/src/main/java/com/aidly/app/FeedTarjetas.kt); the rest of the app does not depend on Search.
+- **Public sources used without Gemini Search:** Wikipedia REST API (text under CC BY-SA, shown as "Wikipedia"), BBC RSS feeds (headlines
+  for non-commercial syndication, shown as "BBC News" / "BBC Mundo") and Open-Meteo (free, non-commercial use). They are only contacted
+  when the person has the cloud switched on, and each source's address sees the phone's IP like any website would.
+
 ## Privacy
 [`docs/PRIVACY.md`](docs/PRIVACY.md) (ES/EN), [`docs/PRIVACY_DATA_FLOW.md`](docs/PRIVACY_DATA_FLOW.md) (every data flow and its source file) and
 [`docs/PLAY_DATA_SAFETY.md`](docs/PLAY_DATA_SAFETY.md). No ads, analytics or crash reporting. Sensitive local data is encrypted with the Android Keystore.

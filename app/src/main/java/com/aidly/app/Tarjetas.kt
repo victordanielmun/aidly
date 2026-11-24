@@ -4,11 +4,12 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /** Una tarjeta de "Para ti": algo de interes para la persona, con su fuente. */
-class Tarjeta(val titulo: String, val resumen: String, val tema: String, val fuente: String, val fecha: String) {
+class Tarjeta(val titulo: String, val resumen: String, val tema: String, val fuente: String, val fecha: String, val ia: Boolean = false) {
+    // [ia]: el resumen lo escribio un modelo de IA (las tarjetas de Wikipedia y de la BBC traen el texto de la fuente y no llevan ese aviso).
     /** Dato de conocimiento general (sin busqueda): no es una noticia de hoy y la pantalla lo dice. */
     val general: Boolean get() = fuente == Tarjetas.FUENTE_GENERAL_ES || fuente == Tarjetas.FUENTE_GENERAL_EN
 
-    fun aJson(): JSONObject = JSONObject().put("titulo", titulo).put("resumen", resumen).put("tema", tema).put("fuente", fuente).put("fecha", fecha)
+    fun aJson(): JSONObject = JSONObject().put("titulo", titulo).put("resumen", resumen).put("tema", tema).put("fuente", fuente).put("fecha", fecha).put("ia", ia)
 }
 
 /**
@@ -26,7 +27,9 @@ object Tarjetas {
     /** Temas que una persona mayor no necesita recibir sin pedirlos (violencia, politica que divide, dinero facil, curas milagrosas). Se compara sin tildes. */
     private val DELICADO = Regex(
         "\\b(asesin\\w*|muert[eo]s?|murio|muere\\w*|fallec\\w*|homicid\\w*|masacre\\w*|tirote\\w*|terroris\\w*|atentado\\w*|secuestr\\w*|violacion|" +
-            "abuso sexual|suicid\\w*|guerra\\w*|bombarde\\w*|accidente (mortal|grave)|tragedia|cadaver\\w*|elecciones?|candidat[oa]s?|partido politico|" +
+            "gobierno|presidente|ministr\\w*|parlamento|congreso|senado|trump|putin|biden|sancion\\w*|policia|arrest\\w*|detenid\\w*|juicio|tribunal|escandalo|ataque\\w*|protesta\\w*|huelga|arancel\\w*|crisis|" +
+            "government|president|minister|parliament|congress|senate|sanction\\w*|police|trial|court|affair|scandal|attack\\w*|protest\\w*|strike|tariff\\w*|prime minister|labour|tory|republican|democrat|" +
+            "kill\\w*|bombard\\w*|slaughter\\w*|casualt\\w*|civilians|matan|mata a|asesinat\\w*|sin vida|desaparecid\\w*|hallan (un |el )?cuerpo|found dead|body found|missing (person|student|child)|dead|abuso sexual|suicid\\w*|guerra\\w*|bombarde\\w*|accidente (mortal|grave)|tragedia|cadaver\\w*|elecciones?|candidat[oa]s?|partido politico|" +
             "estafa\\w*|fraude\\w*|inversion garantizada|criptomoned\\w*|bitcoin|apuestas?|casino|cura (milagrosa|definitiva)|cura(r|n)? el cancer|" +
             "remedio casero|murder\\w*|killed|dies|died|death toll|massacre|shooting|terroris\\w*|kidnap\\w*|rape|suicide|war|bombing|fatal|tragedy|corpse|" +
             "election|candidates?|political party|scams?|fraud\\w*|guaranteed returns|crypto\\w*|betting|gambling|miracle cure|home remedy|cure for cancer)\\b",
@@ -47,7 +50,7 @@ object Tarjetas {
             val tema = o.optString("tema").trim().lowercase()
             if (titulo.isBlank() || resumen.isBlank() || fuente.isBlank()) continue          // sin fuente no hay tarjeta
             if (temasValidos.isNotEmpty() && tema !in temasValidos) continue
-            val t = Tarjeta(titulo, resumen, tema, fuente, o.optString("fecha").trim())
+            val t = Tarjeta(titulo, resumen, tema, fuente, o.optString("fecha").trim(), ia = true)
             val n = normalizarTexto(titulo)
             if (n in usados || !esSegura(t)) continue
             usados += n
@@ -68,6 +71,10 @@ object Tarjetas {
         } catch (_: Exception) {}
         return null
     }
+
+    /** Lee la lista de numeros (base 1) que devuelve el modelo, p. ej. "[1, 4]" o "1,4"; descarta repetidos y fuera de rango. */
+    fun indicesDe(texto: String, total: Int): List<Int> =
+        Regex("""\d+""").findAll(texto.substringAfter("[", texto).substringBefore("]")).mapNotNull { it.value.toIntOrNull() }.filter { it in 1..total }.distinct().map { it - 1 }.toList()
 
     fun aJson(lista: List<Tarjeta>): String = JSONArray(lista.map { it.aJson() }).toString()
 }

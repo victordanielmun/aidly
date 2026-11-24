@@ -106,7 +106,7 @@ object FeedTarjetas {
         return try {
             val j = JSONObject(txt)
             val arr = j.getJSONArray("tarjetas")
-            val lista = (0 until arr.length()).map { i -> arr.getJSONObject(i).let { Tarjeta(it.getString("titulo"), it.getString("resumen"), it.optString("tema"), it.getString("fuente"), it.optString("fecha")) } }
+            val lista = (0 until arr.length()).map { i -> arr.getJSONObject(i).let { Tarjeta(it.getString("titulo"), it.getString("resumen"), it.optString("tema"), it.getString("fuente"), it.optString("fecha"), it.optBoolean("ia", false)) } }
             Triple(j.getLong("ts"), j.optString("clave"), lista)
         } catch (e: Exception) { null }
     }
@@ -154,22 +154,78 @@ object FeedTarjetas {
         }
         Privacidad.exigirNube()
         if (ids.isEmpty()) return Resultado(emptyList(), false, 0)
+        val t0 = System.currentTimeMillis()
+        // 1) Fuentes publicas (Wikipedia, titulares de la BBC): fecha y fuente reales, sin gastar cupo de Gemini.
+        val web = try { FuentesWeb.tarjetas(ctx, idioma, ids, perfil.vistos) } catch (e: Exception) { SpikeLog.log("FEED: fuentes web fallaron (${e::class.simpleName})"); emptyList() }
+        // Los titulares de la BBC pasan por un modelo que deja solo los tranquilos (falla cerrado: si no puede juzgarlos, no se muestra ninguno).
+        val aptas = if (web.isEmpty()) emptyList() else aptas(idioma, web)
+        var lista = aptas.take(Tarjetas.MAX)
+        // 2) Si faltan, Gemini: con busqueda de Google si hay cupo y, si no, de conocimiento general (marcadas como tales).
+        var crudas = ""
+        var motivo = ""
+        if (lista.size < Tarjetas.MAX) {
+            val faltan = Tarjetas.MAX - lista.size
+            try {
+                val (extra, c, m) = deGemini(ctx, idioma, ids, perfil)
+                crudas = c; motivo = m
+                lista = (lista + extra.filter { e -> lista.none { normalizarTexto(it.titulo) == normalizarTexto(e.titulo) } }.take(faltan))
+            } catch (e: Exception) {
+                if (lista.isEmpty()) throw e                       // sin nada que mostrar: que la pantalla lo explique y use lo guardado
+                SpikeLog.log("FEED: Gemini fallo (${e::class.simpleName}); se muestran las de fuentes web")
+            }
+        }
+        val ms = System.currentTimeMillis() - t0
+        SpikeLog.log("FEED: $ms ms | temas=$ids | web=${web.size} gemini=${lista.size - web.take(Tarjetas.MAX).size} general=${lista.any { it.general }} $motivo | recibidas=${crudas.length} car | titulos=${lista.map { it.titulo.take(40) }}")
+        if (lista.isNotEmpty()) guardarCache(ctx, clave, lista)
+        return Resultado(lista, false, ms)
+    }
+
+    /** Juzga titulares con Gemini (sin busqueda) y deja los tranquilos y neutrales; si falla, devuelve vacio. */
+    internal suspend fun aptas(idioma: String, noticias: List<Tarjeta>): List<Tarjeta> {
+        val en = idioma == "en"
+        val lista = noticias.mapIndexed { i, t -> "${i + 1}. ${t.titulo}: ${t.resumen.take(160)}" }.joinToString("\n")
+        val p = if (en)
+            "Items (news headlines and historical facts) for an older adult who did NOT ask for them. Select ONLY the calm, positive or neutral ones: science, nature, culture, arts, technology explained simply, " +
+                "good news, and history only if it is about discoveries, inventions, culture or achievements (never battles, wars, bombings or disasters). EXCLUDE politics, governments, elections, war, killings, crime, accidents, disasters, deaths, scandals, economic worries, violence, abuse, health scares and anything upsetting. " +
+                "Answer ONLY with a JSON array of the numbers to keep, for example [1,4]. If none qualify, answer [].\n$lista"
+        else
+            "Elementos (titulares y hechos historicos) para una persona mayor que NO los pidio. Elige SOLO los tranquilos, positivos o neutrales: ciencia, naturaleza, cultura, arte, tecnologia explicada con sencillez, " +
+                "buenas noticias, e historia solo si trata de descubrimientos, inventos, cultura o logros (nunca batallas, guerras, bombardeos ni desastres). EXCLUYE politica, gobiernos, elecciones, guerra, asesinatos, crimenes, accidentes, desastres, muertes, escandalos, preocupaciones economicas, violencia, maltrato, sustos de salud y todo lo que inquiete. " +
+                "Responde SOLO con un arreglo JSON con los numeros que se quedan, por ejemplo [1,4]. Si ninguno sirve, responde [].\n$lista"
+        return try {
+            val r = withTimeout(30_000) { model(false).generateContent(p) }.text.orEmpty()
+            val ok = Tarjetas.indicesDe(r, noticias.size).map { noticias[it] }
+            SpikeLog.log("FEED: el modelo dejo ${ok.size} de ${noticias.size} titulares")
+            ok
+        } catch (e: Exception) {
+            SpikeLog.log("FEED: no pude juzgar los titulares (${e::class.simpleName}); no se muestran noticias")
+            emptyList()
+        }
+    }
+
+    /** La busqueda de Google de Gemini tiene cupo limitado: tras un error de cupo no se vuelve a intentar durante un rato. */
+    private const val PAUSA_BUSQUEDA_MS = 3L * 60 * 60 * 1000
+
+    private suspend fun deGemini(ctx: Context, idioma: String, ids: List<String>, perfil: Perfil): Triple<List<Tarjeta>, String, String> {
         val temas = ids.mapNotNull { Intereses.tema(it) }
         val pais = Locale.getDefault().country.ifBlank { "US" }
         val fecha = java.time.LocalDate.now().toString()
         val t0 = System.currentTimeMillis()
-        var crudas: String
+        var crudas = ""
         var motivo = ""
-        var lista = try {
+        var lista: List<Tarjeta> = emptyList()
+        if (System.currentTimeMillis() < prefs(ctx).getLong("sinBusquedaHasta", 0L)) motivo = "busqueda en pausa"
+        else try {
             crudas = withTimeout(60_000) { model(true).generateContent(prompt(idioma, pais, fecha, temas, perfil.vistos)) }.text.orEmpty()
-            Tarjetas.parsear(crudas, vistos = perfil.vistos, temasValidos = ids.toSet())
+            lista = Tarjetas.parsear(crudas, vistos = perfil.vistos, temasValidos = ids.toSet())
         } catch (e: Exception) {
             SpikeLog.log("FEED: la busqueda fallo tras ${System.currentTimeMillis() - t0} ms (${e::class.simpleName}); se usa conocimiento general")
             if (!sinCupo(e)) throw e
-            motivo = e::class.simpleName.orEmpty(); crudas = ""; emptyList()
+            motivo = e::class.simpleName.orEmpty()
+            if (e is com.google.firebase.ai.type.QuotaExceededException) prefs(ctx).edit().putLong("sinBusquedaHasta", System.currentTimeMillis() + PAUSA_BUSQUEDA_MS).apply()
         }
         if (lista.isEmpty()) {
-            val sinNoticias = temas.filter { it.id != "noticias" }
+            val sinNoticias = temas.filter { it.id != "noticias" && it.id != "historia" }
             if (sinNoticias.isNotEmpty()) {
                 val p = promptGeneral(idioma, sinNoticias, perfil.vistos)
                 crudas = try {
@@ -183,10 +239,7 @@ object FeedTarjetas {
                 lista = Tarjetas.parsear(crudas, vistos = perfil.vistos, temasValidos = sinNoticias.map { it.id }.toSet())
             }
         }
-        val ms = System.currentTimeMillis() - t0
-        SpikeLog.log("FEED: $ms ms | temas=$ids | respaldo=${lista.any { it.general }} $motivo | recibidas=${crudas.length} car | validas=${lista.size} | titulos=${lista.map { it.titulo.take(40) }}")
-        if (lista.isNotEmpty()) guardarCache(ctx, clave, lista)
-        return Resultado(lista, false, ms)
+        return Triple(lista, crudas, motivo)
     }
 
     /** Solo depuracion: mide cuanto tarda una generacion sin busqueda con un prompt corto (a) o el completo (b). */
