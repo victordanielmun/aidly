@@ -47,6 +47,9 @@ object Agente {
         return pegado.startsWith("recuerdame") || pegado.startsWith("recordarme") || pegado.startsWith("remindme") || pegado.startsWith("aidlyrecuerdame")
     }
 
+    /** "Necesito ayuda" dicho solo es un pedido de ayuda; con algo mas ("necesito ayuda con el telefono") no lo es. */
+    private val AYUDA_SOLA = setOf("necesito ayuda", "ayuda", "ayudame", "help", "help me", "i need help", "need help", "necesito ayuda por favor")
+
     suspend fun procesar(ctx: Context, frase: String): Respuesta {
         val n = normalizar(frase)
         val L = Lexico.de(ctx)
@@ -55,7 +58,7 @@ object Agente {
             L.cancelarRec.containsMatchIn(n) && L.objRec.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=cancelar recordatorio"); cancelarRecordatorio(ctx, n, L) }
             L.crearRec.containsMatchIn(n) || verboRecordarPartido(n) -> { SpikeLog.log("AGENTE: ruta=crear recordatorio"); crearRecordatorio(ctx, frase) }
             L.objRec.containsMatchIn(n) && L.listarRec.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=listar recordatorios"); listarRecordatorios(ctx) }
-            L.sos.containsMatchIn(n) && !L.llamar.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=pedir ayuda"); pedirAyuda(ctx) }
+            (L.sos.containsMatchIn(n) || n.trim() in AYUDA_SOLA) && !L.llamar.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=pedir ayuda"); pedirAyuda(ctx) }
             L.estoyBien.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=estoy bien"); estoyBien(ctx) }
             L.tomado.containsMatchIn(n) && MedicinaValidador.respuestaSegura(ctx, frase) == null -> { SpikeLog.log("AGENTE: ruta=ya lo hice"); yaLoHice(ctx) }
             L.crearCita.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=agendar cita"); crearCita(ctx, frase) }

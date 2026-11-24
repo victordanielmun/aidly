@@ -1,0 +1,62 @@
+# phrase | expected route (prefix of the log "AGENTE: ruta=")
+what time is it | hora/fecha
+can you tell me the time | hora/fecha
+tell me the time please | hora/fecha
+what is the date today | hora/fecha
+what day is it | hora/fecha
+what s today s date | hora/fecha
+what day of the week is it | hora/fecha
+remind me to take my pill at eight | crear recordatorio
+set an alarm for six in the morning | crear recordatorio
+let me know at nine to take my medicine | crear recordatorio
+do not let me forget the doctor appointment | crear recordatorio
+what reminders do i have | listar recordatorios
+show me my reminders | listar recordatorios
+cancel the reminder for the pill | cancelar recordatorio
+delete the alarm for six | cancelar recordatorio
+schedule an appointment with the doctor on tuesday at ten | agendar cita
+book an appointment with the dentist on friday | agendar cita
+what do i have today on my calendar | ver agenda
+what appointments do i have tomorrow | ver agenda
+do i have anything scheduled this week | ver agenda
+call my daughter | llamar
+phone my son please | llamar
+call the pharmacy | llamar
+i want to call emergency | llamar
+i need help | pedir ayuda
+help me | pedir ayuda
+i feel sick | pedir ayuda
+i fell and i can not get up | pedir ayuda
+i am fine | estoy bien
+everything is fine here | estoy bien
+i already took the pill | ya lo hice
+i took my medicine already | ya lo hice
+read my messages | mensajes
+do i have new messages | mensajes
+who wrote to me | mensajes
+read my email | correo
+do i have emails | correo
+open whatsapp | app WhatsApp
+open youtube | app
+play music on spotify | app
+i want to watch a movie | app
+open the camera | camara
+take a picture | camara
+what does this medicine box say | medicina
+read what this paper says | analiza
+can you read this letter | analiza
+show me things i like | para ti
+what news do you have for me | para ti
+open dock mode | modo dock
+how is the weather today | busqueda web
+will it rain tomorrow | busqueda web
+who won the game yesterday | busqueda web
+what is the capital of france | conversacion
+tell me a joke | conversacion
+how are you | conversacion
+i am bored | conversacion
+thank you | conversacion
+scroll down | accesibilidad
+go back | accesibilidad
+tap search | accesibilidad
+i need help with my phone | conversacion

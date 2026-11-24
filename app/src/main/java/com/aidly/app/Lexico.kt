@@ -40,7 +40,7 @@ class Lexico(
                 r("\\b(google maps|maps|mapa|mapas)\\b") to "MAPS", r("\\bfacebook\\b") to "FACEBOOK",
             ),
             correo = r("\\b(correo|correos|mail|mails|email|emails|gmail|outlook)\\b"),
-            mensajes = r("\\b(mensaje|mensajes|whatsapp|wasap|guasap)\\b"),
+            mensajes = r("\\b(mensaje|mensajes|whatsapp|wasap|guasap|quien me (escribio|mando|ha escrito|escribe)|me escribio alguien)\\b"),
             enviar = r("\\b(envia|enviar|manda|mandar|escribe|escribir|responde|responder|contesta|contestar)\\b"),
             abrirExpl = r("\\b(abre|abrir|ejecuta|inicia|iniciar)\\b"),
             verboAbrir = r("\\b(abre|abrir|pon|ponme|poner|busca|buscar|quiero|reproduce|reproducir|muestrame|ensename|escuchar|ver|mirar)\\b"),
@@ -53,10 +53,10 @@ class Lexico(
             analiza = r(
                 "\\b(analiza|analizar|analizame|analicemos)\\b|\\b(que|cual) dice (esta|este|esto|el|la)\\b|" +
                     "\\b(que|cual) dice (aqui|ahi|alli|alla)\\b|\\bque (es|son) (esto|eso|estas cosas)\\b|" +
-                    "\\b(es|sera|parece) (una )?estafa\\b|\\b(revisa|revisame|lee|leeme) (esta|este|esto|estos|estas)\\b",
+                    "\\b(es|sera|parece) (una )?estafa\\b|\\b(revisa|revisame|lee|leer|leeme) (esta|este|esto|estos|estas)\\b",
             ),
             crearRec = r(
-                "\\b(recuerdame|recordarme|recuerdamelo|ponme (una )?alarma|pon (una )?alarma|programa (una )?alarma|" +
+                "\\b(recuerdame|recordarme|recuerdamelo|no me dejes olvidar|que no se me olvide|no se me vaya a olvidar|ponme (una )?alarma|pon (una )?alarma|programa (una )?alarma|" +
                     "(crea|creame|agrega|agregame|anade|anademe|programa|pon|ponme) (un )?recordatorio)\\b|" +
                     "\\bavisame (a|en|manana|hoy|todos|cada|el|que|para|cuando sean)\\b",
             ),
@@ -68,14 +68,14 @@ class Lexico(
                 "\\b(me siento mal|no me siento bien|me senti mal|me cai|auxilio|socorro|emergencia|me duele el pecho|" +
                     "no puedo respirar|avisa a mi familia|avisale a mi familia|avisales a mis familiares)\\b",
             ),
-            estoyBien = r("\\b(estoy bien|me siento bien|ya estoy bien)\\b"),
+            estoyBien = r("\\b(estoy bien|me siento bien|ya estoy bien|todo bien|estoy mejor)\\b"),
             crearCita = r(
-                "\\b(agendame|agendar|agenda (una|un|la|el|mi)|apuntame (una|un|la|el)|anota (una|un|la|el) (cita|consulta|evento)|" +
+                "\\b(agendame|agendar|agenda (una|un|la|el|mi)|apuntame (una|un|la|el)|apunta (una|un|la|el) (cita|consulta|evento)|anota (una|un|la|el) (cita|consulta|evento)|" +
                     "programame (una|un) (cita|consulta))\\b",
             ),
-            verAgenda = r("\\b(que (tengo|hay)( agendado| pendiente| programado| para)?|mi agenda|mis citas|que citas tengo|tengo (alguna )?cita)\\b"),
+            verAgenda = r("\\b(que (tengo|hay)( agendado| pendiente| programado| para)?|mi agenda|mis citas|que citas tengo|tengo (alguna )?cita|tengo (algo|alguna cosa) (agendado|programado|pendiente))\\b"),
             cuandoAgenda = r("\\b(hoy|manana|semana|agenda|citas|cita|agendado|pendiente|programado)\\b"),
-            horaFecha = r("\\b(que hora es|que dia es|que fecha es|a cuanto estamos|que dia es hoy|dime la hora|me dices la hora|dime la fecha|que dia estamos|en que dia estamos)\\b"),
+            horaFecha = r("\\b(que hora es|que dia es|que fecha es|a cuanto estamos|que dia es hoy|dime la hora|me dices la hora|dime la fecha|que dia estamos|en que dia estamos|me puedes decir la hora|puedes decirme la hora|la hora por favor|que fecha estamos|a que fecha estamos|en que fecha estamos|a que dia estamos|que dia de la semana es|que dia de la semana)\\b"),
             preguntaHora = r("\\bhora\\b"),
             buscarWeb = r(
                 "\\b(internet|google|noticias|clima|pronostico|llover|lluvia|temperatura|dolar|euro|precio|cuanto cuesta|cuanto vale|" +
@@ -105,7 +105,7 @@ class Lexico(
             tituloBusqueda = r("\\b(?:de|del|sobre|llamad[ao]|titulad[ao]|que se llama)\\s+(.+)$"),
             porFavor = r("\\bpor favor\\b"),
             modoDock = r("\\b(modo dock|modo mesa|modo base|el dock)\\b"),
-            paraTi = r("\\b(para ti|cuentame algo|cuentame (una )?(cosa|historia|curiosidad|dato)|dime algo (interesante|bonito|curioso)|algo interesante|que hay de nuevo|alguna novedad|hay novedades|ponme al dia|tienes algo para mi|mis gustos)\\b"),
+            paraTi = r("\\b(para ti|cuentame algo|cuentame (una )?(cosa|historia|curiosidad|dato)|dime algo (interesante|bonito|curioso)|algo interesante|que hay de nuevo|alguna novedad|hay novedades|ponme al dia|tienes algo para mi|mis gustos|cosas que me gusten|cosas que me gustan|noticias para mi|que noticias hay para mi|algo que me guste|algo para mi)\\b"),
             atras = r("\\b(atras|retrocede|vuelve atras|volver atras|ve atras|regresa atras)\\b"),
             inicio = r("\\b(ve|ir|vamos|llevame|regresa|vuelve|volver|pon|ponme) (al |a la |a )?(inicio|pantalla principal|pantalla de inicio)\\b|^(inicio|pantalla principal)$"),
             bajar = r("\\b(baja|bajar|desplaza hacia abajo|ve mas abajo)( un poco)?( la)? (pantalla|pagina)\\b|\\b(mas abajo|desplazate hacia abajo)\\b"),
@@ -121,7 +121,7 @@ class Lexico(
                 r("\\b(google maps|maps|map)\\b") to "MAPS", r("\\bfacebook\\b") to "FACEBOOK",
             ),
             correo = r("\\b(email|emails|e mail|mail|mails|gmail|outlook)\\b"),
-            mensajes = r("\\b(message|messages|text|texts|whatsapp)\\b"),
+            mensajes = r("\\b(message|messages|text|texts|whatsapp|who (wrote|texted|messaged|emailed) (to )?me|did anyone (write|text|message))\\b"),
             enviar = r("\\b(send|write|reply|respond|answer)\\b"),
             abrirExpl = r("\\b(open|launch|start|run)\\b"),
             verboAbrir = r("\\b(open|put on|play|search|search for|find|i want|i d like|id like|show me|watch|listen|listen to|look)\\b"),
@@ -134,38 +134,38 @@ class Lexico(
             analiza = r(
                 "\\b(analyze|analyse)\\b|\\bwhat (does|do) (this|that|it|these|those) say\\b|\\bwhat (is|are) (this|these|that|those)\\b|" +
                     "\\bwhat s (this|that)\\b|\\bwhats (this|that)\\b|\\b(is|could be|might be) (this )?(a )?scam\\b|" +
-                    "\\b(check|read|look at) (this|these|that|those)\\b",
+                    "\\b(check|read|look at) (what )?(this|these|that|those)\\b",
             ),
             crearRec = r(
-                "\\b(remind me|set (a|an) (reminder|alarm)|create (a )?reminder|add (a )?reminder|wake me( up)?|let me know (at|in|tomorrow|every|when))\\b",
+                "\\b(remind me|set (a|an) (reminder|alarm)|create (a )?reminder|add (a )?reminder|wake me( up)?|do not let me forget|don t let me forget|dont let me forget|let me know (at|in|tomorrow|every|when))\\b",
             ),
             objRec = r("\\b(reminder|reminders|alarm|alarms|alert|alerts)\\b"),
             listarRec = r("\\b(what|which|how many|list|show|tell me|do i have|have)\\b"),
             cancelarRec = r("\\b(cancel|delete|remove|erase|clear)\\b"),
             tomado = r("\\b(i (already )?took (it|them|my pills?|my medicine|my medication)|i already took|i have taken (it|them|my )|i did it|already took (it|them))\\b"),
             sos = r(
-                "\\b(i fell|i have fallen|i need help|i feel (sick|bad|unwell|dizzy)|i dont feel well|i don t feel well|i do not feel well|" +
+                "\\b(i fell|i have fallen|i feel (sick|bad|unwell|dizzy)|i dont feel well|i don t feel well|i do not feel well|" +
                     "chest pain|my chest hurts|i can t breathe|i cant breathe|emergency|tell my family|call my family|notify my family)\\b|" +
                     "\\bhelp me$|^help$|^help help",
             ),
-            estoyBien = r("\\b(i am (fine|ok|okay|good|well|alright)|im (fine|ok|okay|good|well|alright)|i m (fine|ok|okay|good|well|alright)|i feel (fine|ok|okay|good|better))\\b"),
+            estoyBien = r("\\b(i am (fine|ok|okay|good|well|alright)|im (fine|ok|okay|good|well|alright)|i m (fine|ok|okay|good|well|alright)|i feel (fine|ok|okay|good|better)|everything is (fine|ok|okay|good)|all good|i am better)\\b"),
             crearCita = r(
                 "\\b((schedule|book|add) (a|an|my|the) (appointment|meeting|visit|event|doctor)|(make|set up|set) (a|an) (appointment|meeting)|put (a|an) (appointment|event))\\b",
             ),
             verAgenda = r(
-                "\\b(what do i have|what s on|whats on|what is on|my schedule|my agenda|my appointments|do i have (any )?(appointments|plans)|what appointments)\\b",
+                "\\b(what do i have|what s on|whats on|what is on|my schedule|my agenda|my appointments|do i have (any )?(appointments|plans)|do i have anything (scheduled|planned|on)|what appointments)\\b",
             ),
             cuandoAgenda = r("\\b(today|tomorrow|week|schedule|agenda|appointments|appointment|calendar|planned|scheduled)\\b"),
             horaFecha = r(
                 "\\b(what time is it|what is the time|what s the time|whats the time|what day is it|what is the date|what s the date|whats the date|" +
-                    "what is today|what s today|whats today|what day is today|what date is it|what date is today|what is today s date|what is the date today|todays date|what day is it today|tell me the time|tell me the date)\\b",
+                    "what is today|what s today|whats today|what day is today|what date is it|what date is today|what is today s date|what is the date today|todays date|what day is it today|tell me the time|tell me the date|what day of the week is it|what day of the week)\\b",
             ),
             preguntaHora = r("\\btime\\b"),
             buscarWeb = r(
                 "\\b(internet|google|news|weather|forecast|rain|temperature|exchange rate|dollar|euro|price|how much does|how much is|who won|score|" +
                     "recipe|opening hours|look up|find out|search online|search the web)\\b",
             ),
-            llamar = r("\\b(call|phone|dial|ring)\\b"),
+            llamar = r("\\b(call|dial|ring)\\b|^phone\\b"),
             telefono = r("\\b(phone|dialer|keypad|keyboard)\\b"),
             camara = r("\\b(camera|photo|photos|picture|pictures|selfie)\\b"),
             fotoVerbo = r("\\b(take|snap|shoot|make|want)\\b"),
@@ -188,7 +188,7 @@ class Lexico(
             tituloBusqueda = r("\\b(?:by|of|called|named|titled|about)\\s+(.+)$"),
             porFavor = r("\\bplease\\b"),
             modoDock = r("\\b(dock mode|table mode|desk mode|the dock)\\b"),
-            paraTi = r("\\b(for you|tell me something|tell me (a )?(thing|story|fun fact|fact)|something interesting|something nice|what s new|whats new|any news|catch me up|got something for me|my interests)\\b"),
+            paraTi = r("\\b(for you|tell me something|tell me (a )?(thing|story|fun fact|fact)|something interesting|something nice|what s new|whats new|any news|catch me up|got something for me|my interests|things i like|something i like|news for me|what news do you have for me)\\b"),
             atras = r("\\b(go back|back|previous screen|step back)\\b"),
             inicio = r("\\b(go|take me|bring me|return) (to )?(the )?(home|home screen)\\b|^(home|home screen)$"),
             bajar = r("\\b(scroll|move|go) down\\b|\\bpage down\\b"),

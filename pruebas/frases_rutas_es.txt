@@ -1,0 +1,64 @@
+# frase | ruta esperada (prefijo del registro "AGENTE: ruta=")
+que hora es | hora/fecha
+me puedes decir la hora | hora/fecha
+dime que hora es por favor | hora/fecha
+que dia es hoy | hora/fecha
+a que fecha estamos | hora/fecha
+en que fecha estamos hoy | hora/fecha
+que dia de la semana es hoy | hora/fecha
+recuerdame tomar la pastilla a las ocho | crear recordatorio
+ponme una alarma para las seis de la manana | crear recordatorio
+avisame a las nueve que tengo que tomar la medicina | crear recordatorio
+no me dejes olvidar la cita del doctor | crear recordatorio
+que recordatorios tengo | listar recordatorios
+cuales son mis recordatorios | listar recordatorios
+cancela el recordatorio de la pastilla | cancelar recordatorio
+borra la alarma de las seis | cancelar recordatorio
+agenda una cita con el doctor el martes a las diez | agendar cita
+apunta una cita con el dentista el viernes | agendar cita
+que tengo hoy en la agenda | ver agenda
+que citas tengo manana | ver agenda
+tengo algo agendado esta semana | ver agenda
+llama a mi hija | llamar
+marca a mi hijo por favor | llamar
+llama a la farmacia | llamar
+quiero llamar a emergencias | llamar
+necesito ayuda | pedir ayuda
+auxilio | pedir ayuda
+me siento mal | pedir ayuda
+me caí y no me puedo levantar | pedir ayuda
+estoy bien | estoy bien
+todo bien por aqui | estoy bien
+ya tome la pastilla | ya lo hice
+ya me tome la medicina | ya lo hice
+leeme los mensajes | mensajes
+tengo mensajes nuevos | mensajes
+quien me escribio | mensajes
+leeme el correo | correo
+tengo correos | correo
+abre whatsapp | app WhatsApp
+abre youtube | app
+pon musica en spotify | app
+quiero ver una pelicula | app
+abre la camara | camara
+toma una foto | camara
+que dice esta caja de medicina | medicina
+leeme lo que dice este papel | analiza
+puedes leer esta carta | analiza
+muestrame cosas que me gusten | para ti
+que noticias hay para mi | para ti
+abre el modo dock | modo dock
+como esta el clima hoy | busqueda web
+va a llover manana | busqueda web
+quien gano el partido de ayer | busqueda web
+cual es la capital de francia | conversacion
+cuentame un chiste | conversacion
+como estas | conversacion
+estoy aburrido | conversacion
+gracias | conversacion
+sube la pantalla | accesibilidad
+baja la pantalla | accesibilidad
+vuelve atras | accesibilidad
+toca buscar | accesibilidad
+necesito ayuda con el telefono | conversacion
+quien me llamo | conversacion
