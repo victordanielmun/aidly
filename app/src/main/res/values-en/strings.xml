@@ -553,4 +553,15 @@
     <string name="em_quitar">Remove this information</string>
     <string name="ajustes_emergencia">My emergency</string>
     <string name="ajustes_emergencia_sub">Emergency number and trusted contact</string>
+    <string name="av_titulo">Choose your Aidly</string>
+    <string name="av_sub">This is how your companion will look. You can change it any time in Settings.</string>
+    <string name="av_clasico">Classic</string>
+    <string name="av_brote">Sprout</string>
+    <string name="av_pixel">Pixel</string>
+    <string name="av_rosa">Rose</string>
+    <string name="av_turquesa">Soft teal</string>
+    <string name="av_tele">TV</string>
+    <string name="av_elegido">%1$s, selected</string>
+    <string name="ajustes_avatar">My Aidly</string>
+    <string name="ajustes_avatar_sub">Choose how it looks</string>
 </resources>

@@ -25,6 +25,10 @@ object Preferencias {
     fun nombre(ctx: Context) = prefs(ctx).getString("nombre", "").orEmpty()
     fun fijarNombre(ctx: Context, v: String) = prefs(ctx).edit().putString("nombre", v.trim()).apply()
 
+    /** Avatar elegido (id de [Avatar]); "clasico" si no eligio. */
+    fun avatar(ctx: Context): String = prefs(ctx).getString("avatar", "clasico").orEmpty()
+    fun fijarAvatar(ctx: Context, id: String) = prefs(ctx).edit().putString("avatar", Avatar.deId(id).id).apply()
+
     /** Numero de emergencias que la persona (o su familia) puso a mano; vacio = se usa el del pais. Se guarda cifrado. */
     fun numeroEmergencia(ctx: Context): String = Cifrado.abrir(prefs(ctx).getString("numEmergencia", null)).orEmpty()
     fun fijarNumeroEmergencia(ctx: Context, v: String) =

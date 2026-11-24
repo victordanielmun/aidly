@@ -110,6 +110,10 @@ private fun Pantalla(cerrar: () -> Unit) {
             ) { elegirIdioma(op.id) }
         }
 
+        FilaAccion(Iconos.Corazon, stringResource(R.string.ajustes_avatar), stringResource(R.string.ajustes_avatar_sub)) {
+            ctx.startActivity(Intent(ctx, AvatarActivity::class.java))
+        }
+
         InterruptorFila(null, stringResource(R.string.ajustes_reducir), stringResource(R.string.ajustes_reducir_desc), reducir) {
             reducir = it; Preferencias.fijarReducirMovimiento(ctx, it)
         }

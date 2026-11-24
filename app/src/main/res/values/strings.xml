@@ -553,4 +553,15 @@
     <string name="em_quitar">Quitar estos datos</string>
     <string name="ajustes_emergencia">Mi emergencia</string>
     <string name="ajustes_emergencia_sub">Número de emergencias y contacto de confianza</string>
+    <string name="av_titulo">Elige tu Aidly</string>
+    <string name="av_sub">Así se verá tu compañero. Puedes cambiarlo cuando quieras en Ajustes.</string>
+    <string name="av_clasico">Clásico</string>
+    <string name="av_brote">Brote</string>
+    <string name="av_pixel">Píxel</string>
+    <string name="av_rosa">Rosa</string>
+    <string name="av_turquesa">Turquesa suave</string>
+    <string name="av_tele">Tele</string>
+    <string name="av_elegido">%1$s, elegido</string>
+    <string name="ajustes_avatar">Mi Aidly</string>
+    <string name="ajustes_avatar_sub">Elegir cómo se ve</string>
 </resources>
