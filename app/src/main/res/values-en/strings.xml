@@ -533,4 +533,7 @@
     <string name="v_a11y_tocar">Tapping "%1$s".</string>
     <string name="ajustes_a11y">Help with other apps</string>
     <string name="ajustes_a11y_sub">Floating button and voice commands</string>
+    <string name="notif_servicio_canal">Aidly keeps you company</string>
+    <string name="notif_servicio_titulo">Aidly is keeping you company</string>
+    <string name="v_no_supe_medicina">I could not answer that. Ask your doctor or pharmacist.</string>
 </resources>

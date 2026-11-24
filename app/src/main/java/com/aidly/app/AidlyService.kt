@@ -64,10 +64,10 @@ class AidlyService : Service() {
         super.onCreate()
         val nm = getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(
-            NotificationChannel(CHANNEL, "Aidly te acompana", NotificationManager.IMPORTANCE_LOW),
+            NotificationChannel(CHANNEL, getString(R.string.notif_servicio_canal), NotificationManager.IMPORTANCE_LOW),
         )
         val notif = Notification.Builder(this, CHANNEL)
-            .setContentTitle("Aidly te esta acompanando")
+            .setContentTitle(getString(R.string.notif_servicio_titulo))
             .setSmallIcon(android.R.drawable.ic_btn_speak_now)
             .setOngoing(true)
             .build()
@@ -404,7 +404,7 @@ class AidlyService : Service() {
             "(?i)\\b(reply|answer|respond|tell(?: (?:him|her|them))?|say)\\b[\\s,:]+(?:(?:that|to (?:him|her|them))\\b[\\s,:]+)?(.+)",
         )
         private val INLINE = Regex(
-            "(?i)\\b(cont[eé]sta(?:le|la|lo)?|resp[oó]nd[eé](?:le|la|lo)?|d[ií]le|d[ií]les)\\b[\\s,:]+(.+)",
+            "(?i)\\b(cont[eé]sta(?:le|la|lo)?|resp[oó]nd[eé](?:le|la|lo)?|d[ií]le|d[ií]les)\\b[\\s,:]+(.+)", // i18n-ok
         )
 
         fun start(

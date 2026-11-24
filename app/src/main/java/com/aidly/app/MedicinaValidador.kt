@@ -157,14 +157,8 @@ object MedicinaValidador {
             if (DOSIS_OLVIDO_EN.containsMatchIn(p)) return Idioma.vozTexto(ctx, R.string.v_riesgo_dosis)
             return null
         }
-        if (URGENTE.containsMatchIn(p)) {
-            return "Eso es importante y no debo responderlo yo. Llama ahora a tu médico o a tu farmacia. " +
-                "Si te sientes muy mal o tienes dificultad para respirar, llama al ${Emergencia.numero(ctx)}."
-        }
-        if (DOSIS_OLVIDO.containsMatchIn(p)) {
-            return "Para una dosis olvidada, no tomes doble por tu cuenta. Pregunta a tu médico o a tu farmacéutico " +
-                "qué hacer con esta medicina. Yo solo puedo leerte lo que dice la caja."
-        }
+        if (URGENTE.containsMatchIn(p)) return Idioma.vozTexto(ctx, R.string.v_riesgo_urgente, Emergencia.numero(ctx))
+        if (DOSIS_OLVIDO.containsMatchIn(p)) return Idioma.vozTexto(ctx, R.string.v_riesgo_dosis)
         return null
     }
 
@@ -187,7 +181,7 @@ object MedicinaValidador {
         val t0 = System.currentTimeMillis()
         val resp = withTimeout(30_000) { modeloPreguntas.generateContent(prompt) }
         val texto = resp.text?.trim().orEmpty()
-            .ifBlank { "No supe responderte eso. Pregúntaselo a tu médico o a tu farmacéutico." }
+            .ifBlank { Idioma.vozTexto(ctx, R.string.v_no_supe_medicina) }
         SpikeLog.log("MEDICINA pregunta: ${System.currentTimeMillis() - t0} ms | '${pregunta.take(80)}' -> '${texto.take(160)}'")
         return texto
     }

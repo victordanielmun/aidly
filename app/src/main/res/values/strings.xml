@@ -533,4 +533,7 @@
     <string name="v_a11y_tocar">Toco «%1$s».</string>
     <string name="ajustes_a11y">Ayuda con otras apps</string>
     <string name="ajustes_a11y_sub">Botón flotante y órdenes de voz</string>
+    <string name="notif_servicio_canal">Aidly te acompaña</string>
+    <string name="notif_servicio_titulo">Aidly te está acompañando</string>
+    <string name="v_no_supe_medicina">No supe responderte eso. Pregúntaselo a tu médico o a tu farmacéutico.</string>
 </resources>

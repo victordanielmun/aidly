@@ -127,6 +127,9 @@ if r.returncode != 0:
 r = subprocess.run([sys.executable, str(RAIZ / "pruebas/validar_idiomas.py")], capture_output=True, text=True)
 if r.returncode != 0:
     fallo("validar_idiomas.py fallo:\n" + r.stdout[-600:])
+r = subprocess.run([sys.executable, str(RAIZ / "pruebas/validar_traducciones.py")], capture_output=True, text=True)
+if r.returncode != 0:
+    fallo("validar_traducciones.py fallo:" + chr(10) + r.stdout[-600:])
 
 # ---------- Registro de depuracion ----------
 log = (RAIZ / "app/src/main/java/com/aidly/app/SpikeLog.kt").read_text(encoding="utf-8")

@@ -260,7 +260,7 @@ object Recordatorios {
                 "La persona dijo: \"$frase\". " +
                 "Responde SOLO un objeto JSON con: entendido, texto, tipo, hora, fecha, en_minutos, cada_horas. " +
                 "Reglas: texto va en infinitivo (por ejemplo 'tomar la pastilla de la presion'). " +
-                "Si dice una hora sin mañana/tarde/noche (por ejemplo 'a las 8'), usa la proxima vez futura. " +
+                "Si dice una hora sin mañana/tarde/noche (por ejemplo 'a las 8'), usa la proxima vez futura. " + // i18n-ok (instruccion al modelo)
                 "'8 de la noche' es 20:00. 'todos los dias' es cada_horas 24. 'cada 8 horas' es cada_horas 8. " +
                 "Si no se sabe cuando avisar, entendido=false."
         return Interprete.pedir("recordatorio", prompt, esquema) { j ->

@@ -126,7 +126,7 @@ object Circulo {
             set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
             if (timeInMillis <= System.currentTimeMillis() + 30_000) add(Calendar.DAY_OF_MONTH, 1)
         }
-        Recordatorios.agregar(ctx, Recordatorios.Item(ID_CHECKIN, "cómo te sientes hoy", Recordatorios.Tipo.CHECKIN, c.timeInMillis, 1440))
+        Recordatorios.agregar(ctx, Recordatorios.Item(ID_CHECKIN, "cómo te sientes hoy", Recordatorios.Tipo.CHECKIN, c.timeInMillis, 1440)) // i18n-ok
     }
 
     // ---------- Actividad, sincronizacion y SOS ----------

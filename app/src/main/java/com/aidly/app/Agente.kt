@@ -368,7 +368,7 @@ object Agente {
         val antes = frase.substring(0, m.range.first).trim().lowercase().split(" ").filter { it.isNotBlank() }
         // "me toca tomar la pastilla" / "que te toca hoy" NO es una orden de tocar un boton.
         if (antes.size > 2 || antes.lastOrNull() in setOf("me", "te", "le", "nos", "les", "que", "lo")) return null
-        val objetivo = m.groupValues[1].trim().removeSuffix(" button").removeSuffix(" botón").trim().trim('"', '\u00ab', '\u00bb', '\u201c', '\u201d', '\'')
+        val objetivo = m.groupValues[1].trim().removeSuffix(" button").removeSuffix(" botón").trim().trim('"', '\u00ab', '\u00bb', '\u201c', '\u201d', '\'') // i18n-ok
         return if (objetivo.isNotBlank() && objetivo.split(" ").size <= 5) "tocar" to objetivo else null
     }
 
