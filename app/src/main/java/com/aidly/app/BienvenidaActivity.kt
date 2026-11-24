@@ -125,8 +125,11 @@ private fun Pantalla(voz: Voz, terminar: () -> Unit) {
     var refresco by remember { mutableIntStateOf(0) }   // fuerza a releer el estado de los permisos
     var nombre by remember { mutableStateOf(Preferencias.nombre(ctx)) }
     var idiomaPreferido by remember { mutableStateOf(Idioma.preferido(ctx)) }
+    var avatarSel by remember { mutableStateOf(Avatar.deId(Preferencias.avatar(ctx))) }
+    var a11yActiva by remember { mutableStateOf(Accesibilidad.activa(ctx)) }
+    var perfil by remember { mutableStateOf(Intereses.cargar(ctx)) }
 
-    LifecycleResumeEffect(Unit) { refresco++; onPauseOrDispose {} }
+    LifecycleResumeEffect(Unit) { refresco++; a11yActiva = Accesibilidad.activa(ctx); onPauseOrDispose {} }
     val pedir = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { refresco++ }
 
     // Al llegar al ultimo paso, saludo de arranque en el idioma activo.
@@ -150,7 +153,7 @@ private fun Pantalla(voz: Voz, terminar: () -> Unit) {
             }
             AidlyCara(
                 if (ultimo) Emocion.CONTENTO else Emocion.REPOSO,
-                Modifier.fillMaxWidth(0.42f), remember { !Preferencias.reducirMovimiento(ctx) }, voz.hablando.collectAsState().value,
+                Modifier.fillMaxWidth(0.42f), remember { !Preferencias.reducirMovimiento(ctx) }, voz.hablando.collectAsState().value, avatarSel,
             )
             Text(paso.titulo, fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Tema.Texto, textAlign = TextAlign.Center)
             Text(paso.texto, fontSize = 22.sp, color = Tema.TextoSuave, textAlign = TextAlign.Center)
@@ -183,8 +186,32 @@ private fun Pantalla(voz: Voz, terminar: () -> Unit) {
                     ),
                     modifier = Modifier.fillMaxWidth(),
                 )
-                "familia" -> BotonGrande(stringResource(R.string.bienv_configurar), Tema.Turquesa, alto = 72.dp) {
-                    ctx.startActivity(Intent(ctx, CirculoActivity::class.java))
+                "avatar" -> SelectorAvatar(alElegir = { avatarSel = it })
+                "otras_apps" -> {
+                    Text(stringResource(R.string.bienv_a11y_pasos), fontSize = 20.sp, color = Tema.Texto, modifier = Modifier.fillMaxWidth())
+                    FilaAccion(
+                        if (a11yActiva) Iconos.Check else Iconos.Alerta, stringResource(R.string.a11y_estado),
+                        stringResource(if (a11yActiva) R.string.a11y_encendida else R.string.a11y_apagada), amarilla = !a11yActiva, chevron = false,
+                    ) {}
+                    if (!a11yActiva) BotonGrande(stringResource(R.string.bienv_a11y_abrir), Tema.Amarillo, alto = 72.dp) { Accesibilidad.abrirAjustes(ctx) }
+                    FilaAccion(Iconos.Estrella, stringResource(R.string.bienv_a11y_leer), "") { ctx.startActivity(Intent(ctx, AyudaOtrasAppsActivity::class.java)) }
+                }
+                "familia" -> {
+                    FilaAccion(Iconos.Personas, stringResource(R.string.bienv_fam_contactos), stringResource(R.string.bienv_fam_contactos_sub)) {
+                        ctx.startActivity(Intent(ctx, FamiliaActivity::class.java))
+                    }
+                    FilaAccion(Iconos.Corazon, stringResource(R.string.bienv_fam_comparte), stringResource(R.string.bienv_fam_comparte_sub)) {
+                        ctx.startActivity(Intent(ctx, CirculoActivity::class.java))
+                    }
+                }
+                "emergencia" -> EditorEmergencia(conIntro = false)
+                "intereses" -> {
+                    Intereses.TEMAS.forEach { tema ->
+                        InterruptorFila(null, stringResource(tema.nombre), "", tema.id in perfil.elegidos) { on -> perfil = Intereses.cambiar(ctx) { it.conElegido(tema.id, on) } }
+                    }
+                    InterruptorFila(Iconos.Altavoz, stringResource(R.string.pt_propuestas), stringResource(R.string.pt_propuestas_sub), perfil.propuestas) { on ->
+                        perfil = Intereses.cambiar(ctx) { it.conPropuestas(on) }
+                    }
                 }
                 "prueba" -> {
                     Text(stringResource(R.string.bienv_ejemplos), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa, modifier = Modifier.fillMaxWidth())

@@ -51,7 +51,7 @@ class EmergenciaActivity : ActividadAidly() {
 
 /** Los dos campos con su boton de guardar. Lo usan la pantalla "Mi emergencia" y el paso de la bienvenida. */
 @Composable
-fun EditorEmergencia(alGuardar: () -> Unit = {}) {
+fun EditorEmergencia(conIntro: Boolean = true, alGuardar: () -> Unit = {}) {
     val ctx = LocalContext.current
     var numero by remember { mutableStateOf(Preferencias.numeroEmergencia(ctx)) }
     val c0 = remember { Preferencias.contactoConfianza(ctx) }
@@ -73,7 +73,7 @@ fun EditorEmergencia(alGuardar: () -> Unit = {}) {
     )
     val estiloTexto = androidx.compose.ui.text.TextStyle(fontSize = 26.sp)
 
-    Text(stringResource(R.string.em_intro), fontSize = 20.sp, color = Tema.TextoSuave)
+    if (conIntro) Text(stringResource(R.string.em_intro), fontSize = 20.sp, color = Tema.TextoSuave)
     TituloSeccion(stringResource(R.string.em_numero))
     OutlinedTextField(
         value = numero, onValueChange = { numero = it.take(16); guardado = false; error = false }, singleLine = true,

@@ -564,4 +564,11 @@
     <string name="av_elegido">%1$s, elegido</string>
     <string name="ajustes_avatar">Mi Aidly</string>
     <string name="ajustes_avatar_sub">Elegir cómo se ve</string>
+    <string name="bienv_a11y_pasos">1. Toca «Abrir accesibilidad».\n2. Busca «Aidly» en la lista.\n3. Enciéndelo y toca «Permitir».\n4. Vuelve aquí.</string>
+    <string name="bienv_a11y_abrir">ABRIR ACCESIBILIDAD</string>
+    <string name="bienv_a11y_leer">Qué puede y qué no puede hacer</string>
+    <string name="bienv_fam_contactos">Elegir a mi familia</string>
+    <string name="bienv_fam_contactos_sub">Los contactos a quienes llamo más</string>
+    <string name="bienv_fam_comparte">Qué comparto con mi familia</string>
+    <string name="bienv_fam_comparte_sub">Tú eliges cada cosa</string>
 </resources>

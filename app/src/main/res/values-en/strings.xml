@@ -564,4 +564,11 @@
     <string name="av_elegido">%1$s, selected</string>
     <string name="ajustes_avatar">My Aidly</string>
     <string name="ajustes_avatar_sub">Choose how it looks</string>
+    <string name="bienv_a11y_pasos">1. Tap “Open accessibility”.\n2. Find “Aidly” in the list.\n3. Turn it on and tap “Allow”.\n4. Come back here.</string>
+    <string name="bienv_a11y_abrir">OPEN ACCESSIBILITY</string>
+    <string name="bienv_a11y_leer">What it can and cannot do</string>
+    <string name="bienv_fam_contactos">Choose my family</string>
+    <string name="bienv_fam_contactos_sub">The contacts I call most</string>
+    <string name="bienv_fam_comparte">What I share with my family</string>
+    <string name="bienv_fam_comparte_sub">You choose each thing</string>
 </resources>
