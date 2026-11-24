@@ -60,6 +60,21 @@ fun EditorEmergencia(conIntro: Boolean = true, alGuardar: () -> Unit = {}) {
     var error by remember { mutableStateOf(false) }
     var guardado by remember { mutableStateOf(false) }
 
+    // Si sale de la pantalla sin tocar GUARDAR, se guarda lo escrito siempre que sea valido (no se pierde por distraccion).
+    val actuales by androidx.compose.runtime.rememberUpdatedState(Triple(numero, nombreC, numeroC))
+    androidx.lifecycle.compose.LifecycleResumeEffect(Unit) {
+        onPauseOrDispose {
+            val (n0, nom, c0v) = actuales
+            SpikeLog.log("EMERGENCIA: autoguardado n=${n0.length} c=${c0v.length}")
+            val n = if (n0.isBlank()) "" else Emergencia.limpiarNumero(n0)
+            val c = if (c0v.isBlank()) "" else Emergencia.limpiarNumero(c0v)
+            if (n != null && c != null) {
+                Preferencias.fijarNumeroEmergencia(ctx, n)
+                Preferencias.fijarContactoConfianza(ctx, nom.ifBlank { c }, c)
+            }
+        }
+    }
+
     val elegir = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { r ->
         val uri = r.data?.data ?: return@rememberLauncherForActivityResult
         ctx.contentResolver.query(

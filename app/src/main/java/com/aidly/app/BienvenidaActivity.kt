@@ -151,7 +151,8 @@ private fun Pantalla(voz: Voz, terminar: () -> Unit) {
                     Box(Modifier.size(12.dp).clip(CircleShape).background(if (i <= indice) Tema.Turquesa else Tema.Tarjeta))
                 }
             }
-            AidlyCara(
+            // En el paso del avatar la cuadricula ya muestra las caras: no se repite la grande.
+            if (paso.id != "avatar") AidlyCara(
                 if (ultimo) Emocion.CONTENTO else Emocion.REPOSO,
                 Modifier.fillMaxWidth(0.42f), remember { !Preferencias.reducirMovimiento(ctx) }, voz.hablando.collectAsState().value, avatarSel,
             )
