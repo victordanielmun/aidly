@@ -35,6 +35,7 @@ object GeminiStt {
             "(por ejemplo: 'Que tengo hoy', 'Leeme los mensajes', 'Recuerdame tomar la pastilla', 'Llama a mi hija', " +
             "'Si', 'No'). Si dudas entre dos palabras, elige la que tenga sentido en ese contexto. " +
             "Nunca adivines ni inventes palabras a partir de ruido, musica o sonidos poco claros: los ejemplos son solo contexto, no los repitas. " +
+            "El asistente se llama Aidly (se pronuncia «ei-dli»): si la persona lo nombra, escribe siempre Aidly. " +
             "Si no oyes palabras claras, responde exactamente: (silencio)"
 
     private val model by lazy {
@@ -58,6 +59,7 @@ object GeminiStt {
             "Context: an older adult speaking to their voice assistant; usually short phrases (for example: $ejemplos). " +
             "If you are unsure between two words, choose the one that makes sense in that context. " +
             "Never guess or invent words from noise, music or unclear sounds: the examples are only context, do not repeat them. " +
+            "The assistant is called Aidly (pronounced \"AYD-lee\"): if the person says its name, always write Aidly. " +
             "If you cannot clearly hear spoken words, reply exactly: (silence)"
     }
 

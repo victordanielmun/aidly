@@ -72,7 +72,7 @@ class EscuchaLibre(private val cfg: Config = Config()) {
     companion object {
         /** «Aidly» como lo suele transcribir un reconocedor de voz, con saludo opcional delante. */
         val LLAMADA = Regex(
-            "(?i)\\b(?:(?:hey|oye|hola|ok|okay|hi)[ ,]+)?(?:aidly|aidli|aidley|aidlee|eidly|eidli|aily|ai dly|ay dly)\\b[ ,.:;!?-]*",
+            "(?i)\\b(?:(?:hey|oye|hola|ok|okay|hi)[ ,]+)?(?:aidly|aidli|aidley|aidlee|aidlie|aydli|aydly|aydlee|eidly|eidli|eidlee|idly|idli|aily|ai dly|ai dli|ay dly|aid lee|a idly)\\b[ ,.:;!?-]*",
         )
     }
 }

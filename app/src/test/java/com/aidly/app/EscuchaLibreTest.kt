@@ -14,6 +14,8 @@ class EscuchaLibreTest {
         assertEquals("cuéntame una noticia", resto(l.clasificar(0, "oye Aidly cuéntame una noticia")))
         assertEquals("", resto(l.clasificar(0, "Hey Aidly")))
         assertEquals("what time is it", resto(l.clasificar(0, "Aidly: what time is it?")))
+        assertEquals("what time is it", resto(l.clasificar(0, "Idly, what time is it?")))   // como lo transcribio el A23
+        assertEquals("que hora es", resto(l.clasificar(0, "Aidli que hora es")))
     }
 
     @Test fun sinLaPalabraNoHaceCaso() {
