@@ -39,10 +39,18 @@ object Busqueda {
         )
     }
 
+    /** La busqueda de Google de Gemini tiene cupo limitado: tras un error de cupo se salta la API unas horas y Aidly abre google.com directamente. */
+    private const val PAUSA_MS = 3L * 60 * 60 * 1000
+    private fun prefs(ctx: android.content.Context) = ctx.getSharedPreferences("ajustes", android.content.Context.MODE_PRIVATE)
+    fun enPausa(ctx: android.content.Context) = System.currentTimeMillis() < prefs(ctx).getLong("sinBusquedaWebHasta", 0L)
+
     suspend fun responder(ctx: android.content.Context, pregunta: String): Respuesta {
+        if (enPausa(ctx)) throw IllegalStateException("busqueda en pausa por cupo: se abre Google")
         val en = Idioma.resolver(ctx) == "en"
         val t0 = System.currentTimeMillis()
-        val r = withTimeout(40_000) { model.generateContent(if (en) "$SISTEMA_EN\n\nThe person asks: $pregunta\n\nYour answer:" else "$SISTEMA\n\nLa persona pregunta: $pregunta\n\nTu respuesta:") }
+        val r = try { withTimeout(40_000) { model.generateContent(if (en) "$SISTEMA_EN\n\nThe person asks: $pregunta\n\nYour answer:" else "$SISTEMA\n\nLa persona pregunta: $pregunta\n\nTu respuesta:") } } catch (e: com.google.firebase.ai.type.QuotaExceededException) {
+            prefs(ctx).edit().putLong("sinBusquedaWebHasta", System.currentTimeMillis() + PAUSA_MS).apply(); throw e
+        }
         val ms = System.currentTimeMillis() - t0
         val texto = r.text?.trim().orEmpty().ifBlank { if (en) "I did not find anything reliable about that." else "No encontré nada confiable sobre eso." }
         val fuentes = r.candidates.firstOrNull()?.groundingMetadata?.groundingChunks

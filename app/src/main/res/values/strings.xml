@@ -486,4 +486,17 @@
     <string name="pt_propuestas_sub">Solo con la cámara activa y cuando estés cerca. Máximo 3 al día.</string>
     <string name="home_foto">Tomar una foto</string>
     <string name="home_foto_sub">Una caja, una carta, un cartel…</string>
+    <string name="pt_leer_noticia">LEER LA NOTICIA</string>
+    <string name="pt_google">BUSCAR EN GOOGLE</string>
+    <string name="pt_imagen">Imagen: %1$s</string>
+    <string name="pt_gustos_libres">Lo que me gusta leer o ver</string>
+    <string name="pt_gusto_add">AÑADIR CON MI VOZ</string>
+    <string name="pt_quitar">Quitar</string>
+    <string name="pt_gusto_pregunta_t">¿Qué te gusta leer o ver?</string>
+    <string name="pt_gusto_pregunta_s">Dímelo y te traigo cosas parecidas.</string>
+    <string name="pt_decirmelo">DECÍRMELO</string>
+    <string name="pt_ahora_no">Ahora no</string>
+    <string name="pt_gusto_anotado">Anotado: %1$s. Busco cosas parecidas.</string>
+    <string name="pt_gusto_no">No pude anotarlo. Prueba con una frase corta, sin números ni correos.</string>
+    <string name="v_pt_gustos_pregunta">¿Qué te gusta leer o ver? Por ejemplo: novelas de misterio, el equipo de tu ciudad o música de boleros.</string>
 </resources>

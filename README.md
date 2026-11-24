@@ -76,8 +76,8 @@ Firebase creates and restricts inside *your* Firebase project (`app/google-servi
      Firebase in your project; nothing needs to be pasted into the source.
   3. To use a different LLM provider you would have to replace the two search-dependent files, [`Busqueda.kt`](app/src/main/java/com/aidly/app/Busqueda.kt)
      and [`FeedTarjetas.kt`](app/src/main/java/com/aidly/app/FeedTarjetas.kt); the rest of the app does not depend on Search.
-- **Public sources used without Gemini Search:** Wikipedia REST API (text under CC BY-SA, shown as "Wikipedia"), BBC RSS feeds (headlines
-  for non-commercial syndication, shown as "BBC News" / "BBC Mundo") and Open-Meteo (free, non-commercial use). They are only contacted
+- **Public sources used without Gemini Search:** Wikipedia REST API (text under CC BY-SA, images from Wikimedia Commons; shown as "Wikipedia"), BBC and Smithsonian Magazine RSS feeds (headlines, summaries and thumbnails for non-commercial syndication, always credited and linking to the original article) and Open-Meteo (free, non-commercial use). Images and links are only accepted over https from an allow-list of these sites.
+- **Searches on google.com:** "Search on Google" and the fallback for web questions open google.com in the phone's browser; Aidly does not scrape Google results. They are only contacted
   when the person has the cloud switched on, and each source's address sees the phone's IP like any website would.
 
 ## Privacy

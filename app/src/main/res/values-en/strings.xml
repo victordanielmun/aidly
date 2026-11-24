@@ -486,4 +486,17 @@
     <string name="pt_propuestas_sub">Only with the camera on and when you are near. At most 3 a day.</string>
     <string name="home_foto">Take a photo</string>
     <string name="home_foto_sub">A box, a letter, a sign…</string>
+    <string name="pt_leer_noticia">READ THE ARTICLE</string>
+    <string name="pt_google">SEARCH ON GOOGLE</string>
+    <string name="pt_imagen">Image: %1$s</string>
+    <string name="pt_gustos_libres">What I like to read or watch</string>
+    <string name="pt_gusto_add">ADD WITH MY VOICE</string>
+    <string name="pt_quitar">Remove</string>
+    <string name="pt_gusto_pregunta_t">What do you like to read or watch?</string>
+    <string name="pt_gusto_pregunta_s">Tell me and I will bring you similar things.</string>
+    <string name="pt_decirmelo">TELL ME</string>
+    <string name="pt_ahora_no">Not now</string>
+    <string name="pt_gusto_anotado">Noted: %1$s. I will look for similar things.</string>
+    <string name="pt_gusto_no">I could not note that. Try a short phrase, without numbers or emails.</string>
+    <string name="v_pt_gustos_pregunta">What do you like to read or watch? For example: mystery novels, your city team, or bolero music.</string>
 </resources>

@@ -29,6 +29,18 @@ object FuentesWeb {
 
     // ====================== Partes puras ======================
 
+    /** Sitios desde los que se descargan imagenes y a los que se abren enlaces: solo las fuentes que usamos, siempre por https. */
+    private val HOSTS_IMAGEN = listOf("bbci.co.uk", "wikimedia.org", "smithsonianmag.com", "nasa.gov")
+    private val HOSTS_ENLACE = listOf("bbc.co.uk", "bbc.com", "wikipedia.org", "smithsonianmag.com", "nasa.gov")
+
+    private fun urlSegura(url: String, hosts: List<String>): String {
+        val u = try { java.net.URI(url.trim()) } catch (e: Exception) { return "" }
+        val host = u.host?.lowercase() ?: return ""
+        return if (u.scheme == "https" && hosts.any { host == it || host.endsWith(".$it") }) url.trim() else ""
+    }
+    fun imagenSegura(url: String) = urlSegura(url, HOSTS_IMAGEN)
+    fun enlaceSeguro(url: String) = urlSegura(url, HOSTS_ENLACE)
+
     /** Efemerides de Wikipedia convertidas en tarjetas ("historia"); las que hablan de muertes, guerras, etc. se descartan. */
     fun efemerides(json: String, idioma: String, hoy: LocalDate, max: Int = 2): List<Tarjeta> {
         val en = idioma == "en"
@@ -40,7 +52,10 @@ object FuentesWeb {
             val anio = o.optInt("year", 0)
             if (texto.length < 25 || anio == 0) return@mapNotNull null
             val titulo = if (en) "On $fecha, $anio" else "El $fecha de $anio"
-            Tarjeta(titulo, texto.take(300), "historia", "Wikipedia", hoy.toString())
+            val pagina = o.optJSONArray("pages")?.optJSONObject(0)
+            val imagen = imagenSegura(pagina?.optJSONObject("thumbnail")?.optString("source").orEmpty())
+            val enlace = enlaceSeguro(pagina?.optJSONObject("content_urls")?.optJSONObject("desktop")?.optString("page").orEmpty())
+            Tarjeta(titulo, texto.take(300), "historia", "Wikipedia", hoy.toString(), imagen = imagen, enlace = enlace)
         }.filter { Tarjetas.esSegura(it) }
         if (candidatas.isEmpty()) return emptyList()
         // Estable durante el dia (no cambia al reabrir) pero distinta cada dia.
@@ -49,7 +64,7 @@ object FuentesWeb {
     }
 
     /** Titulares de un RSS como tarjetas de "noticias", sin los temas delicados. [fuente]: nombre del medio. */
-    fun titulares(xml: String, fuente: String, max: Int = 3): List<Tarjeta> {
+    fun titulares(xml: String, fuente: String, max: Int = 3, tema: String = "noticias"): List<Tarjeta> {
         if (xml.contains("<!DOCTYPE", ignoreCase = true)) return emptyList()            // nada de entidades externas
         return try {
             val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xml.byteInputStream(Charsets.UTF_8))
@@ -62,7 +77,11 @@ object FuentesWeb {
                 val resumen = hijo("description").replace(Regex("<[^>]*>"), "").replace(Regex("\\s+"), " ").trim().take(300)
                 if (titulo.length < 15) return@mapNotNull null
                 val fecha = try { SimpleDateFormat("yyyy-MM-dd", Locale.US).format(formato.parse(hijo("pubDate"))!!) } catch (e: Exception) { "" }
-                Tarjeta(titulo, resumen.ifBlank { titulo }, "noticias", fuente, fecha)
+                // Imagen: miniatura del feed (la BBC la ofrece en varios anchos: se pide la de 624 px) y enlace a la noticia.
+                val imagen = (0 until it.childNodes.length).map { k -> it.childNodes.item(k) }
+                    .firstOrNull { c -> c.nodeName == "media:thumbnail" || c.nodeName == "media:content" || c.nodeName == "enclosure" }
+                    ?.attributes?.getNamedItem("url")?.nodeValue.orEmpty().replace("/standard/240/", "/standard/624/")
+                Tarjeta(titulo, resumen.ifBlank { titulo }, tema, fuente, fecha, imagen = imagenSegura(imagen), enlace = enlaceSeguro(hijo("link")))
             }.filter { Tarjetas.esSegura(it) }.take(max)
         } catch (e: Exception) { emptyList() }
     }
@@ -126,26 +145,43 @@ object FuentesWeb {
         } catch (e: Exception) { SpikeLog.log("WEB: fallo ${e::class.simpleName} en ${url.substringBefore('?')}"); null }
     }
 
-    /** Tarjetas reales de internet para los temas elegidos (historia y noticias); nunca lanza, devuelve lo que haya. Exige la nube encendida. */
-    suspend fun tarjetas(ctx: Context, idioma: String, temas: List<String>, vistos: Collection<String>): List<Tarjeta> {
+    /** Un feed de noticias: [url], nombre del medio y a que temas de interes responde. */
+    internal class Feed(val url: String, val fuente: String, val temas: Set<String>, val principal: String = temas.first())
+
+    /** El tema con el que se etiquetan sus tarjetas (para que "me interesa / no me interesa" ajuste el gusto correcto): el principal si la persona lo eligio, o el primero que si eligio. */
+    internal fun temaDe(f: Feed, elegidos: List<String>) = if (f.principal in elegidos) f.principal else elegidos.firstOrNull { it in f.temas } ?: f.principal
+
+    private val FEEDS_EN = listOf(
+        Feed("https://feeds.bbci.co.uk/news/science_and_environment/rss.xml", "BBC News", setOf("noticias", "animales", "jardin"), "animales"),
+        Feed("https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml", "BBC News", setOf("noticias", "musica", "humor"), "musica"),
+        Feed("https://feeds.bbci.co.uk/news/technology/rss.xml", "BBC News", setOf("tecnologia")),
+        Feed("https://feeds.bbci.co.uk/sport/rss.xml", "BBC Sport", setOf("deportes")),
+        Feed("https://feeds.bbci.co.uk/news/health/rss.xml", "BBC News", setOf("salud")),
+        Feed("https://www.smithsonianmag.com/rss/latest_articles/", "Smithsonian Magazine", setOf("historia", "animales", "viajes", "cocina"), "historia"),
+    )
+    // En espanol solo BBC Mundo ofrece imagenes; su portada responde a varios temas y el juez de Gemini descarta lo que no conviene.
+    private val FEEDS_ES = listOf(Feed("https://feeds.bbci.co.uk/mundo/rss.xml", "BBC Mundo", setOf("noticias", "tecnologia", "salud", "deportes", "animales", "musica", "viajes")))
+
+    internal fun feedsPara(idioma: String, temas: List<String>): List<Feed> =
+        (if (idioma == "en") FEEDS_EN else FEEDS_ES).filter { f -> f.temas.any { it in temas } }
+
+    /**
+     * Tarjetas reales de internet para los temas elegidos (efemerides de Wikipedia y titulares con imagen de los feeds acreditados), ordenadas
+     * por lo que a la persona le gusta leer o ver; nunca lanza, devuelve lo que haya. Exige la nube encendida.
+     */
+    suspend fun tarjetas(ctx: Context, idioma: String, temas: List<String>, perfil: Perfil): List<Tarjeta> {
         Privacidad.exigirNube()
         val en = idioma == "en"
         val hoy = LocalDate.now()
+        val feeds = feedsPara(idioma, temas)
         val (historia, noticias) = coroutineScope {
             val h = async { if ("historia" in temas) descargar("https://${if (en) "en" else "es"}.wikipedia.org/api/rest_v1/feed/onthisday/events/${"%02d".format(hoy.monthValue)}/${"%02d".format(hoy.dayOfMonth)}")?.let { efemerides(it, idioma, hoy) }.orEmpty() else emptyList() }
-            // En ingles se usan las secciones de ciencia y cultura (mas amables que la portada); BBC Mundo solo tiene la portada.
-            val n = async {
-                if ("noticias" !in temas) emptyList()
-                else if (en) {
-                    val ciencia = async { descargar("https://feeds.bbci.co.uk/news/science_and_environment/rss.xml")?.let { titulares(it, "BBC News", 2) }.orEmpty() }
-                    val cultura = async { descargar("https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml")?.let { titulares(it, "BBC News", 2) }.orEmpty() }
-                    (ciencia.await() + cultura.await()).sortedByDescending { it.fecha }
-                } else descargar("https://feeds.bbci.co.uk/mundo/rss.xml")?.let { titulares(it, "BBC Mundo") }.orEmpty()
-            }
-            h.await() to n.await()
+            val n = feeds.map { f -> async { descargar(f.url)?.let { titulares(it, f.fuente, 3, temaDe(f, temas)) }.orEmpty() } }.map { it.await() }
+            h.await() to n.flatten()
         }
-        val nuevas = (noticias + historia).filter { normalizarTexto(it.titulo) !in vistos }
-        SpikeLog.log("WEB: historia=${historia.size} noticias=${noticias.size} nuevas=${nuevas.size}")
+        val nuevas = (noticias + historia).distinctBy { normalizarTexto(it.titulo) }.filter { !perfil.haVisto(it.titulo) }
+            .sortedByDescending { perfil.puntos(it.titulo, it.resumen) }                    // estable: a igualdad de puntos queda el orden del feed
+        SpikeLog.log("WEB: historia=${historia.size} noticias=${noticias.size} (${feeds.size} feeds) nuevas=${nuevas.size} gustos=${perfil.gustos.size}")
         return nuevas
     }
 

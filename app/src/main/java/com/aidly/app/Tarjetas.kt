@@ -4,12 +4,14 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /** Una tarjeta de "Para ti": algo de interes para la persona, con su fuente. */
-class Tarjeta(val titulo: String, val resumen: String, val tema: String, val fuente: String, val fecha: String, val ia: Boolean = false) {
+class Tarjeta(val titulo: String, val resumen: String, val tema: String, val fuente: String, val fecha: String, val ia: Boolean = false,
+    /** Imagen de la fuente (miniatura https de un sitio permitido) y enlace a la noticia completa; vacios si no hay. */
+    val imagen: String = "", val enlace: String = "") {
     // [ia]: el resumen lo escribio un modelo de IA (las tarjetas de Wikipedia y de la BBC traen el texto de la fuente y no llevan ese aviso).
     /** Dato de conocimiento general (sin busqueda): no es una noticia de hoy y la pantalla lo dice. */
     val general: Boolean get() = fuente == Tarjetas.FUENTE_GENERAL_ES || fuente == Tarjetas.FUENTE_GENERAL_EN
 
-    fun aJson(): JSONObject = JSONObject().put("titulo", titulo).put("resumen", resumen).put("tema", tema).put("fuente", fuente).put("fecha", fecha).put("ia", ia)
+    fun aJson(): JSONObject = JSONObject().put("titulo", titulo).put("resumen", resumen).put("tema", tema).put("fuente", fuente).put("fecha", fecha).put("ia", ia).put("imagen", imagen).put("enlace", enlace)
 }
 
 /**
@@ -18,7 +20,7 @@ class Tarjeta(val titulo: String, val resumen: String, val tema: String, val fue
  * se confia solo en el prompt.
  */
 object Tarjetas {
-    const val MAX = 3
+    const val MAX = 5
     const val FUENTE_GENERAL_ES = "Conocimiento general"
     const val FUENTE_GENERAL_EN = "General knowledge"
     private const val MAX_TITULO = 120

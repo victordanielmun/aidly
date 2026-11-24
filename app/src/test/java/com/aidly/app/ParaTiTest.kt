@@ -206,5 +206,76 @@ class ParaTiTest {
         assertEquals(emptyList<Int>(), Tarjetas.indicesDe("[]", 5))
         assertEquals(emptyList<Int>(), Tarjetas.indicesDe("ninguno", 5))
     }
+
+    // ---------- Gustos libres, imagenes y enlaces ----------
+    @Test fun lasFrasesDeGustoSeLimpianYSeRechazanLosDatosPersonales() {
+        assertEquals("novelas de misterio", Perfil.limpiarGusto("  Novelas de misterio.  ")!!.lowercase())
+        assertEquals(null, Perfil.limpiarGusto("ab")); assertEquals(null, Perfil.limpiarGusto("escribeme a alguien" + "@" + "ejemplo"))
+        assertEquals(null, Perfil.limpiarGusto("mi telefono es 3001234567")); assertEquals(null, Perfil.limpiarGusto("300 123 45 67 89"))
+        assertEquals(40, Perfil.limpiarGusto("a".repeat(100))!!.length)
+    }
+
+    @Test fun losGustosSeGuardanSinRepetirseConMaximoOcho() {
+        var p = Perfil()
+        repeat(12) { p = p.conGusto("gusto numero $it") }
+        assertEquals(Perfil.MAX_GUSTOS, p.gustos.size); assertEquals("gusto numero 11", p.gustos.last())
+        assertEquals(Perfil.MAX_GUSTOS, p.conGusto("GUSTO NUMERO 11").gustos.size)
+        assertTrue(p.preguntado); assertEquals(Perfil.MAX_GUSTOS - 1, p.sinGusto("gusto numero 11").gustos.size)
+        val q = Perfil.deJson(p.aJson()); assertEquals(p.gustos, q.gustos); assertTrue(q.preguntado)
+    }
+
+    @Test fun losGustosSubenLasTarjetasQueLosMencionan() {
+        val p = Perfil().conGusto("novelas de misterio").conGusto("el Deportivo Cali")
+        assertTrue(p.puntos("Nueva novela de Agatha Christie", "Un misterio sin resolver") >= 2)
+        assertTrue(p.puntos("Gran victoria del Deportivo Cali", "") >= 1)
+        assertEquals(0, p.puntos("Receta de sopa", "con verduras")); assertEquals(0, Perfil().puntos("novela de misterio", ""))
+        assertEquals(0, p.puntos("Viaje a California", "en vacaciones"))                      // "cali" no es "california"
+    }
+
+    @Test fun soloSeAceptanImagenesYEnlacesDeSitiosPermitidosPorHttps() {
+        assertTrue(FuentesWeb.imagenSegura("https://ichef.bbci.co.uk/ace/standard/624/cpsprodpb/x.jpg").isNotEmpty())
+        assertTrue(FuentesWeb.imagenSegura("https://upload.wikimedia.org/a.jpg").isNotEmpty())
+        assertEquals("", FuentesWeb.imagenSegura("http://ichef.bbci.co.uk/a.jpg"))                 // sin https
+        assertEquals("", FuentesWeb.imagenSegura("https://evil.com/a.jpg"))
+        assertEquals("", FuentesWeb.imagenSegura("https://bbci.co.uk.evil.com/a.jpg"))               // dominio engañoso
+        assertEquals("", FuentesWeb.imagenSegura("javascript:alert(1)"))
+        assertTrue(FuentesWeb.enlaceSeguro("https://www.bbc.com/news/articles/abc").isNotEmpty())
+        assertEquals("", FuentesWeb.enlaceSeguro("https://ichef.bbci.co.uk/a.jpg"))                 // un host de imagenes no vale como enlace
+    }
+
+    @Test fun losTitularesTraenImagenYEnlace() {
+        val xml = """<?xml version="1.0"?><rss xmlns:media="http://search.yahoo.com/mrss/"><channel>
+            <item><title>Descubren una nueva especie de mariposa en la selva</title><description>Un equipo la encontro.</description>
+            <link>https://www.bbc.com/news/articles/c1</link><pubDate>Mon, 23 Nov 2026 10:30:00 GMT</pubDate>
+            <media:thumbnail width="240" height="135" url="https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/abc.jpg"/></item>
+            <item><title>Otra noticia amable sobre la naturaleza local</title><description>Texto.</description>
+            <link>https://evil.com/x</link><media:thumbnail url="https://evil.com/i.jpg"/></item></channel></rss>"""
+        val t = FuentesWeb.titulares(xml, "BBC News", tema = "animales")
+        assertEquals("https://ichef.bbci.co.uk/ace/standard/624/cpsprodpb/abc.jpg", t[0].imagen)
+        assertEquals("https://www.bbc.com/news/articles/c1", t[0].enlace); assertEquals("animales", t[0].tema)
+        assertEquals("", t[1].imagen); assertEquals("", t[1].enlace)                               // fuera de la lista permitida: sin imagen ni enlace
+    }
+
+    @Test fun lasEfemeridesTraenLaMiniaturaDeWikipedia() {
+        val j = """{"events":[{"text":"Se inaugura en la ciudad el primer teatro de la opera del pais.","year":1884,
+            "pages":[{"thumbnail":{"source":"https://upload.wikimedia.org/wikipedia/commons/thumb/a.jpg"},"content_urls":{"desktop":{"page":"https://es.wikipedia.org/wiki/Teatro"}}}]}]}"""
+        val t = FuentesWeb.efemerides(j, "es", hoy)[0]
+        assertEquals("https://upload.wikimedia.org/wikipedia/commons/thumb/a.jpg", t.imagen); assertEquals("https://es.wikipedia.org/wiki/Teatro", t.enlace)
+    }
+
+    @Test fun cadaTemaSabeQueFeedsUsar() {
+        assertTrue(FuentesWeb.feedsPara("en", listOf("deportes")).any { it.url.contains("sport") })
+        assertTrue(FuentesWeb.feedsPara("en", listOf("cocina", "jardin")).isNotEmpty())
+        assertEquals(1, FuentesWeb.feedsPara("es", listOf("noticias", "salud")).size)               // en espanol solo BBC Mundo
+        assertTrue(FuentesWeb.feedsPara("es", listOf("cocina")).isEmpty())
+    }
+
+    @Test fun lasTarjetasSeEtiquetanConElTemaCorrecto() {
+        val smith = FuentesWeb.feedsPara("en", listOf("historia", "animales")).first { it.fuente.startsWith("Smithsonian") }
+        assertEquals("historia", FuentesWeb.temaDe(smith, listOf("animales", "historia")))      // su tema principal, si la persona lo eligio
+        assertEquals("animales", FuentesWeb.temaDe(smith, listOf("animales", "cocina")))        // si no, el primero que si eligio
+        val mundo = FuentesWeb.feedsPara("es", listOf("salud")).first()
+        assertEquals("salud", FuentesWeb.temaDe(mundo, listOf("salud")))
+    }
 }
 

@@ -106,7 +106,7 @@ object FeedTarjetas {
         return try {
             val j = JSONObject(txt)
             val arr = j.getJSONArray("tarjetas")
-            val lista = (0 until arr.length()).map { i -> arr.getJSONObject(i).let { Tarjeta(it.getString("titulo"), it.getString("resumen"), it.optString("tema"), it.getString("fuente"), it.optString("fecha"), it.optBoolean("ia", false)) } }
+            val lista = (0 until arr.length()).map { i -> arr.getJSONObject(i).let { Tarjeta(it.getString("titulo"), it.getString("resumen"), it.optString("tema"), it.getString("fuente"), it.optString("fecha"), it.optBoolean("ia", false), it.optString("imagen"), it.optString("enlace")) } }
             Triple(j.getLong("ts"), j.optString("clave"), lista)
         } catch (e: Exception) { null }
     }
@@ -156,7 +156,7 @@ object FeedTarjetas {
         if (ids.isEmpty()) return Resultado(emptyList(), false, 0)
         val t0 = System.currentTimeMillis()
         // 1) Fuentes publicas (Wikipedia, titulares de la BBC): fecha y fuente reales, sin gastar cupo de Gemini.
-        val web = try { FuentesWeb.tarjetas(ctx, idioma, ids, perfil.vistos) } catch (e: Exception) { SpikeLog.log("FEED: fuentes web fallaron (${e::class.simpleName})"); emptyList() }
+        val web = try { FuentesWeb.tarjetas(ctx, idioma, ids, perfil) } catch (e: Exception) { SpikeLog.log("FEED: fuentes web fallaron (${e::class.simpleName})"); emptyList() }
         // Los titulares de la BBC pasan por un modelo que deja solo los tranquilos (falla cerrado: si no puede juzgarlos, no se muestra ninguno).
         val aptas = if (web.isEmpty()) emptyList() else aptas(idioma, web)
         var lista = aptas.take(Tarjetas.MAX)

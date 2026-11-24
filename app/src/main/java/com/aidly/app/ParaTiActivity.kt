@@ -3,6 +3,14 @@ package com.aidly.app
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.runtime.produceState
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -86,6 +94,16 @@ private fun Pantalla(voz: Voz, cerrar: () -> Unit) {
     val animar = remember { !Preferencias.reducirMovimiento(ctx) }
     fun cambiar(f: (Perfil) -> Perfil) { perfil = Intereses.cambiar(ctx, f) }
     val pedirMic = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { ok -> if (ok) quiereHablar++ }
+    var quiereGusto by remember { mutableIntStateOf(0) }
+    var anadiendo by remember { mutableStateOf(false) }
+    val pedirMicGusto = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { ok -> if (ok) quiereGusto++ }
+    fun hayMic() = ContextCompat.checkSelfPermission(ctx, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+
+    /** Abre una pagina en el navegador (la noticia o una busqueda de Google): la persona sale de Aidly a proposito, al tocar. */
+    fun abrir(url: String) {
+        try { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) } catch (e: Exception) { SpikeLog.log("PARATI: no pude abrir la pagina (${e::class.simpleName})") }
+    }
+    fun google(consulta: String) = abrir("https://www.google.com/search?q=" + Uri.encode(consulta))
 
     suspend fun buscarNovedades(forzar: Boolean) {
         if (!Privacidad.nubeActiva()) { aviso = ctx.getString(R.string.pt_solo_guardado); return }
@@ -139,6 +157,26 @@ private fun Pantalla(voz: Voz, cerrar: () -> Unit) {
         if (respuesta.isNotBlank()) voz.decir(respuesta)
     }
 
+    // "¿Que te gusta leer o ver?": la persona lo dice, se anota la frase y se buscan cosas parecidas.
+    LaunchedEffect(quiereGusto) {
+        if (quiereGusto == 0) return@LaunchedEffect
+        anadiendo = true; aviso = ""
+        try {
+            voz.callar()
+            withTimeoutOrNull(20_000) { voz.decirYEsperar(Idioma.vozTexto(ctx, R.string.v_pt_gustos_pregunta)) }
+            val q = if (Privacidad.nubeActiva()) GeminiStt.escuchar(ctx) else EscuchaSistema.escuchar(ctx)
+            val nuevo = q?.let { Perfil.limpiarGusto(it) }
+            if (nuevo == null) aviso = ctx.getString(R.string.pt_gusto_no)
+            else {
+                cambiar { it.conGusto(nuevo) }
+                aviso = ctx.getString(R.string.pt_gusto_anotado, nuevo)
+                voz.decir(aviso)
+                if (Privacidad.nubeActiva()) { anadiendo = false; buscarNovedades(true) }
+            }
+        } catch (e: Exception) { SpikeLog.log("PARATI: error al anotar un gusto (${e::class.simpleName})"); aviso = ctx.getString(R.string.pt_gusto_no) }
+        anadiendo = false
+    }
+
     fun siguiente(reaccion: Int = 0) {
         val t = actual
         if (t != null && reaccion != 0) cambiar { it.conReaccion(t.tema, reaccion) }
@@ -152,6 +190,17 @@ private fun Pantalla(voz: Voz, cerrar: () -> Unit) {
 
             if (!editando) Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 AidlyCara(if (habla) Emocion.HABLANDO else if (hablando) Emocion.ESCUCHANDO else Emocion.REPOSO, Modifier.fillMaxWidth(0.3f), animar, habla)
+            }
+            if (!editando && !perfil.preguntado) Column(
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(Tema.RadioPrincipal)).background(Tema.Tarjeta).padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                Text(stringResource(R.string.pt_gusto_pregunta_t), fontSize = 26.sp, fontWeight = FontWeight.Bold, color = Tema.Turquesa)
+                Text(stringResource(R.string.pt_gusto_pregunta_s), fontSize = 20.sp, color = Tema.Texto)
+                BotonGrande(stringResource(R.string.pt_decirmelo), Tema.Turquesa, alto = 72.dp) {
+                    if (hayMic()) quiereGusto++ else pedirMicGusto.launch(Manifest.permission.RECORD_AUDIO)
+                }
+                BotonGrande(stringResource(R.string.pt_ahora_no), Tema.Tarjeta, Tema.Texto, alto = 56.dp, tamLetra = 20) { cambiar { it.conPreguntado(true) } }
             }
             if (editando) {
                 Text(stringResource(R.string.pt_gustos_sub), fontSize = 20.sp, color = Tema.TextoSuave)
@@ -171,6 +220,18 @@ private fun Pantalla(voz: Voz, cerrar: () -> Unit) {
                     Modifier.fillMaxWidth().clip(RoundedCornerShape(Tema.RadioPrincipal)).background(Tema.Tarjeta).padding(18.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
+                    if (actual.imagen.isNotBlank()) {
+                        // La imagen viene de la fuente (BBC, Wikipedia...): solo se baja con la nube encendida y, si falla, la tarjeta sale igual.
+                        val foto by produceState<Bitmap?>(null, actual.imagen) { value = ImagenWeb.cargar(actual.imagen) }
+                        foto?.let { b ->
+                            Image(
+                                b.asImageBitmap(), contentDescription = actual.titulo, contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f).clip(RoundedCornerShape(Tema.RadioFila))
+                                    .then(if (actual.enlace.isNotBlank()) Modifier.clickable(role = Role.Button, onClickLabel = stringResource(R.string.pt_leer_noticia)) { abrir(actual.enlace) } else Modifier),
+                            )
+                            Text(stringResource(R.string.pt_imagen, if (actual.fuente == "Wikipedia") "Wikimedia Commons" else actual.fuente), fontSize = 16.sp, color = Tema.TextoSuave)
+                        }
+                    }
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(stringResource(if (actual.general) R.string.pt_dato else R.string.pt_web), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = if (actual.general) Tema.Turquesa else Tema.Amarillo)
                         Text(stringResource(R.string.pt_pos, indice + 1, tarjetas.size), fontSize = 18.sp, color = Tema.TextoSuave)
@@ -188,6 +249,8 @@ private fun Pantalla(voz: Voz, cerrar: () -> Unit) {
                     if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) quiereHablar++
                     else pedirMic.launch(Manifest.permission.RECORD_AUDIO)
                 }
+                if (actual.enlace.isNotBlank()) BotonGrande(stringResource(R.string.pt_leer_noticia), Tema.Tarjeta, Tema.Texto, alto = 64.dp, tamLetra = 20) { abrir(actual.enlace) }
+                BotonGrande(stringResource(R.string.pt_google), Tema.Tarjeta, Tema.Texto, alto = 64.dp, tamLetra = 20) { google(actual.titulo) }
                 if (pregunta.isNotBlank()) Text(stringResource(R.string.hablar_tu, pregunta), fontSize = 20.sp, color = Tema.TextoSuave)
                 if (respuesta.isNotBlank()) {
                     Text(
@@ -208,6 +271,23 @@ private fun Pantalla(voz: Voz, cerrar: () -> Unit) {
                 }
                 if (aviso.isNotBlank()) Text(aviso, fontSize = 18.sp, color = Tema.TextoSuave)
                 if (Privacidad.nubeActiva() && !buscando) BotonGrande(stringResource(R.string.pt_buscar), Tema.Tarjeta, Tema.Texto, alto = 64.dp, tamLetra = 20) { scope.launch { buscarNovedades(true) } }
+                TituloSeccion(stringResource(R.string.pt_gustos_libres))
+                perfil.gustos.forEach { g ->
+                    Row(
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(Tema.RadioFila)).background(Tema.Tarjeta).padding(start = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text(g, Modifier.weight(1f), fontSize = 22.sp, color = Tema.Texto)
+                        Text(
+                            stringResource(R.string.pt_quitar), Modifier.heightIn(min = 56.dp).clickable(role = Role.Button) { cambiar { it.sinGusto(g) } }.padding(horizontal = 16.dp, vertical = 14.dp),
+                            fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Tema.Coral,
+                        )
+                    }
+                }
+                BotonGrande(stringResource(if (anadiendo) R.string.pt_te_escucho else R.string.pt_gusto_add), Tema.Tarjeta, Tema.Texto, alto = 64.dp, tamLetra = 20) {
+                    if (anadiendo) return@BotonGrande
+                    if (hayMic()) quiereGusto++ else pedirMicGusto.launch(Manifest.permission.RECORD_AUDIO)
+                }
                 InterruptorFila(Iconos.Altavoz, stringResource(R.string.pt_propuestas), stringResource(R.string.pt_propuestas_sub), perfil.propuestas) { on -> cambiar { it.conPropuestas(on) } }
                 Text(
                     stringResource(R.string.pt_cambiar),
