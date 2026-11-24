@@ -421,9 +421,9 @@ footer a{color:var(--text2)}
 <script>
 (function () {
   var root = document.documentElement;
-  function setLang(l) {
+  function setLang(l, guardar) {
     root.setAttribute("data-lang", l); root.lang = l;
-    try { localStorage.setItem("aidly-web-lang", l); } catch (e) {}
+    if (guardar) { try { localStorage.setItem("aidly-web-lang", l); } catch (e) {} }
     document.querySelectorAll("[data-alt-es]").forEach(function (n) {
       if (!n.hasAttribute("data-alt-en")) n.setAttribute("data-alt-en", n.getAttribute("alt") || n.getAttribute("aria-label") || "");
       var v = l === "es" ? n.getAttribute("data-alt-es") : n.getAttribute("data-alt-en");
@@ -432,7 +432,7 @@ footer a{color:var(--text2)}
     document.title = l === "es" ? "Aidly: un compañero de voz proactivo para personas mayores" : "Aidly: a proactive voice companion for older adults";
   }
   document.querySelectorAll(".idioma button").forEach(function (b) {
-    b.addEventListener("click", function () { setLang(b.getAttribute("data-l")); });
+    b.addEventListener("click", function () { setLang(b.getAttribute("data-l"), true); });
   });
   setLang(root.getAttribute("data-lang") || "en");
 

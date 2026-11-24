@@ -4,56 +4,71 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1d2523">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='6' y='28' width='6' height='18' rx='3' fill='%23ffd800'/%3E%3Crect x='52' y='28' width='6' height='18' rx='3' fill='%23ffd800'/%3E%3Crect x='10' y='8' width='44' height='48' rx='14' fill='%231d2523' stroke='%235bd6bb' stroke-width='5'/%3E%3Ccircle cx='24' cy='28' r='4' fill='%23ffd800'/%3E%3Ccircle cx='40' cy='28' r='4' fill='%23ffd800'/%3E%3Cpath d='M23 41q9 8 18 0' stroke='%23ffd800' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <title>Aidly Familia</title>
 <style>
+  @font-face { font-family: "Atkinson"; src: url(/assets/fonts/atkinson_regular.ttf) format("truetype"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "Atkinson"; src: url(/assets/fonts/atkinson_bold.ttf) format("truetype"); font-weight: 700; font-display: swap; }
   :root {
-    --fondo: #2b2b26; --tarjeta: #383832; --texto: #fff3dc; --suave: #cfc9ba;
-    --turquesa: #40ddda; --amarillo: #ffe000; --coral: #ff7f50; --verde: #3ddc84; --tinta: #1f1f1b;
-  }
-  @media (prefers-color-scheme: light) {
-    :root { --fondo: #f4efe3; --tarjeta: #ffffff; --texto: #1f1f1b; --suave: #5a5648; --turquesa: #007c91; --amarillo: #8a6d00; --coral: #c2410c; --verde: #15803d; --tinta: #1f1f1b; }
+    --fondo: #1d2523; --tarjeta: #28322f; --hover: #3c4944; --texto: #f6f1de; --suave: #d3d6c5; --tenue: #b0b6a6;
+    --turquesa: #5bd6bb; --amarillo: #ffd800; --coral: #ff8545; --verde: #5bd6bb; --tinta: #1a1f10;
+    --linea: rgba(236,240,226,.18); --foco: #84caff; --ease: cubic-bezier(.22,.8,.24,1);
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--fondo); color: var(--texto); font: 18px/1.45 "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  main { max-width: 640px; margin: 0 auto; padding: 16px 16px 48px; }
-  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  h1 { font-size: 28px; margin: 8px 0 4px; }
-  h2 { font-size: 15px; margin: 0 0 6px; color: var(--suave); text-transform: uppercase; letter-spacing: .05em; }
+  body { margin: 0; background: var(--fondo); color: var(--texto); font: 400 18px/1.55 "Atkinson", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+  main { max-width: 680px; margin: 0 auto; padding: 0 20px 56px; }
+  .barra { position: sticky; top: 0; z-index: 5; background: rgba(29,37,35,.94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--linea); }
+  .barra .in { max-width: 680px; margin: 0 auto; padding: 0 20px; min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .marca { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 22px; color: var(--texto); text-decoration: none; }
+  .marca img { width: 34px; height: 34px; border-radius: 10px; }
+  .marca small { font-weight: 400; font-size: 14px; color: var(--tenue); margin-left: 4px; }
+  h1 { font-size: clamp(34px, 7vw, 46px); line-height: 1.05; letter-spacing: -.01em; margin: 30px 0 8px; }
+  h1 span { color: var(--amarillo); }
+  h2 { font-size: 15px; margin: 0 0 8px; color: var(--suave); text-transform: uppercase; letter-spacing: .06em; }
   .suave { color: var(--suave); }
-  .tarjeta { background: var(--tarjeta); border-radius: 16px; padding: 16px 18px; margin: 14px 0; }
-  .grande { font-size: 24px; font-weight: 700; }
-  .banner { border-radius: 16px; padding: 18px; margin: 14px 0; font-size: 22px; font-weight: 700; }
+  .tarjeta { background: var(--tarjeta); border: 1.5px solid var(--linea); border-radius: 24px; padding: 20px 22px; margin: 16px 0; }
+  .grande { font-size: 26px; font-weight: 700; line-height: 1.15; }
+  .banner { border-radius: 24px; padding: 20px 22px; margin: 16px 0; font-size: 22px; font-weight: 700; line-height: 1.25; }
   .ok { background: var(--verde); color: var(--tinta); }
   .alerta { background: var(--coral); color: var(--tinta); }
   .aviso { background: var(--amarillo); color: var(--tinta); }
-  .neutro { background: var(--tarjeta); color: var(--suave); }
+  .neutro { background: var(--tarjeta); color: var(--suave); border: 1.5px solid var(--linea); }
   a { color: var(--turquesa); font-weight: 700; }
   .alerta a, .ok a, .aviso a { color: inherit; }
-  form { display: flex; gap: 10px; flex-wrap: wrap; }
-  input { flex: 1 1 200px; font: 700 26px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; padding: 14px; border-radius: 12px; border: 2px solid var(--suave); background: var(--tarjeta); color: var(--texto); }
-  input:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid var(--turquesa); outline-offset: 2px; }
-  button { font: 700 20px system-ui, sans-serif; padding: 14px 22px; border: 0; border-radius: 12px; background: var(--turquesa); color: var(--tinta); cursor: pointer; }
-  button.link { background: none; color: var(--suave); text-decoration: underline; padding: 8px 0; font-size: 16px; font-weight: 400; }
-  .idiomas { display: flex; gap: 6px; }
-  .idiomas button { padding: 8px 14px; font-size: 16px; border-radius: 20px; background: transparent; color: var(--suave); border: 2px solid var(--suave); }
-  .idiomas button[aria-pressed="true"] { background: var(--turquesa); color: var(--tinta); border-color: var(--turquesa); }
+  form { display: flex; gap: 12px; flex-wrap: wrap; }
+  input { flex: 1 1 200px; font: 700 26px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; padding: 15px 18px; border-radius: 16px; border: 1.5px solid var(--tenue); background: var(--fondo); color: var(--texto); }
+  input::placeholder { color: var(--tenue); }
+  input:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid var(--foco); outline-offset: 3px; border-radius: 12px; }
+  button { font: 700 18px "Atkinson", system-ui, sans-serif; padding: 15px 26px; min-height: 52px; border: 2px solid transparent; border-radius: 999px; background: var(--amarillo); color: var(--tinta); cursor: pointer; transition: transform .2s var(--ease), background .25s var(--ease); }
+  button:hover { background: #ffe34d; }
+  button:active { transform: scale(.98); }
+  button.link { background: none; color: var(--suave); text-decoration: underline; padding: 8px 0; min-height: 44px; font-size: 16px; font-weight: 400; border-radius: 8px; }
+  button.link:hover { background: none; color: var(--texto); }
+  .idiomas { display: flex; border: 1.5px solid var(--linea); border-radius: 999px; overflow: hidden; }
+  .idiomas button { padding: 8px 14px; min-height: 40px; font: 400 14px "Atkinson", sans-serif; border-radius: 0; background: transparent; color: var(--suave); border: 0; }
+  .idiomas button:hover { background: var(--hover); }
+  .idiomas button[aria-pressed="true"] { background: var(--amarillo); color: var(--tinta); font-weight: 700; }
   ul { list-style: none; padding: 0; margin: 6px 0 0; }
-  li { padding: 8px 0; border-top: 1px solid rgba(128,128,128,.25); }
+  li { padding: 10px 0; border-top: 1px solid var(--linea); }
   li:first-child { border-top: 0; }
   .dato { color: var(--turquesa); font-weight: 700; }
-  .error { color: var(--coral); font-weight: 700; }
-  footer { margin-top: 28px; font-size: 14px; color: var(--suave); }
+  .error { color: #ffb399; font-weight: 700; }
+  footer { margin-top: 30px; font-size: 14px; color: var(--tenue); }
+  footer a { font-weight: 400; color: var(--suave); }
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: .01ms !important; } }
 </style>
 </head>
 <body>
+<div class="barra"><div class="in">
+  <a class="marca" href="/" aria-label="Aidly"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23151b19'/%3E%3Crect x='3' y='28' width='6' height='18' rx='3' fill='%23ffd800'/%3E%3Crect x='55' y='28' width='6' height='18' rx='3' fill='%23ffd800'/%3E%3Crect x='10' y='10' width='44' height='46' rx='14' fill='%231d2523' stroke='%235bd6bb' stroke-width='5'/%3E%3Ccircle cx='24' cy='30' r='4' fill='%23ffd800'/%3E%3Ccircle cx='40' cy='30' r='4' fill='%23ffd800'/%3E%3Cpath d='M23 42q9 8 18 0' stroke='%23ffd800' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" alt="">Aidly</a>
+  <div class="idiomas" role="group" aria-label="Idioma / Language">
+    <button type="button" id="b-en" data-lang="en" aria-pressed="false">EN</button>
+    <button type="button" id="b-es" data-lang="es" aria-pressed="true">ES</button>
+  </div>
+</div></div>
 <main>
-  <header>
-    <h1 data-i="titulo">Aidly Familia</h1>
-    <div class="idiomas" role="group" aria-label="Idioma / Language">
-      <button type="button" id="b-es" data-lang="es" aria-pressed="true">ES</button>
-      <button type="button" id="b-en" data-lang="en" aria-pressed="false">EN</button>
-    </div>
-  </header>
+  <h1 data-i="titulo">Aidly Familia</h1>
   <p class="suave" id="sub" data-i="sub"></p>
 
   <section id="entrada" hidden>
@@ -168,7 +183,7 @@ const T = {
 };
 
 const $ = (id) => document.getElementById(id);
-const CLAVE = "aidly_codigo", CLAVE_LANG = "aidly_idioma";
+const CLAVE = "aidly_codigo", CLAVE_LANG = "aidly-web-lang";
 let lang = "es", datos = null, baja = null, esDemo = false;
 
 const guardar = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
@@ -341,7 +356,7 @@ setInterval(() => { if (datos) pintar(); }, 30000);   // refresca los "hace X mi
 // ---------- Arranque ----------
 // Idioma: elegido en esta página > ?lang= > idioma del navegador. Luego, el de la persona (si aún no se eligió).
 const pedido = new URLSearchParams(location.search).get("lang");
-lang = T[pedido] ? pedido : (T[leer(CLAVE_LANG)] ? leer(CLAVE_LANG) : ((navigator.language || "es").toLowerCase().startsWith("en") ? "en" : "es"));
+lang = T[pedido] ? pedido : (T[leer(CLAVE_LANG)] ? leer(CLAVE_LANG) : T[leer("aidly_idioma")] ? leer("aidly_idioma") : ((navigator.language || "es").toLowerCase().startsWith("en") ? "en" : "es"));
 aplicarTextos();
 
 // El código puede venir en el enlace (#ABCDEFGHJKLM): el fragmento no se envía a ningún servidor.
