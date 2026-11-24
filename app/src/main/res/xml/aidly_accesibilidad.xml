@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Ayuda de Aidly para otras aplicaciones (OPCIONAL, apagada hasta que la persona la enciende en Ajustes > Accesibilidad).
+  Para que sirve: dibujar el boton flotante de Aidly y, cuando la persona lo pide, tocar un boton por su texto, ir atras o al inicio y
+  desplazar la pantalla. No se registra ningun tipo de evento (no recibe lo que escribes ni lo que pasa en pantalla) y no guarda ni envia nada.
+-->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/a11y_descripcion"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:canRetrieveWindowContent="true"
+    android:canPerformGestures="true"
+    android:accessibilityFlags="flagRetrieveInteractiveWindows"
+    android:isAccessibilityTool="true"
+    android:notificationTimeout="100" />

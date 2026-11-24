@@ -34,6 +34,11 @@
         <package android:name="com.disney.disneyplus" />
         <package android:name="com.whatsapp" />
         <package android:name="com.facebook.katana" />
+        <!-- "Abre ..." con cualquier app instalada: se pueden ver las que tienen icono de lanzamiento -->
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
     </queries>
 
     <application
@@ -89,6 +94,20 @@
             android:name=".PrivacidadActivity"
             android:exported="false"
             android:theme="@style/Theme.Aidly" />
+
+        <activity
+            android:name=".AyudaOtrasAppsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aidly" />
+
+        <!-- Ventana de voz translucida sobre otra app: escucha una orden, la ejecuta y se cierra -->
+        <activity
+            android:name=".OrdenActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:theme="@style/Theme.Aidly.Translucente" />
 
         <activity
             android:name=".ParaTiActivity"
@@ -184,6 +203,20 @@
             <intent-filter>
                 <action android:name="android.telecom.CallScreeningService" />
             </intent-filter>
+        </service>
+
+        <!-- Ayuda para otras apps (boton flotante, atras/inicio, tocar por su texto): opcional y la enciende la persona en Ajustes > Accesibilidad. Ver docs/PRIVACY_DATA_FLOW.md (F19). -->
+        <service
+            android:name=".AidlyAccesibilidad"
+            android:exported="true"
+            android:label="@string/a11y_nombre"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/aidly_accesibilidad" />
         </service>
 
         <service

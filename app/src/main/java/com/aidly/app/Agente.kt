@@ -50,6 +50,7 @@ object Agente {
     suspend fun procesar(ctx: Context, frase: String): Respuesta {
         val n = normalizar(frase)
         val L = Lexico.de(ctx)
+        val orden = ordenAccesibilidad(frase, n, L)
         val r: Respuesta = when {
             L.cancelarRec.containsMatchIn(n) && L.objRec.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=cancelar recordatorio"); cancelarRecordatorio(ctx, n, L) }
             L.crearRec.containsMatchIn(n) || verboRecordarPartido(n) -> { SpikeLog.log("AGENTE: ruta=crear recordatorio"); crearRecordatorio(ctx, frase) }
@@ -60,6 +61,7 @@ object Agente {
             L.crearCita.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=agendar cita"); crearCita(ctx, frase) }
             L.verAgenda.containsMatchIn(n) && L.cuandoAgenda.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=ver agenda"); verAgenda(ctx, n) }
             L.horaFecha.containsMatchIn(n) -> { SpikeLog.log("AGENTE: ruta=hora/fecha"); horaFecha(ctx, n, L) }
+            orden != null -> { SpikeLog.log("AGENTE: ruta=accesibilidad ${orden.first}"); accesibilidad(ctx, orden) }
             L.paraTi.containsMatchIn(n) -> {
                 SpikeLog.log("AGENTE: ruta=para ti")
                 pantalla(ctx, ParaTiActivity::class.java, t(ctx, R.string.v_pantalla_parati))
@@ -99,7 +101,7 @@ object Agente {
             else -> detectarApp(ctx, n, L)?.let { (app, q) ->
                 SpikeLog.log("AGENTE: ruta=app ${app.nombre} busqueda='$q'")
                 abrir(ctx, app, q)
-            } ?: MedicinaValidador.respuestaSegura(ctx, frase)?.let { segura ->
+            } ?: abrirPorNombre(ctx, n, L) ?: MedicinaValidador.respuestaSegura(ctx, frase)?.let { segura ->
                 // Sobredosis, alergia, sintomas o dosis olvidada: nunca los responde el modelo.
                 SpikeLog.log("AGENTE: ruta=medicina riesgo (respuesta fija)")
                 Respuesta(segura, "local", 0)
@@ -352,6 +354,50 @@ object Agente {
     // ---------- Abrir apps ----------
 
     private fun instalada(ctx: Context, app: App) = ctx.packageManager.getLaunchIntentForPackage(app.pkg) != null
+
+    // ---- Ayuda con otras apps (servicio de accesibilidad, opcional) ----
+
+    /** Una orden corta sobre la app que se esta usando: atras, inicio, bajar, subir o tocar <texto>. null si la frase no lo es. */
+    internal fun ordenAccesibilidad(frase: String, n: String, L: Lexico): Pair<String, String>? {
+        val palabras = n.split(" ").size
+        if (palabras <= 4 && L.atras.containsMatchIn(n)) return "atras" to ""
+        if (palabras <= 6 && L.inicio.containsMatchIn(n)) return "inicio" to ""
+        if (palabras <= 6 && L.bajar.containsMatchIn(n)) return "bajar" to ""
+        if (palabras <= 6 && L.subir.containsMatchIn(n)) return "subir" to ""
+        val m = L.tocar.find(frase) ?: return null
+        val antes = frase.substring(0, m.range.first).trim().lowercase().split(" ").filter { it.isNotBlank() }
+        // "me toca tomar la pastilla" / "que te toca hoy" NO es una orden de tocar un boton.
+        if (antes.size > 2 || antes.lastOrNull() in setOf("me", "te", "le", "nos", "les", "que", "lo")) return null
+        val objetivo = m.groupValues[1].trim().removeSuffix(" button").removeSuffix(" botón").trim().trim('"', '\u00ab', '\u00bb', '\u201c', '\u201d', '\'')
+        return if (objetivo.isNotBlank() && objetivo.split(" ").size <= 5) "tocar" to objetivo else null
+    }
+
+    private fun accesibilidad(ctx: Context, orden: Pair<String, String>): Respuesta {
+        val (accion, arg) = orden
+        if (!Accesibilidad.activa(ctx)) return Respuesta(t(ctx, R.string.v_a11y_apagada), "local", 0) { Accesibilidad.abrirPantallaDeAyuda(ctx) }
+        val texto = when (accion) {
+            "atras" -> t(ctx, R.string.v_a11y_atras)
+            "inicio" -> t(ctx, R.string.v_a11y_inicio)
+            "bajar" -> t(ctx, R.string.v_a11y_bajar)
+            "subir" -> t(ctx, R.string.v_a11y_subir)
+            else -> t(ctx, R.string.v_a11y_tocar, arg)
+        }
+        return Respuesta(texto, "local", 0) {
+            if (!Accesibilidad.ejecutar(accion, arg)) {
+                android.widget.Toast.makeText(ctx.applicationContext, if (accion == "tocar") ctx.getString(R.string.a11y_no_encontre, arg) else ctx.getString(R.string.a11y_no_pude), android.widget.Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    /** "Abre <nombre>" con cualquier app instalada (no solo las de la lista fija). null si no hay una con ese nombre. */
+    private fun abrirPorNombre(ctx: Context, n: String, L: Lexico): Respuesta? {
+        if (!L.verboAbrir.containsMatchIn(n)) return null
+        val sobra = setOf("la", "el", "los", "las", "app", "aplicacion", "the", "application", "please", "una", "un")
+        val pedido = n.replace(L.verboAbrir, " ").split(" ").filter { it.isNotBlank() && it !in L.relleno && it !in sobra }.joinToString(" ")
+        val (etiqueta, paquete) = AppsInstaladas.buscar(ctx, pedido) ?: return null
+        SpikeLog.log("AGENTE: ruta=app instalada $etiqueta")
+        return Respuesta(t(ctx, R.string.v_abriendo, etiqueta), "local", 0) { AppsInstaladas.lanzar(ctx, paquete) }
+    }
 
     private fun detectarApp(ctx: Context, n: String, L: Lexico): Pair<App, String>? {
         val app = L.nombresApps.firstOrNull { it.first.containsMatchIn(n) }?.second?.let { App.valueOf(it) }

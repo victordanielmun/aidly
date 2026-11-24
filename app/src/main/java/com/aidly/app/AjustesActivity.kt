@@ -134,6 +134,10 @@ private fun Pantalla(cerrar: () -> Unit) {
             }
         }
 
+        FilaAccion(Iconos.Estrella, stringResource(R.string.ajustes_a11y), stringResource(R.string.ajustes_a11y_sub)) {
+            ctx.startActivity(Intent(ctx, AyudaOtrasAppsActivity::class.java))
+        }
+
         TituloSeccion(stringResource(R.string.ajustes_inicio))
         FilaAccion(Iconos.Microfono, stringResource(R.string.widget_grande_titulo), stringResource(R.string.widget_grande_sub)) {
             fijarWidget(ctx, AidlyWidgetReceiver::class.java)

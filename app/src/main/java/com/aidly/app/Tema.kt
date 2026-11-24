@@ -63,7 +63,7 @@ object Tema {
  * Material fija 20-24 sp y las lineas se pisan con letra grande.
  */
 @Composable
-fun AidlyTema(contenido: @Composable () -> Unit) {
+fun AidlyTema(transparente: Boolean = false, contenido: @Composable () -> Unit) {
     val base = Typography()
     fun TextStyle.a() = copy(fontFamily = Tema.Atkinson, lineHeight = TextUnit.Unspecified)
     val tipografia = Typography(
@@ -77,8 +77,9 @@ fun AidlyTema(contenido: @Composable () -> Unit) {
     val ctx = LocalContext.current
     SideEffect {
         (ctx as? Activity)?.window?.let {
-            it.statusBarColor = Tema.Fondo.toArgb()
-            it.navigationBarColor = Tema.Fondo.toArgb()
+            // [transparente]: ventana sobre otra app (OrdenActivity): se ve lo de debajo, las barras no se pintan.
+            it.statusBarColor = if (transparente) android.graphics.Color.TRANSPARENT else Tema.Fondo.toArgb()
+            it.navigationBarColor = if (transparente) android.graphics.Color.TRANSPARENT else Tema.Fondo.toArgb()
         }
     }
     val colores = darkColorScheme(
@@ -90,8 +91,8 @@ fun AidlyTema(contenido: @Composable () -> Unit) {
     MaterialTheme(colorScheme = colores, typography = tipografia) {
         // Fondo y color de texto por defecto: sin esto, un Text sin color sale negro sobre el fondo oscuro.
         // Android 15 dibuja la app bajo la barra de estado y la de navegacion: el contenido se separa de ellas (el fondo sigue llegando al borde).
-        Surface(modifier = Modifier.fillMaxSize(), color = Tema.Fondo, contentColor = Tema.Texto) {
-            androidx.compose.foundation.layout.Box(Modifier.fillMaxSize().systemBarsPadding()) { contenido() }
+        Surface(modifier = Modifier.fillMaxSize(), color = if (transparente) androidx.compose.ui.graphics.Color.Transparent else Tema.Fondo, contentColor = Tema.Texto) {
+            androidx.compose.foundation.layout.Box(if (transparente) Modifier.fillMaxSize() else Modifier.fillMaxSize().systemBarsPadding()) { contenido() }
         }
     }
 }

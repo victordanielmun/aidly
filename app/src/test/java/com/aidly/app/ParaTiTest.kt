@@ -277,5 +277,28 @@ class ParaTiTest {
         val mundo = FuentesWeb.feedsPara("es", listOf("salud")).first()
         assertEquals("salud", FuentesWeb.temaDe(mundo, listOf("salud")))
     }
+
+    // ---------- Ordenes sobre otras apps (accesibilidad) ----------
+    private fun orden(frase: String, en: Boolean = false) = Agente.ordenAccesibilidad(frase, normalizarTexto(frase), if (en) Lexico.EN else Lexico.ES)
+
+    @Test fun ordenesEnEspanol() {
+        assertEquals("atras" to "", orden("Atrás")); assertEquals("atras" to "", orden("vuelve atrás"))
+        assertEquals("inicio" to "", orden("Ve al inicio")); assertEquals("inicio" to "", orden("llévame a la pantalla principal"))
+        assertEquals("bajar" to "", orden("Baja la pantalla")); assertEquals("subir" to "", orden("sube un poco la pantalla"))
+        assertEquals("tocar" to "Buscar", orden("Toca Buscar")); assertEquals("tocar" to "Enviar", orden("pulsa el botón Enviar"))
+        assertEquals("tocar" to "Reproducir", orden("dale a Reproducir"))
+    }
+
+    @Test fun ordenesEnIngles() {
+        assertEquals("atras" to "", orden("go back", true)); assertEquals("inicio" to "", orden("Go to the home screen", true))
+        assertEquals("bajar" to "", orden("scroll down", true)); assertEquals("subir" to "", orden("scroll up", true))
+        assertEquals("tocar" to "Search", orden("Tap Search", true)); assertEquals("tocar" to "Send", orden("press the Send button", true))
+    }
+
+    @Test fun lasFrasesNormalesNoSeConfundenConOrdenes() {
+        listOf("Me toca tomar la pastilla", "¿Qué me toca hoy?", "Baja el volumen", "Recuérdame tomar la pastilla a las 8", "¿Qué hora es?", "Léeme los mensajes", "Llama a mi hija", "Ponme música de boleros")
+            .forEach { assertEquals("no debia ser una orden: $it", null, orden(it)) }
+        listOf("What do I have today?", "Remind me to take my pill", "It is my turn to take it", "Play some music").forEach { assertEquals("no debia ser una orden: $it", null, orden(it, true)) }
+    }
 }
 

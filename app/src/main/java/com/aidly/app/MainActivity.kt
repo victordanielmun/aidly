@@ -2,6 +2,8 @@ package com.aidly.app
 
 import android.Manifest
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity

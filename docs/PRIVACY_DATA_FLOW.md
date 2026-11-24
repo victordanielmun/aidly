@@ -37,6 +37,9 @@ Idea tomada de la tabla de flujos del repo `fun-phone` (reimplementada, sin copi
 
 | F18 | **Lo que me gusta leer o ver** (frases libres que la persona dice) | La frase se guarda cifrada solo en el teléfono (hasta 8, de máximo 40 caracteres; se rechazan correos y teléfonos). Con la nube encendida, esas frases viajan a Gemini dentro de la petición de tarjetas (sin nombre ni ubicación); además se usan en el teléfono para ordenar los titulares | Gemini (Firebase AI Logic), con la nube encendida | Sin nube solo se usan en el teléfono | `Intereses.kt`, `ParaTiActivity.kt` |
 
+| F19 | **Ayuda con otras apps** (servicio de accesibilidad, opcional; la persona lo enciende en Ajustes > Accesibilidad) | Ninguno sale del teléfono. El servicio no registra eventos de accesibilidad; solo cuando la persona pide "toca X" mira el texto de los botones de la otra app para encontrar X, y no lo guarda ni lo envía. El audio de la orden de voz sigue F1 / F9 | No sale | Apagado de fábrica | `AidlyAccesibilidad.kt`, `Accesibilidad.kt`, `OrdenActivity.kt` |
+| F20 | **Botón flotante de Aidly** y **abrir cualquier app por su nombre** | Ninguno. El botón se dibuja en la capa de accesibilidad y su posición se guarda en el teléfono. Para "abre X" Aidly consulta localmente la lista de apps instaladas con icono y no la guarda ni la envía | No sale | El botón solo existe con la ayuda encendida | `AidlyAccesibilidad.kt`, `Accesibilidad.kt` (`AppsInstaladas`) |
+
 No sale nunca del teléfono: el texto de los mensajes y correos que Aidly lee en voz alta (viene de las notificaciones), la lista de recordatorios, los favoritos, el número de quien llama, el contenido del calendario (solo se lee o se escribe en el calendario del propio teléfono).
 
 ## 3. Lo que se guarda en el teléfono

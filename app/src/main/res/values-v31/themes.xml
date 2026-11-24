@@ -6,4 +6,11 @@
         <item name="android:windowSplashScreenBackground">@color/aidly_fondo</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_icono</item>
     </style>
+    <!-- Ventana de voz sobre otra app: se ve la app de abajo -->
+    <style name="Theme.Aidly.Translucente" parent="Theme.Aidly">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
 </resources>

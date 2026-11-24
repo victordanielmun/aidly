@@ -27,6 +27,7 @@ class Lexico(
     val porFavor: Regex,
     val modoDock: Regex,
     val paraTi: Regex,
+    val atras: Regex, val inicio: Regex, val bajar: Regex, val subir: Regex, val tocar: Regex,
 ) {
     companion object {
         private fun r(s: String) = Regex(s)
@@ -105,6 +106,11 @@ class Lexico(
             porFavor = r("\\bpor favor\\b"),
             modoDock = r("\\b(modo dock|modo mesa|modo base|el dock)\\b"),
             paraTi = r("\\b(para ti|cuentame algo|cuentame (una )?(cosa|historia|curiosidad|dato)|dime algo (interesante|bonito|curioso)|algo interesante|que hay de nuevo|alguna novedad|hay novedades|ponme al dia|tienes algo para mi|mis gustos)\\b"),
+            atras = r("\\b(atras|retrocede|vuelve atras|volver atras|ve atras|regresa atras)\\b"),
+            inicio = r("\\b(ve|ir|vamos|llevame|regresa|vuelve|volver|pon|ponme) (al |a la |a )?(inicio|pantalla principal|pantalla de inicio)\\b|^(inicio|pantalla principal)$"),
+            bajar = r("\\b(baja|bajar|desplaza hacia abajo|ve mas abajo)( un poco)?( la)? (pantalla|pagina)\\b|\\b(mas abajo|desplazate hacia abajo)\\b"),
+            subir = r("\\b(sube|subir|desplaza hacia arriba|ve mas arriba)( un poco)?( la)? (pantalla|pagina)\\b|\\b(mas arriba|desplazate hacia arriba)\\b"),
+            tocar = r("(?i)\\b(?:toca|tocar|pulsa|pulsar|presiona|oprime|aprieta|dale a|haz clic en)\\s+(?:en\\s+|el\\s+|la\\s+|los\\s+|las\\s+|bot[oó]n\\s+)*(.+?)[\\s.!?]*$"),
         )
 
         val EN = Lexico(
@@ -183,6 +189,11 @@ class Lexico(
             porFavor = r("\\bplease\\b"),
             modoDock = r("\\b(dock mode|table mode|desk mode|the dock)\\b"),
             paraTi = r("\\b(for you|tell me something|tell me (a )?(thing|story|fun fact|fact)|something interesting|something nice|what s new|whats new|any news|catch me up|got something for me|my interests)\\b"),
+            atras = r("\\b(go back|back|previous screen|step back)\\b"),
+            inicio = r("\\b(go|take me|bring me|return) (to )?(the )?(home|home screen)\\b|^(home|home screen)$"),
+            bajar = r("\\b(scroll|move|go) down\\b|\\bpage down\\b"),
+            subir = r("\\b(scroll|move|go) up\\b|\\bpage up\\b"),
+            tocar = r("(?i)\\b(?:tap|press|click|touch|hit)\\s+(?:on\\s+|the\\s+|button\\s+)*(.+?)[\\s.!?]*$"),
         )
 
         fun de(ctx: Context): Lexico = if (Idioma.resolver(ctx) == "en") EN else ES

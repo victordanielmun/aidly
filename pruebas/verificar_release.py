@@ -42,9 +42,20 @@ if "android:debuggable" in man:
 if "usesCleartextTraffic=\"true\"" in man:
     fallo("trafico sin cifrar permitido")
 
+# El servicio de accesibilidad solo lo puede conectar el sistema y no debe pedir eventos ni nada fuera de su finalidad
+if "android.permission.BIND_ACCESSIBILITY_SERVICE" not in man:
+    fallo("el servicio de accesibilidad no exige BIND_ACCESSIBILITY_SERVICE")
+cfg = RAIZ / "app/src/main/res/xml/aidly_accesibilidad.xml"
+if cfg.exists():
+    x = cfg.read_text(encoding="utf-8")
+    if "accessibilityEventTypes" in x.replace("<!--", "").split("-->")[-1]:
+        fallo("el servicio de accesibilidad se suscribe a eventos: debe quedar sin ninguno")
+
 # Componentes exportados: solo los esperados
+# (los servicios de sistema que el propio Android debe poder conectar van exportados pero protegidos por un permiso de sistema:
+#  notificaciones, filtro de llamadas y accesibilidad con BIND_ACCESSIBILITY_SERVICE)
 ESPERADOS_EXPORTADOS = {".HomeActivity", ".ArranqueReceiver", ".AidlyWidgetReceiver",
-                        ".AidlyWidgetCompactoReceiver", ".AidlyNotificationListener", ".AidlyCallScreeningService"}
+                        ".AidlyWidgetCompactoReceiver", ".AidlyNotificationListener", ".AidlyCallScreeningService", ".AidlyAccesibilidad"}
 exportados = set()
 for bloque in re.findall(r"<(?:activity|receiver|service)\b.*?>", man, flags=re.S):
     if 'android:exported="true"' in bloque:

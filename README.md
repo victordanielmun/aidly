@@ -29,7 +29,7 @@ Also used: **Firebase App Check** (debug provider for development and submission
 rules in [`firestore.rules`](firestore.rules)) and **Firebase Hosting** (family web page in [`familia/`](familia/)).
 
 ## Features
-**For you** (the assistant brings things the person likes, with source and a safety filter; optional spoken offers in dock mode) · Voice assistant (messages and email by notification, reminders with exact alarms, calendar, web questions, call/open apps) · one-button **Take a photo** reader that recognises medicines (with "add a reminder", e.g. "blood pressure pill at 9:00 AM") and reads letters, receipts and signs ·
+**For you** (the assistant brings things the person likes, with source and a safety filter; optional spoken offers in dock mode) · optional **floating button and voice control of other apps** (accessibility service, off by default) · Voice assistant (messages and email by notification, reminders with exact alarms, calendar, web questions, call/open apps) · one-button **Take a photo** reader that recognises medicines (with "add a reminder", e.g. "blood pressure pill at 9:00 AM") and reads letters, receipts and signs ·
 daily check-in · **dock mode** (USB-C code for the dock included, unit-tested against a simulated port only; big animated face, voice through the dock, optional on-device presence detection with MediaPipe that asks "are you okay?" if it stops seeing you after a conversation; no images are stored or sent) · consent-based family circle with a code · SOS · big-key dialer · optional caller announcement · widgets · Spanish and English UI **and voice** (commands, spoken answers, speech recognition and AI prompts follow the app language).
 
 ## How it is organised
@@ -79,6 +79,11 @@ Firebase creates and restricts inside *your* Firebase project (`app/google-servi
 - **Public sources used without Gemini Search:** Wikipedia REST API (text under CC BY-SA, images from Wikimedia Commons; shown as "Wikipedia"), BBC and Smithsonian Magazine RSS feeds (headlines, summaries and thumbnails for non-commercial syndication, always credited and linking to the original article) and Open-Meteo (free, non-commercial use). Images and links are only accepted over https from an allow-list of these sites.
 - **Searches on google.com:** "Search on Google" and the fallback for web questions open google.com in the phone's browser; Aidly does not scrape Google results. They are only contacted
   when the person has the cloud switched on, and each source's address sees the phone's IP like any website would.
+
+## Accessibility service and floating button (opt-in)
+Older adults get lost when they leave Aidly for another app. An **optional** accessibility service (off by default; turned on in the system's *Settings > Accessibility* after an in-app notice)
+shows Aidly's **floating button** over other apps and, only when the person asks, goes back/home, scrolls and **taps a button by its text** ("tap Search"); "open <any installed app>" works by name.
+It subscribes to no accessibility events and stores or sends nothing it sees. Full declaration: [`docs/ACCESIBILIDAD_DECLARACION.md`](docs/ACCESIBILIDAD_DECLARACION.md).
 
 ## Privacy
 [`docs/PRIVACY.md`](docs/PRIVACY.md) (ES/EN), [`docs/PRIVACY_DATA_FLOW.md`](docs/PRIVACY_DATA_FLOW.md) (every data flow and its source file) and
