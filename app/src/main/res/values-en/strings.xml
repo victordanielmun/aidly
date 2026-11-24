@@ -208,9 +208,9 @@
     <!-- Privacy -->
     <string name="privacidad_titulo">Your privacy</string>
     <string name="privacidad_local_t">Stays on your phone</string>
-    <string name="privacidad_local">Your reminders, your favorites, the messages I read to you and your settings. Aidly has no ads or accounts, and sends no usage statistics. In dock mode the camera is analysed on the phone (no image is saved) and, to hear “Aidly” without a button, your phone’s speech recognizer is used, which depending on the model may use Google’s service; you can pause it.</string>
+    <string name="privacidad_local">Your reminders, your favorites, the messages I read to you and your settings. Aidly has no ads or accounts, and sends no usage statistics. In dock mode the camera is analysed on the phone (no image is saved) and, with the cloud off, to hear “Aidly” without a button your phone’s speech recognizer is used, which depending on the model may use Google’s service; you can pause it.</string>
     <string name="privacidad_nube_t">Goes to Google\'s cloud (Gemini)</string>
-    <string name="privacidad_nube">Only when you ask: your voice when you talk to Aidly, photos of what you ask it to read (a bottle, a letter), and internet questions. Google processes them to answer you.</string>
+    <string name="privacidad_nube">Only when you ask: your voice when you talk to Aidly, photos of what you ask it to read (a bottle, a letter), and internet questions. Google processes them to answer you. In dock mode with the cloud on, to hear “Aidly” without a button, the phone sends short voice clips to Google to be transcribed; those that do not start with “Aidly” are discarded and not saved, and you can pause it.</string>
     <string name="privacidad_familia_t">Your family</string>
     <string name="privacidad_familia">Only if you turn on “My family”: what you choose is shared with a code. You can stop sharing and it is deleted.</string>
     <string name="privacidad_sin_nube_nota">Without the cloud, Aidly understands your reminders, reads your messages and makes calls, but cannot read medicines or papers, or search the internet. To hear you it uses your phone\'s speech recognizer, which on some phones may use Google\'s service. You can change this any time in Settings.</string>

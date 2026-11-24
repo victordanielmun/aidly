@@ -208,9 +208,9 @@
     <!-- Privacidad -->
     <string name="privacidad_titulo">Tu privacidad</string>
     <string name="privacidad_local_t">Se queda en tu teléfono</string>
-    <string name="privacidad_local">Tus recordatorios, tus favoritos, los mensajes que te leo y tus ajustes. Aidly no tiene anuncios ni cuentas, y no manda estadísticas de uso. En el modo dock, la cámara se analiza en el teléfono (no se guarda ninguna imagen) y, para oír «Aidly» sin botón, se usa el reconocedor de voz del teléfono, que según el modelo puede usar el servicio de Google; puedes pausarlo.</string>
+    <string name="privacidad_local">Tus recordatorios, tus favoritos, los mensajes que te leo y tus ajustes. Aidly no tiene anuncios ni cuentas, y no manda estadísticas de uso. En el modo dock, la cámara se analiza en el teléfono (no se guarda ninguna imagen) y, con la nube apagada, para oír «Aidly» sin botón se usa el reconocedor de voz del teléfono, que según el modelo puede usar el servicio de Google; puedes pausarlo.</string>
     <string name="privacidad_nube_t">Va a la nube de Google (Gemini)</string>
-    <string name="privacidad_nube">Solo cuando tú lo pides: tu voz al hablar con Aidly, las fotos de lo que le pides que lea (un frasco, una carta), y las preguntas de internet. Google las procesa para responderte.</string>
+    <string name="privacidad_nube">Solo cuando tú lo pides: tu voz al hablar con Aidly, las fotos de lo que le pides que lea (un frasco, una carta), y las preguntas de internet. Google las procesa para responderte. En el modo dock con la nube encendida, para oír «Aidly» sin botón, el teléfono manda a Google frases cortas de voz para transcribirlas; las que no empiezan por «Aidly» se descartan sin guardarse, y puedes pausarlo.</string>
     <string name="privacidad_familia_t">Tu familia</string>
     <string name="privacidad_familia">Solo si activas «Mi familia»: se comparte con un código lo que tú elijas. Puedes dejar de compartir y se borra.</string>
     <string name="privacidad_sin_nube_nota">Sin la nube, Aidly entiende tus recordatorios, lee tus mensajes y llama, pero no puede leer medicinas ni papeles, ni buscar en internet. Para escucharte usa el reconocedor de voz de tu teléfono, que según el modelo puede usar el servicio de Google. Puedes cambiarlo cuando quieras en Ajustes.</string>

@@ -43,6 +43,9 @@ class AidlyAccesibilidad : AccessibilityService() {
         private const val PANEL_MS = 15_000L
     }
 
+    /** Textos en el idioma elegido en la app (no el del telefono): el servicio no pasa por ActividadAidly, igual que los widgets. */
+    private fun t(id: Int): String = Idioma.envolver(applicationContext).getString(id)
+
     private val main = Handler(Looper.getMainLooper())
     private var wm: WindowManager? = null
     private var boton: View? = null
@@ -136,7 +139,7 @@ class AidlyAccesibilidad : AccessibilityService() {
             setPadding(dp(6f), dp(6f), dp(6f), dp(6f))
             background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(Tema.Fondo.toArgb()); setStroke(dp(3f), Tema.Turquesa.toArgb()) }
             elevation = dp(6f).toFloat()
-            contentDescription = getString(R.string.a11y_boton_desc)
+            contentDescription = t(R.string.a11y_boton_desc)
             isClickable = true
         }
         val m = resources.displayMetrics
@@ -210,10 +213,10 @@ class AidlyAccesibilidad : AccessibilityService() {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(10f), dp(10f), dp(10f), dp(10f))
             background = GradientDrawable().apply { cornerRadius = dp(24f).toFloat(); setColor(Tema.Fondo.toArgb()); setStroke(dp(3f), turquesa) }
-            addView(boton(getString(R.string.a11y_decir), turquesa, oscuro) { abrirOrden() }, LinearLayout.LayoutParams(-1, -2).apply { setMargins(dp(4f), dp(4f), dp(4f), dp(4f)) })
-            addView(fila(boton(getString(R.string.a11y_atras), tarjeta, texto) { atras() }, boton(getString(R.string.a11y_inicio), tarjeta, texto) { inicio() }))
-            addView(fila(boton(getString(R.string.a11y_bajar), tarjeta, texto) { desplazar(true) }, boton(getString(R.string.a11y_subir), tarjeta, texto) { desplazar(false) }))
-            addView(fila(boton(getString(R.string.a11y_volver_aidly), tarjeta, texto) { abrirAidly() }, boton(getString(R.string.a11y_quitar), tarjeta, Tema.Coral.toArgb()) { Accesibilidad.fijarBoton(this@AidlyAccesibilidad, false) }))
+            addView(boton(t(R.string.a11y_decir), turquesa, oscuro) { abrirOrden() }, LinearLayout.LayoutParams(-1, -2).apply { setMargins(dp(4f), dp(4f), dp(4f), dp(4f)) })
+            addView(fila(boton(t(R.string.a11y_atras), tarjeta, texto) { atras() }, boton(t(R.string.a11y_inicio), tarjeta, texto) { inicio() }))
+            addView(fila(boton(t(R.string.a11y_bajar), tarjeta, texto) { desplazar(true) }, boton(t(R.string.a11y_subir), tarjeta, texto) { desplazar(false) }))
+            addView(fila(boton(t(R.string.a11y_volver_aidly), tarjeta, texto) { abrirAidly() }, boton(t(R.string.a11y_quitar), tarjeta, Tema.Coral.toArgb()) { Accesibilidad.fijarBoton(this@AidlyAccesibilidad, false) }))
         }
         val ancho = (m.widthPixels * 0.92f).toInt()
         val alto = dp(360f)

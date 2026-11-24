@@ -30,6 +30,10 @@ Si lo enciendes en *Ajustes > Accesibilidad*, Aidly muestra su botón flotante s
 ### Cámara del modo dock (opcional)
 Si activas el modo dock y aceptas, la cámara frontal del teléfono sirve para saber si estás frente a Aidly y para que la base gire hacia ti. Las imágenes se procesan **en tu teléfono**: no se muestran, no se guardan y no se envían. Si después de conversar dejo de verte, te preguntaré en voz alta si estás bien. No detecta caídas ni emergencias. Puedes pausarla cuando quieras.
 
+
+### Escucha sin botón en el modo dock
+Mientras el modo dock está abierto, Aidly escucha su nombre («Aidly») y solo hace caso si lo oye o si continúas una conversación recién hecha. Lo demás se descarta sin guardarse. **Con la nube encendida**, el teléfono graba una frase corta cada vez que detecta una voz y la envía a Google (Gemini) para transcribirla y saber si dijiste «Aidly»; esto incluye a otras personas que hablen en la habitación, y la grabación no se conserva después de la respuesta. **Con la nube apagada** se usa el reconocedor de voz del teléfono y, según el modelo, Android puede enviar ese audio al servicio de voz de Google; Aidly no lo controla. Está encendida mientras la pantalla del dock está abierta, muestra un aviso y se puede pausar con un botón.
+
 ### Tu familia (opcional)
 Si activas «Mi familia», se crea un código aleatorio y se guarda en Google Firebase solo lo que tú elijas compartir: nombre, última actividad, estado de las medicinas, ubicación y cómo te sientes. Quien tenga el código ve esos datos. Si pides ayuda (SOS) se comparte la hora y, si hay permiso, la ubicación. Al dejar de compartir se borra todo en la nube.
 
@@ -77,7 +81,7 @@ If you turn it on in *Settings > Accessibility*, Aidly shows its floating button
 If you turn on dock mode and accept, the phone's front camera is used to know whether you are in front of Aidly and so the base can turn toward you. Images are processed **on your phone**: they are not shown, saved or sent. If I stop seeing you after we talk, I will ask aloud whether you are okay. It does not detect falls or emergencies. You can pause it any time. If you also allow offers in "For you", it uses the same on-phone detector to notice a few everyday objects (a book, an oven, a laptop, a plant) and, as a guess only ("if you are cooking..."), may offer a related card that is already inside the app; nothing about what it sees leaves the phone.
 
 ### Dock-mode listening without a button
-While dock mode is open Aidly listens for its name ("Aidly") using your phone's speech recognizer, and only acts if it hears the name or if you are continuing a conversation it just had. Anything else is discarded and not saved. Depending on the phone model, Android may send that audio to Google's speech service; Aidly does not control this. It is on while the dock screen is open, shows a message and can be paused with one button.
+While dock mode is open Aidly listens for its name ("Aidly"), and only acts if it hears the name or if you are continuing a conversation it just had. Anything else is discarded and not saved. **With the cloud on**, the phone records a short clip whenever it detects a voice and sends it to Google (Gemini) to be transcribed, so that it can tell whether you said "Aidly"; this includes other people talking in the room, and the clip is not kept after the answer. **With the cloud off**, your phone's own speech recognizer is used and, depending on the phone model, Android may send that audio to Google's speech service; Aidly does not control this. It is on while the dock screen is open, shows a message and can be paused with one button.
 
 ### Emergency number and trusted contact (optional)
 If you set your own emergency number or a trusted contact, they are stored encrypted on your phone and used only to open the dialer; Aidly never calls by itself.
