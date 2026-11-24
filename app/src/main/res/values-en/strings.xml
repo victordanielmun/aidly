@@ -208,7 +208,7 @@
     <!-- Privacy -->
     <string name="privacidad_titulo">Your privacy</string>
     <string name="privacidad_local_t">Stays on your phone</string>
-    <string name="privacidad_local">Your reminders, your favorites, the messages I read to you and your settings. Aidly has no ads or accounts, and sends no usage statistics.</string>
+    <string name="privacidad_local">Your reminders, your favorites, the messages I read to you and your settings. Aidly has no ads or accounts, and sends no usage statistics. In dock mode the camera is analysed on the phone (no image is saved) and, to hear “Aidly” without a button, your phone’s speech recognizer is used, which depending on the model may use Google’s service; you can pause it.</string>
     <string name="privacidad_nube_t">Goes to Google\'s cloud (Gemini)</string>
     <string name="privacidad_nube">Only when you ask: your voice when you talk to Aidly, photos of what you ask it to read (a bottle, a letter), and internet questions. Google processes them to answer you.</string>
     <string name="privacidad_familia_t">Your family</string>

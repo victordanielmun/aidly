@@ -30,7 +30,7 @@ rules in [`firestore.rules`](firestore.rules)) and **Firebase Hosting** (family 
 
 ## Features
 **For you** (the assistant brings things the person likes, with source and a safety filter; optional spoken offers in dock mode) · optional **floating button and voice control of other apps** (accessibility service, off by default) · Voice assistant (messages and email by notification, reminders with exact alarms, calendar, web questions, call/open apps) · one-button **Take a photo** reader that recognises medicines (with "add a reminder", e.g. "blood pressure pill at 9:00 AM") and reads letters, receipts and signs ·
-daily check-in · **dock mode** (USB-C code for the dock included, unit-tested against a simulated port only; big animated face, voice through the dock, optional on-device presence detection with MediaPipe that asks "are you okay?" if it stops seeing you after a conversation; no images are stored or sent) · consent-based family circle with a code · SOS · big-key dialer · optional caller announcement · widgets · Spanish and English UI **and voice** (commands, spoken answers, speech recognition and AI prompts follow the app language).
+daily check-in · **dock mode** (USB-C code for the dock included, unit-tested against a simulated port only; big animated face, voice through the dock, camera that starts by itself once accepted, on-device presence and everyday-object detection with MediaPipe (asks "are you okay?" if it stops seeing you after a conversation; may offer a related card as a guess, never a statement), hands-free listening for "Aidly"; no images are stored or sent) · consent-based family circle with a code · SOS with your own emergency number and a trusted contact · six avatars · guided setup (permissions, accessibility steps, family sharing, emergency number, interests) · big-key dialer · optional caller announcement · widgets · Spanish and English UI **and voice** (commands, spoken answers, speech recognition and AI prompts follow the app language).
 
 ## How it is organised
 - **UI:** Jetpack Compose, one activity per screen, shared components in [`Componentes.kt`](app/src/main/java/com/aidly/app/Componentes.kt); high contrast, large type that scales to 200 %, Android 15 edge-to-edge handled in [`Tema.kt`](app/src/main/java/com/aidly/app/Tema.kt).
@@ -49,6 +49,7 @@ daily check-in · **dock mode** (USB-C code for the dock included, unit-tested a
 | Camera presence detection (MediaPipe) | Measured on a Galaxy A23 (Android 14, 3.6 GB RAM): about 4 analysed frames per second at 24 ms each, battery temperature unchanged after 40 s; found and fixed a CameraX binding bug that only showed on the real phone. Battery drain over longer runs not measured |
 | Call announcer (Android 10+ call-screening role) | Not testable on the emulator image used |
 | "For you": card parsing, safety filter, topic profile and offer policy | 21 unit tests passing; the cloud generator and the card conversation were run on the emulator (Google Search grounding had no free quota that day, so the fallback to no-search cards was the path exercised); not yet run on the Galaxy A23 |
+| Dock autonomy (camera on its own, hands-free "Aidly", object context) | Policies are unit-tested (`EscuchaLibreTest`, `ContextoActividadTest`); the screens ran on the emulator (which has no front camera). **Not yet run on a real phone**: object detection accuracy, hands-free listening in a room with a TV, battery |
 | TalkBack walkthrough, USB audio and the dock hardware | Not yet verified; the dock is a design prototype |
 
 ## Test build and family page
@@ -113,7 +114,7 @@ Requirements: Android Studio or JDK 17 and the Android SDK, minSdk 26, an Androi
 Checks: `python pruebas/validar_textos.py`, `python pruebas/validar_idiomas.py`, `python pruebas/verificar_release.py`.
 
 ## Third-party
-Atkinson Hyperlegible font (SIL Open Font License 1.1, `app/src/main/assets/licencias/`), AndroidX, Jetpack Compose, Glance, CameraX, Firebase SDKs and MediaPipe Tasks Vision with its BlazeFace and Pose Landmarker (lite) models (Apache-2.0).
+Atkinson Hyperlegible font (SIL Open Font License 1.1, `app/src/main/assets/licencias/`), AndroidX, Jetpack Compose, Glance, CameraX, Firebase SDKs and MediaPipe Tasks Vision with its BlazeFace, Pose Landmarker (lite) and EfficientDet-Lite0 models (Apache-2.0).
 
 ## License
 [Apache License 2.0](LICENSE).

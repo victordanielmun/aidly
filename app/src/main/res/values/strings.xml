@@ -208,7 +208,7 @@
     <!-- Privacidad -->
     <string name="privacidad_titulo">Tu privacidad</string>
     <string name="privacidad_local_t">Se queda en tu teléfono</string>
-    <string name="privacidad_local">Tus recordatorios, tus favoritos, los mensajes que te leo y tus ajustes. Aidly no tiene anuncios ni cuentas, y no manda estadísticas de uso.</string>
+    <string name="privacidad_local">Tus recordatorios, tus favoritos, los mensajes que te leo y tus ajustes. Aidly no tiene anuncios ni cuentas, y no manda estadísticas de uso. En el modo dock, la cámara se analiza en el teléfono (no se guarda ninguna imagen) y, para oír «Aidly» sin botón, se usa el reconocedor de voz del teléfono, que según el modelo puede usar el servicio de Google; puedes pausarlo.</string>
     <string name="privacidad_nube_t">Va a la nube de Google (Gemini)</string>
     <string name="privacidad_nube">Solo cuando tú lo pides: tu voz al hablar con Aidly, las fotos de lo que le pides que lea (un frasco, una carta), y las preguntas de internet. Google las procesa para responderte.</string>
     <string name="privacidad_familia_t">Tu familia</string>

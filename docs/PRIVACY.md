@@ -74,7 +74,13 @@ If you choose your interests in "For you", Aidly shows things you may enjoy and,
 If you turn it on in *Settings > Accessibility*, Aidly shows its floating button over other apps and, **only when you ask** ("tap Search", "go back", "scroll down"), taps a button by its text, goes back or home and scrolls the screen. It does not receive what you type or what happens on screen, does not store or send anything it sees, and never taps anything on its own. It is off until you turn it on and you can turn it off any time. Details: [ACCESIBILIDAD_DECLARACION.md](ACCESIBILIDAD_DECLARACION.md).
 
 ### Dock-mode camera (optional)
-If you turn on dock mode and accept, the phone's front camera is used to know whether you are in front of Aidly and so the base can turn toward you. Images are processed **on your phone**: they are not shown, saved or sent. If I stop seeing you after we talk, I will ask aloud whether you are okay. It does not detect falls or emergencies. You can pause it any time.
+If you turn on dock mode and accept, the phone's front camera is used to know whether you are in front of Aidly and so the base can turn toward you. Images are processed **on your phone**: they are not shown, saved or sent. If I stop seeing you after we talk, I will ask aloud whether you are okay. It does not detect falls or emergencies. You can pause it any time. If you also allow offers in "For you", it uses the same on-phone detector to notice a few everyday objects (a book, an oven, a laptop, a plant) and, as a guess only ("if you are cooking..."), may offer a related card that is already inside the app; nothing about what it sees leaves the phone.
+
+### Dock-mode listening without a button
+While dock mode is open Aidly listens for its name ("Aidly") using your phone's speech recognizer, and only acts if it hears the name or if you are continuing a conversation it just had. Anything else is discarded and not saved. Depending on the phone model, Android may send that audio to Google's speech service; Aidly does not control this. It is on while the dock screen is open, shows a message and can be paused with one button.
+
+### Emergency number and trusted contact (optional)
+If you set your own emergency number or a trusted contact, they are stored encrypted on your phone and used only to open the dialer; Aidly never calls by itself.
 
 ### Your family (optional)
 If you turn on "My family", a random code is created and only what you choose to share is stored in Google Firebase: name, last activity, medicine status, location and how you feel. Whoever has the code sees that data. If you ask for help (SOS) the time and, with permission, the location are shared. When you stop sharing, everything is deleted from the cloud.
