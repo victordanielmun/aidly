@@ -457,7 +457,7 @@ footer a{color:var(--text2)}
     <button type="button" class="x-p" id="vp-x" aria-label="Close the video">✕</button>
     <h2 id="vp-t"><span lang="en">See Aidly in action</span><span lang="es">Mira Aidly en acción</span></h2>
     <div class="media-p" id="vp-media"></div>
-    <div class="pie-p"><a class="btn y s" href="#get" id="vp-apk"><span lang="en">Get the test APK</span><span lang="es">Obtener la APK</span></a></div>
+    <div class="pie-p"><a class="btn y s" href="#get" id="vp-apk"><span lang="en">Get the test APK</span><span lang="es">Obtener la APK</span></a><a class="btn o s" id="vp-yt" href="#" target="_blank" rel="noopener" hidden><span lang="en">Watch on YouTube</span><span lang="es">Ver en YouTube</span></a></div>
   </div>
 </dialog>
 <dialog class="visor" id="visor" aria-label="Screenshot">
@@ -523,6 +523,7 @@ footer a{color:var(--text2)}
     fetch("assets/video.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (c) {
       if (!c || !c.url) return;
       btnVer.hidden = false;
+      if (c.youtube) { var ly = document.getElementById("vp-yt"); ly.href = c.youtube; ly.hidden = false; }
       var yt = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/.exec(c.url);
       var ratio = c.ancho && c.alto ? c.ancho / c.alto : (c.aspecto === "vertical" ? 9 / 16 : 16 / 9);
       media.style.aspectRatio = String(ratio); media.style.width = "min(100%, " + (ratio * 72).toFixed(2) + "vh)";

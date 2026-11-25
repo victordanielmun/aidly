@@ -1,5 +1,7 @@
 {
-  "url": "https://youtu.be/bz_yENuW8D8",
+  "url": "assets/aidly-video.mp4",
+  "poster": "assets/aidly-video-poster.jpg",
+  "youtube": "https://youtu.be/bz_yENuW8D8",
   "ancho": 960,
   "alto": 544,
   "retraso": 4,
